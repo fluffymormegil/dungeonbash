@@ -1,0 +1,52 @@
+.TH DUNGEONBASHRC 5 2009-09-19 "Martin Read" "Martin's Dungeon Bash User Manual"
+
+.SH NAME
+
+dungeonbashrc \- configuration file for Martin's Dungeon Bash
+
+.SH SYNOPSIS
+
+.B $(HOME)/.dungeonbashrc
+
+.SH DESCRIPTION
+
+The dungeonbashrc file (usually stored as $(HOME)/.dungeonbashrc) contains per-user configuration data for Martin's Dungeon Bash.
+
+.SH SYNTAX
+
+Each line of a dungeonbashrc file should use the following format:
+
+varname = value
+
+(Whitespace around the equals sign is optional, and leading whitespace is discarded.)
+
+Any lines not conforming to this format are discarded by the parser.
+
+.SH VALID PARAMETERS
+
+The following parameters are valid in a dungeonbashrc file:
+
+name - specifies the default name for the player character.
+
+language - specifies a preferred output language; if the requested language is not available, British English will be used instead.
+
+preferred_display - specifies the preferred user interface; at present only the tty interface using ncurses is supported.
+
+suppress_boringfail - suppresses output of failure messages officially decreed boring.
+
+suppress_fluff - suppresses output of messages officially decreed to be fluff (these messages do nothing important).
+
+suppress_taunt - suppresses output of messages officially decreed to be mere taunts (these messages do nothing important).
+
+suppress_numeric - suppresses output of messages conveying numerical information e.g. amount of damage taken on a hit.
+
+suppress_mon_alert - suppresses output of messages warning that a monster has noticed your presence.
+
+.SH "SEE ALSO"
+
+dungeonbash(6)
+
+.SH AUTHOR
+
+Martin's Dungeon Bash, and this manual page, were written by Martin Read <mpread@chiark.greenend.org.uk>
+

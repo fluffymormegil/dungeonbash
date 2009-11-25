@@ -1,0 +1,64 @@
+
+BODY
+{
+        background-color: #800080;
+        color: white;
+}
+
+H1
+{
+        padding: 3px;
+        text-align: center;
+        border-bottom: thick black solid;
+}
+
+.content
+{
+        width: 75% ;
+        padding: 3px;
+        float: right;
+        background-color: #f0f0f0;
+        color: black;
+        border: thin black solid;
+}
+
+TABLE
+{
+        border: thin black solid;
+}
+
+TR.featurewip
+{
+        background-color: yellow;
+}
+
+TR.featurenotyet
+{
+        background-color: gray;
+}
+
+TR.featuredone
+{
+        background-color: #00ff00;
+}
+
+.navbar
+{
+        width: 20%;
+        padding: 3px;
+        float: left;
+        background-color: #f0f0f0;
+        color: black;
+        border: thin black solid;
+}
+
+.navbar UL
+{
+        margin-left: 1em;
+        padding: 0;
+}
+
+.footer
+{
+        clear: both;
+}

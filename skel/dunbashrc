@@ -1,0 +1,5 @@
+suppress_boringfail=no
+levelup_wait=yes
+save_wait=no
+reload_wait=yes
+name=Ingvaeon
