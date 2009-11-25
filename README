@@ -1,0 +1,25 @@
+Top-level directory structure:
+
+audio/
+    does not exist yet; will eventually contain Csound scores and orchestras
+
+bitmaps/
+    does not exist yet; will eventually contain graphics files
+
+etc/
+    example system-wide configuration for Martin's Dungeon Bash.
+
+html/
+    HTML documents and CSS stylesheets relating to Martin's Dungeon Bash.
+
+man/
+    the (rather skimpy) man pages for Martin's Dungeon Bash.
+
+skel/
+    example user configuration for Martin's Dungeon Bash.
+
+spoilers/
+    contains the official spoilers for Martin's Dungeon Bash.
+
+src/
+    contains the source code for Martin's Dungeon Bash.
