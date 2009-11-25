@@ -1,0 +1,485 @@
+# permobj.txt - object database for Martin's Dungeon Bash
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# This file is the preferred source code form for editing the "permobj" data
+# associated with Martin's Dungeon Bash. The behaviour of the C++ source file
+# poparse.cc as distributed with the corresponding official release of
+# Martin's Dungeon Bash defines the syntax and semantics of the language in
+# which this file is written.
+
+obj WEAPON "dagger" "daggers"
+desc A long knife, designed for stabbing.
+rarity 25
+symbol MELEE_WEAPON
+colour CYAN
+power 4
+known true
+depth 1
+
+obj WEAPON "long sword" "long swords"
+desc A steel sword of simple but sturdy construction, with a three-foot blade.
+rarity 30
+symbol MELEE_WEAPON
+colour CYAN
+power 10
+known true
+depth 4
+
+obj WEAPON "mace" "maces"
+desc A flanged lump of iron on an iron haft.
+rarity 30
+symbol MELEE_WEAPON
+colour BROWN
+power 7
+known true
+depth 2
+
+obj WEAPON "runesword" "runeswords"
+desc An eerily glowing sword engraved with many strange runes.
+rarity 80
+symbol MELEE_WEAPON
+colour L_RED
+quality good
+power 20
+known true
+depth 12
+
+obj WEAPON "bow" "bows"
+desc A recurve composite bow.
+rarity 45
+symbol RANGED_WEAPON
+colour BROWN
+power 8
+known true
+depth 1
+
+obj WEAPON "crossbow" "crossbows"
+desc A crossbow.
+rarity 70
+symbol RANGED_WEAPON
+colour CYAN
+power 16
+known true
+depth 6
+
+obj POTION "healing potion" "healing potions"
+desc This magic elixir restores some lost hit points.
+rarity 10
+symbol POTION
+colour L_GREY
+quality good
+power 0
+known false
+depth 1
+
+obj POTION "poison potion" "poison potions"
+desc This liquid is poisonous.
+rarity 10
+symbol POTION
+colour L_GREY
+quality bad
+power 0
+known false
+depth 1
+
+obj POTION "body potion" "body potions"
+desc This magic elixir will improve your physique.
+rarity 70
+symbol POTION
+colour L_GREY
+quality excellent
+power 0
+known false
+depth 5
+
+obj POTION "agility potion" "agility potions"
+desc This magic elixir will sharpen your reflexes.
+rarity 70
+symbol POTION
+colour L_GREY
+quality excellent
+power 0
+known false
+depth 5
+
+obj POTION "weakness potion" "weakness potions"
+desc This magic elixir causes physical degeneration in whoever drinks it.
+rarity 40
+symbol POTION
+colour L_GREY
+quality bad
+power 0
+known false
+depth 1
+
+obj POTION "restoration potion" "restoration potions"
+desc This magic elixir cures temporary damage to one's abilities.
+rarity 70
+symbol POTION
+colour L_GREY
+power 0
+quality good
+known false
+depth 1
+
+obj SCROLL "teleport scroll" "teleport scrolls"
+desc Reading this scroll will teleport you to a random location.
+rarity 40
+symbol SCROLL
+colour WHITE
+power 0
+quality normal
+known false
+depth 1
+
+obj SCROLL "fire scroll" "fire scrolls"
+desc Reading this scroll will engulf you in flames.
+rarity 30
+symbol SCROLL
+colour WHITE
+power 0
+quality bad
+known false
+depth 1
+
+obj SCROLL "summoning scroll" "summoning scrolls"
+desc Reading this scroll will summon hostile monsters to your side.
+rarity 50
+symbol SCROLL
+colour WHITE
+power 0
+quality bad
+known false
+depth 1
+
+obj SCROLL "identify scroll" "identify scrolls"
+desc Reading this scroll will reveal the nature of your possessions.
+rarity 70
+symbol SCROLL
+colour WHITE
+power 0
+quality good
+known false
+depth 3
+
+obj SCROLL "aggravating scroll" "aggravating scrolls"
+desc Reading this scroll will awaken every monster on the level.
+rarity 50 
+symbol SCROLL
+colour WHITE
+power 0
+quality bad
+known false
+depth 3
+
+obj SCROLL "protection scroll" "protection scrolls"
+desc Reading this scroll will dispel any curses afflicting you and protect you from curses for a time.
+rarity 80
+symbol SCROLL
+colour WHITE
+power 0
+quality great
+known false
+depth 8
+
+obj ARMOUR "leather armour" "suits of leather armour"
+desc A heavy leather jerkin and breeches, providing some protection.
+rarity 25
+symbol ARMOUR
+colour BROWN
+power 3
+known true
+depth 1
+
+obj ARMOUR "chainmail" "suits of chainmail"
+desc A suit of interlocking metal rings, providing better protection than leather.
+rarity 30
+symbol ARMOUR
+colour CYAN
+power 6
+known true
+depth 3
+
+obj ARMOUR "plate armour" "suits of plate armour"
+desc A suit of steel plates, providing better protection than chainmail.
+rarity 40
+symbol ARMOUR
+colour CYAN
+power 10
+known true
+depth 6
+
+obj ARMOUR "mage armour" "suits of mage armour"
+desc A suit of glowing steel plates bearing enchantments of defence.
+rarity 70
+symbol ARMOUR
+colour L_CYAN
+power 15
+quality good
+known true
+depth 12
+
+obj ARMOUR "mundane robe" "mundane robes"
+desc A simple woolen robe. It's better protection than your skin, but not by much.
+rarity 50 
+symbol ARMOUR
+colour GREEN
+power 2
+known false
+depth 1
+
+obj ARMOUR "robe of swiftness" "robes of swiftness"
+desc A simple woolen robe that bears a potent enchantment, protecting the wearer and making him unnaturally swift.
+rarity 70
+symbol ARMOUR
+colour GREEN
+power 8
+quality great
+known false
+depth 8
+
+obj ARMOUR "robe of shadows" "robes of shadows"
+desc A simple woolen robe that bears an awesome enchantment, protecting the wearer better than steel plate.
+rarity 90
+symbol ARMOUR
+colour GREEN
+power 14
+quality great
+known false
+depth 18
+
+obj ARMOUR "dragonhide armour" "suits of dragonhide armour"
+desc The skin of a dragon, formed into a jerkin and breeches; it turns blows like steel plate and absorbs flames.
+rarity 90
+symbol ARMOUR
+colour RED
+power 12
+quality great
+known true
+depth 21
+
+obj ARMOUR "meteoric plate armour" "suits of meteoric plate armour"
+desc This plate armour has been forged out of metal taken from a fallen star.
+rarity 90
+symbol ARMOUR
+colour D_GREY
+power 18
+quality excellent
+known true
+depth 27
+
+obj ARMOUR "sacred chainmail" "suits of sacred chainmail"
+desc This suit of interlocking rings has been consecrated to the gods of the Light.
+rarity 90
+symbol ARMOUR
+colour WHITE
+power 15
+quality great
+known true
+depth 24
+
+obj RING "regeneration ring" "regeneration rings"
+desc This magical ring increases the wearer's healing rate, but also increases the rate at which they must consume food.
+rarity 70
+symbol RING
+colour YELLOW
+power 0
+quality good
+known false
+depth 1
+
+obj RING "fire ring" "fire rings"
+desc This magical ring protects the wearer from mundane and magical fire, and imbues their blows in combat with the power of fire.
+rarity 50
+symbol RING
+colour YELLOW
+power 0
+quality great
+known false
+depth 1
+
+obj RING "wedding ring" "wedding rings"
+desc This ring is but a simple love-token.
+rarity 20
+symbol RING
+colour YELLOW
+power 0
+quality normal
+known false
+depth 1
+
+obj RING "vampire ring" "vampire rings"
+desc This magical ring protects the wearer from necromantic energies, and imbues their blows in combat with such energies as well.
+rarity 90
+symbol RING
+colour YELLOW
+power 0
+quality great
+known false
+depth 12
+
+obj RING "frost ring" "frost rings"
+desc This magical ring protects the wearer from mundane and magical cold, and imbues their blows in combat with the power of cold.
+rarity 40
+symbol RING
+colour YELLOW
+power 0
+quality great
+known false
+depth 1
+
+obj RING "doom ring" "doom rings"
+desc This accursed ring inflicts great misery on its wearer. It is said that even its removal is painful.
+rarity 80
+symbol RING
+colour YELLOW
+quality bad
+power 0
+known false
+depth 1
+
+obj RING "teleport ring" "teleport rings"
+desc This magical ring causes the wearer to teleport at random.
+rarity 70
+symbol RING
+colour YELLOW
+quality bad
+power 0
+known false
+depth 1
+
+obj FOOD "iron ration" "iron rations"
+desc A parcel of hardtack and beef jerky. Dull but nutritious.
+rarity 75
+symbol FOOD
+colour BROWN
+power 0
+known true
+depth 1
+
+obj FOOD "parcel of dried fruit" "parcels of dried fruit"
+desc A parcel of mixed dried fruit. It sure beats hardtack and beef jerky.
+rarity 75
+symbol FOOD
+colour BROWN
+power 0
+known true
+depth 1
+
+obj FOOD "round of elven waybread" "rounds of elven waybread"
+desc A tasty, filling, nutritious piece of elven waybread.
+rarity 85
+symbol FOOD
+colour BROWN
+power 0
+known true
+depth 1
+
+obj MISC "ornate ebony cube" "ornate ebony cubes"
+desc A cube of ebony with ornate brass fittings. It looks like it could be manipulated if only you knew how.
+rarity 100
+symbol MISC
+colour D_GREY
+power 0
+known true
+depth 0
+
+obj MISC "lich skull" "lich skulls"
+desc All that remains of an undead sorcerer.
+rarity 100
+symbol MISC
+colour WHITE
+power 0
+known true
+depth 0
+
+obj MISC "lamen of torment" "lamens of torment"
+desc A tooled leather badge of unpleasantly obscene sort.
+rarity 100
+symbol MISC
+colour BROWN
+power 0
+quality excellent
+known true
+depth 0
+
+obj MISC "lamen of death" "lamens of death"
+desc An ornately carved bone badge.
+rarity 100
+symbol MISC
+colour WHITE
+power 0
+quality excellent
+known true
+depth 0
+
+obj WAND "wand of frost" "wands of frost"
+desc The power of this wand engulfs a target in an aura of bitter cold in an attempt to freeze them to death. Be warned that its lethality is not instant.
+rarity 85
+symbol WAND
+colour BLUE
+power 0
+quality great
+known false
+depth 10
+
+obj WAND "wand of shattering" "wands of shattering"
+desc The power of this wand causes some kinds of inanimate object to explode.
+rarity 85
+symbol WAND
+colour BLUE
+power 0
+quality great
+known false
+depth 10
+
+obj WAND "wand of corpse explosion" "wands of corpse explosion"
+desc The power of this wand causes the flesh of the dead to explode with considerable force. The undead, and certain demons, may also be susceptible to its power.
+rarity 85
+symbol WAND
+colour BLUE
+power 0
+quality great
+known false
+depth 10
+
+obj CARRION "corpse" "corpses"
+desc Mortal remains, seldom edible.
+rarity 100
+symbol CARRION
+colour L_GREY
+power 0
+known true
+depth 1
+
+obj COIN "gold piece" "gold pieces"
+desc The wealth of ages. Not that it will do you much good.
+rarity 1
+symbol COIN
+colour YELLOW
+power 0
+known true
+depth 1
+
+ENDOBJS
+# vim:noautoindent:tw=0:wm=0

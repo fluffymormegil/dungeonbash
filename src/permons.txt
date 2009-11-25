@@ -1,0 +1,702 @@
+# permons.txt - monster database for Martin's Dungeon Bash
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# This file is the preferred source code form for editing the "permons" data
+# associated with Martin's Dungeon Bash. The behaviour of the C++ source file
+# pmparse.cc as distributed with the corresponding official release of
+# Martin's Dungeon Bash defines the syntax and semantics of the language in
+# which this file is written.
+
+mon "adventurer" "adventurers"
+description An omnicidal maniac bent on exterminating everyone who might obstruct his relentless quest for treasure.
+symbol HUMAN
+colour WHITE
+rarity 100
+threat 1
+health 20
+melee 5 5 0 none 0
+defence 0
+experience 0
+speed NORMAL
+flags MEATY STUPID
+
+mon "smith" "smiths"
+descripton An innocent artisan, devoid of any malice.
+symbol HUMAN
+colour CYAN
+rarity 100
+threat 0
+health 1
+melee 0 0 0 none 0
+defence 0
+experience 0
+speed NORMAL
+flags MEATY RESIST_FIRE PEACEFUL SMART
+
+mon "newt" "newts"
+description An amphibious creature of unusual size.
+symbol NEWT
+colour RED
+rarity 20
+threat 1
+health 3
+melee 0 2 0 none 0
+defence 1
+experience 1
+speed SLOW
+flags MEATY STUPID
+
+mon "rat" "rats"
+description The rats here are the kind that eat cats.
+symbol RODENT
+colour BROWN
+rarity 15
+threat 1
+health 4
+melee 0 2 0 none 0
+defence 4
+experience 2
+speed FAST
+flags MEATY STUPID
+
+mon "wolf" "wolves"
+description What a wolf is doing in a mysterious hole in the ground is anyone's guess.
+symbol CANINE
+colour BROWN
+rarity 30
+threat 6
+health 20
+melee 8 10 0 none 0
+defence 6
+experience 15
+speed FAST
+flags MEATY
+
+mon "snake" "snakes"
+description Long, slithery, venomous.
+symbol SNAKE
+colour RED
+rarity 20
+threat 6
+health 15
+melee 10 3 20 poison_body 10
+defence 9
+experience 40
+speed FAST
+flags STUPID MEATY
+
+mon "human" "humans"
+description You know what a human is, right?
+species human
+symbol HUMAN
+colour BROWN
+rarity 100
+threat 1
+health 8
+melee 5 5 0 none 0
+defence 0
+experience 0
+speed NORMAL
+flags MEATY
+
+mon "thug" "thugs"
+description An unpleasant person in leather, carrying a blunt instrument.
+species human
+symbol THUG
+colour BROWN
+rarity 30
+threat 1
+health 8
+melee 5 5 0 none 0
+defence 4
+experience 5
+speed NORMAL
+flags ARMED MEATY
+
+mon "goon" "goons"
+description A particularly unpleasant person in leather, carrying a blunt instrument.
+species human
+symbol THUG
+colour BROWN
+rarity 20
+threat 3
+health 20
+melee 6 10 0 none 0
+defence 8
+experience 10
+speed NORMAL
+flags ARMED MEATY
+
+mon "hunter" "hunters"
+description A talented, but somewhat amoral, bowman.
+species human
+symbol HUNTER
+colour GREEN
+rarity 30
+threat 9
+health 40
+melee 6 6 0 none 0
+ranged 20 10 PHYS 0 "shoots an arrow" none 0
+defence 10
+experience 50
+speed NORMAL
+flags ARCHER MEATY ARMED
+
+mon "sybarite" "sybarites" 
+description A devoted shrine-guardian, naked save for a simple leather sword-harness.
+species human
+symbol PRIEST
+colour L_PURPLE
+rarity 100
+threat 6
+health 40
+melee 20 10 0 none 0
+defence 10
+experience 60
+speed NORMAL
+flags SMART MEATY ARMED
+
+mon "iron priest" "iron priests"
+description A devoted shrine-guardian, armoured in massive steel.
+species human
+symbol PRIEST
+colour CYAN
+rarity 100
+threat 6
+health 40
+melee 20 15 0 none 0
+defence 20
+experience 100
+speed NORMAL
+flags SMART MEATY ARMED RESIST_FIRE RESIST_COLD
+
+mon "slime priest" "slime priests"
+description A devoted shrine-guardian, bloated and disfigured by pestilence.
+species human
+symbol PRIEST
+rarity 100
+threat 6
+health 40
+melee 20 15 0 none 0
+defence 5
+experience 40
+speed NORMAL
+flags SMART MEATY RESIST_POIS
+
+mon "fire priest" "fire priests"
+description A devoted shrine-guardian, robed and cowled in vivid scarlet.
+species human
+symbol PRIEST
+rarity 100
+threat 6
+health 40
+melee 20 15 0 none 0
+defence 8
+experience 100
+speed NORMAL
+flags SMART MEATY ARMED RESIST_FIRE
+
+mon "death priest" "death priests"
+description A devoted shrine-guardian, mailed and skull-masked.
+species human
+symbol PRIEST
+rarity 100
+threat 6
+health 40
+melee 20 15 0 none 0
+defence 8
+experience 100
+speed NORMAL
+flags SMART MEATY ARMED RESIST_COLD RESIST_POIS RESIST_NECR
+
+mon "duellist" "duellists"
+description A masterful swordsman.
+species human
+symbol FIGHTER
+colour RED
+rarity 40
+threat 12
+health 60
+melee 30 15 0 none 0
+defence 15
+experience 130
+speed NORMAL
+flags SMART MEATY ARMED
+
+mon "warlord" "warlords"
+description A skilled and tenacious warrior, well armed to deal with visiting maniacs.
+species human
+symbol FIGHTER
+colour L_RED
+rarity 30
+threat 15
+health 80
+melee 25 20 0 none 0
+defence 20
+experience 400
+speed NORMAL
+flags SMART MEATY ARMED
+
+mon "wizard" "wizards"
+description A student of the Arcane.
+species human
+symbol WIZARD
+colour BLUE
+rarity 80
+threat 12
+health 40
+melee 10 10 0 none 0
+ranged 20 10 ELEC 0 "casts" none 0
+defence 15
+experience 200
+speed NORMAL
+flags SMART MAGICIAN MEATY
+
+mon "archmage" "archmagi"
+description A master of the Arcane.
+species human
+symbol WIZARD
+colour L_BLUE
+rarity 80
+threat 24
+health 80
+melee 15 15 0 none 0
+ranged 30 15 ELEC 0 "casts" none 0
+defence 15
+experience 1500
+speed NORMAL
+flags SMART MAGICIAN MEATY
+
+mon "goblin" "goblins"
+description A skulking, grey-skinned humanoid.
+symbol GOBLIN
+colour BROWN
+rarity 20
+threat 1
+health 6
+melee 1 3 0 none 0
+defence 3
+experience 3
+speed NORMAL
+flags ARMED MEATY
+
+mon "elf" "elves"
+description A tall and uncannily slender humanoid.
+species elf
+symbol ELF
+colour L_GREY
+rarity 100
+threat 3
+health 15
+melee 10 6 0 none 0
+defence 8
+experience 15
+speed FAST
+flags SMART MEATY ARMED
+
+mon "bad elf" "bad elves"
+description Banished from the elven homelands for sadism even they could not tolerate.
+symbol ELF
+colour L_GREY
+rarity 40
+threat 3
+health 15
+melee 10 6 0 none 0
+defence 8
+experience 15
+speed FAST
+flags SMART MEATY ARMED
+
+mon "troll" "trolls"
+description A twisted humanoid figure taller than a tall man, with leathery green hide and long limbs.
+symbol TROLL
+colour GREEN
+rarity 20
+threat 12
+health 80
+melee 15 15 0 none 0
+defence 13
+experience 150
+speed NORMAL
+flags STUPID MEATY
+
+mon "giant" "giants"
+description A humanoid twice or more a man's height, noted for its strength but not its wits.
+species giant
+symbol GIANT
+colour BROWN
+rarity 20
+threat 21
+health 80
+melee 15 25 0 none 0
+defence 20
+experience 500
+speed NORMAL
+flags STUPID MEATY ARMED
+
+mon "giant jarl" "giant jarls"
+description A humanoid twice or more a man's height, possessed of rather more wit than his kin.
+species giant
+symbol GIANT
+colour L_GREY
+rarity 80
+threat 25
+health 160
+melee 20 30 0 none 0
+defence 22
+experience 1000
+speed NORMAL
+flags MEATY ARMED
+
+mon "zombie" "zombies"
+description A perambulatory cadaver; you'll probably have to hack it to bits to stop it.
+symbol ZOMBIE
+colour L_GREY
+rarity 25
+threat 3
+health 30
+melee 2 12 0 none 0
+defence 1
+experience 7
+speed SLOW
+flags STUPID UNDEAD RESIST_COLD MEATY NOCORPSE
+
+mon "wraith" "wraiths"
+description The ghostly remnant of a past adventurer, filled with a terrible hunger for living souls.
+symbol WRAITH
+colour WHITE
+rarity 25
+threat 12
+health 40
+melee 25 5 0 none 0
+defence 5
+experience 100
+speed SLOW
+flags SMART UNDEAD RESIST_COLD MEATY ETHEREAL ALWAYS_NEUTER
+
+mon "lich" "liches"
+description A long-dead student of foul sorcery whose obsession with knowledge quickens his withered frame.
+symbol LICH
+colour L_GREY
+rarity 70
+threat 15
+health 70
+melee 15 15 0 none 0
+ranged 25 15 NECRO 0 "casts" none 0
+defence 15
+experience 250
+speed NORMAL
+flags SMART UNDEAD RESIST_COLD MAGICIAN SKELETAL NOCORPSE
+
+mon "master lich" "master liches"
+description A long-dead master of foul sorcery, armed with the very power of death itself.
+symbol LICH
+colour PURPLE
+rarity 60
+threat 30
+health 150
+melee 30 20 0 none 0
+defence 30
+experience 3000
+speed NORMAL
+flags SMART UNDEAD RESIST_COLD MAGICIAN SKELETAL NOCORPSE
+
+mon "vampire" "vampires"
+description A blood-drinking horror that was once a man.
+symbol VAMPIRE
+colour RED
+rarity 55
+threat 18
+health 70
+melee 25 15 30 drink_blood 10
+defence 22
+experience 750
+speed NORMAL
+flags SMART UNDEAD RESIST_COLD MEATY NOCORPSE
+
+mon "imp" "imps"
+description An annoying minor demon.
+symbol LESSER_DEMON
+colour RED
+rarity 80
+threat 6
+health 40
+melee 25 8 0 none 0
+defence 15
+experience 20
+speed FAST
+flags DEMONIC RESIST_FIRE NOCORPSE TELE_HARASS
+
+mon "iron snake" "iron snakes"
+description A slithering mechanical abomination in the service of the Lords of Iron.
+symbol LESSER_DEMON
+colour CYAN
+rarity 100
+threat 9
+health 40
+melee 25 12 0 none 0
+defence 12
+experience 40
+speed FAST
+flags DEMONIC RESIST_FIRE RESIST_COLD NOCORPSE
+
+mon "foetid ooze" "foetid oozes"
+description A hell-spawned blob of festering corruption.
+symbol LESSER_DEMON
+colour L_GREEN
+rarity 100
+threat 9
+health 40
+melee 25 6 30 decay 10
+defence 8
+experience 30
+speed NORMAL
+flags DEMONIC RESIST_POIS RESIST_ACID NOCORPSE ALWAYS_NEUTER
+
+# A lasher on its own is intended to be mostly a nuisance. Throw in something
+# actually dangerous, and you're in a buttload of trouble.
+mon "lasher" "lashers"
+description A many-tentacled fiend.
+symbol LESSER_DEMON
+colour L_PURPLE
+rarity 100
+threat 9
+health 35
+melee 25 3 30 hentacle 1
+defence 15
+experience 50
+speed FAST
+flags DEMONIC NOCORPSE ALWAYS_OTHER
+
+mon "hellhound" "hellhounds"
+description A vaguely dog-like thing from the Inferno, belching stinking flames.
+symbol LESSER_DEMON
+colour RED
+rarity 100
+threat 9
+health 35
+melee 25 10 0 none 0
+ranged 15 8 FIRE 0 "breathes" none 0
+defence 12
+experience 50
+speed NORMAL
+flags DEMONIC NOCORPSE RESIST_FIRE ALWAYS_NEUTER
+
+mon "flying skull" "flying skulls"
+description A disembodied skull propelled by some malicious spirit of the Necropolis.
+symbol LESSER_DEMON
+colour WHITE
+rarity 100
+threat 9
+health 35
+melee 25 10 0 none 0
+defence 12
+experience 40
+speed NORMAL
+flags DEMONIC NOCORPSE RESIST_COLD RESIST_POIS RESIST_NECR RESIST_ELEC SKELETAL ALWAYS_NEUTER
+
+mon "ironguard" "ironguards"
+description The massively armed legionaries of the Halls of Iron.
+symbol MIDDLE_DEMON
+colour CYAN
+rarity 70
+threat 18
+health 60
+melee 30 25 20 shieldbreaker 1
+defence 15
+experience 500
+speed SLOW
+flags SMART DEMONIC RESIST_FIRE RESIST_COLD NOCORPSE
+
+mon "festering horror" "festering horrors"
+description A man-shaped mound of filth vomited up from some unspeakable Hell.
+symbol MIDDLE_DEMON
+colour L_GREEN
+rarity 70
+threat 18
+depth 40
+melee 25 20 30 fever 10
+defence 10
+experience 500
+speed NORMAL
+flags SMART DEMONIC RESIST_FIRE RESIST_POIS RESIST_ACID NOCORPSE ALWAYS_NEUTER
+
+mon "flayer" "flayers"
+description A gaunt humanoid with scythe-like blades where its hands should be.
+symbol MIDDLE_DEMON
+colour L_PURPLE
+rarity 70
+threat 18
+health 50
+melee 30 25 0 none 0
+defence 15
+experience 500
+speed NORMAL
+flags SMART DEMONIC RESIST_FIRE RESIST_POIS NOCORPSE ALWAYS_NEUTER
+
+mon "scorcher" "scorchers"
+description A muscular scarlet-skinned humanoid wreathed in fire and smoke.
+symbol MIDDLE_DEMON
+colour RED
+rarity 70
+threat 18
+depth 45
+melee 30 25 5 ignite 10
+defence 15
+experience 500
+speed NORMAL
+flags SMART DEMONIC RESIST_FIRE NOCORPSE
+
+mon "reaper" "reapers"
+description A perambulatory skeleton with darkness blazing in its eyes, armed with a wickedly sharp scythe.
+symbol MIDDLE_DEMON
+colour WHITE
+rarity 70
+threat 18
+health 50
+melee 30 25 0 none 0
+defence 15
+experience 500
+speed NORMAL
+flags SMART DEMONIC RESIST_COLD RESIST_POIS RESIST_NECR RESIST_ELEC NOCORPSE SKELETAL
+
+mon "iron lord" "iron lords"
+description A massively armoured slayer of heroes and armies alike, one of the lords and masters of the Halls of Iron.
+symbol GREATER_DEMON
+colour CYAN
+rarity 75
+threat 27
+health 200
+melee 40 40 20 shieldbreaker 1
+defence 30
+experience 2000
+speed SLOW
+flags SMART DEMONIC RESIST_FIRE RESIST_COLD NOCORPSE GDEMON
+
+mon "defiler" "defilers"
+decription An incarnation of decay, one of the lords and masters of the nameless Hells of slime.
+symbol GREATER_DEMON
+colour L_GREEN
+rarity 75
+threat 27
+health 120
+melee 30 20 0 none 0
+defence 25
+experience 2000
+speed NORMAL
+flags SMART DEMONIC RESIST_FIRE MAGICIAN NOCORPSE GDEMON
+
+mon "dominator" "dominators"
+description The lords and masters of the fleshy Hells, so devoted to the study of flesh that they experiment upon themselves.
+symbol GREATER_DEMON
+colour L_PURPLE
+rarity 75
+threat 27
+health 120
+melee 30 20 0 none 0
+defence 25
+experience 2000
+speed NORMAL
+flags SMART DEMONIC RESIST_FIRE MAGICIAN NOCORPSE GDEMON
+
+mon "immolator" "immolators"
+description To look upon this mighty fiend of the Inferno is to look upon the incarnate essence of Fire.
+symbol GREATER_DEMON
+colour RED
+rarity 75
+threat 27
+health 120
+melee 30 20 0 none 0
+defence 25
+experience 2000
+speed NORMAL
+flags SMART DEMONIC RESIST_FIRE MAGICIAN NOCORPSE GDEMON
+
+mon "deathlord" "deathlords"
+description Death given form, the keepers of the souls of the unrighteous, the lords of the Necropolis.
+symbol GREATER_DEMON
+colour WHITE
+rarity 75
+threat 27
+health 120
+melee 30 20 0 none 0
+defence 25
+experience 2000
+speed NORMAL
+flags SMART DEMONIC RESIST_FIRE RESIST_COLD RESIST_NECR RESIST_POIS RESIST_ELEC MAGICIAN NOCORPSE GDEMON SKELETAL
+
+mon "archdevil" "archdevils"
+description The mightiest among demons, to whose faces all others bow.
+symbol ARCHDEVIL
+colour PURPLE
+rarity 100
+threat 1000
+health 1
+speed NORMAL
+flags NOCORPSE GDEMON
+
+mon "centaur" "centaurs"
+description The wise man does not think too hard about the circumstances of a centaur's conception.
+symbol CENTAUR
+colour BROWN
+rarity 30
+threat 9
+health 40
+melee 15 10 0 none 0
+defence 10
+experience 50
+speed FAST
+flags MEATY
+
+mon "ice monster" "ice monsters"
+description A vaguely humanoid figure of living ice.
+symbol ICE_MONSTER
+colour WHITE
+rarity 50
+threat 6
+health 40
+melee 10 15 0 none 0
+ranged 20 15 COLD 0 "launches a blast of" none 0
+defence 10
+experience 35
+speed SLOW
+flags RESIST_COLD ARCHER NOCORPSE ALWAYS_NEUTER
+
+mon "dragon" "dragons"
+description Of the very smallest sort, not even so large as an elephant. Its fire will burn you all the same.
+symbol DRAGON
+colour RED
+rarity 50
+threat 15
+health 80
+melee 20 20 0 none 0
+ranged 20 20 FIRE 0 "breathes" none 0
+defence 18
+experience 300
+speed NORMAL
+flags RESIST_FIRE RESIST_POIS ARCHER MEATY
+
+ENDMONS
+
+vim:tw=0:wm=0
+Everything after the ENDMONS tag is effectively a comment.
