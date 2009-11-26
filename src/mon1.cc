@@ -619,12 +619,12 @@ void update_mon(Mon_handle mon)
             if ((*peff_iter).duration)
             {
                 /* Act on the debuff */
-                mptr->status.set_flag((*peff).flavour);
+                mptr->status.set_flag((*peff_iter).flavour);
                 wiped = mptr->suffer(*peff_iter);
             }
             else
             {
-                mptr->perseffs.erase(deb_iter);
+                mptr->perseffs.erase(peff_iter);
             }
             if (wiped)
             {
