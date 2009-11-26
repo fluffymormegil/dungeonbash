@@ -1,6 +1,24 @@
-Advice to would-be committers
-=============================
-1) This is a BSD-licensed project.
+Authors
+=======
+dungeonbash is largely the work of one person, Martin Read.
+
+Acknowledgements
+================
+dungeonbash could not have reached its current state without the benefit of bug
+reports and inspirational ideas from a variety of places. As such,
+acknowledgements are due to numerous people.
+
+- Michael Toy, Glenn Wichman, and Ken Arnold, for writing the original "rogue".
+- Everyone who reported bugs on past versions of the game, including:
+- Jon Amery (bug reports)
+- Adam White (data size bugs)
+- Gero Kunter (bug reports; balance suggestions)
+- David Damerell (bug reports)
+- Richard Kettlewell (portability advice regarding building on Darwin)
+- Jeff Lait (progenitor of the Seven Day Roguelike Challenge; author of
+  POWDER, an approximate ripoff of whose speed system still underpins 
+  dungeonbash; suggesting the "weapons and armour are consumables"
+  approach, which is unusual for roguelikes)
 
 Top-level directory structure
 =============================
