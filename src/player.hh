@@ -65,6 +65,10 @@ struct Player {
     Obj_handle ring;		/* For now, you can only wear one magic ring. */
     bool farmoving;
     libmrl::Coord farmove_direction;
+    // Persistent effect handling
+    std::list<Perseff_data> perseffs;
+    Status_flags status;
+    // computed-value functions
     int net_body() const { return body - bdam; }
     int net_agility() const { return agility - adam; }
 };

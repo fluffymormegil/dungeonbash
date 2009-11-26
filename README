@@ -1,4 +1,9 @@
-Top-level directory structure:
+Advice to would-be committers
+=============================
+1) This is a BSD-licensed project.
+
+Top-level directory structure
+=============================
 
 audio/
     does not exist yet; will eventually contain Csound scores and orchestras
