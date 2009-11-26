@@ -14,18 +14,10 @@ PRERELEASE=
 include os.mk
 include dirs.mk
 include permissions.mk
-
-# The following definitions are used for Unixy systems where the administrator
-# wants to have a shared playground. You will need to tweak them to match your
-# system, and also settings in dbashcfg.hh, if you want to produce a multi-user
-# install.
-PLAYGROUND=$(games_vardir)/$(GAME)
-PLAYGROUNDMODE=0755
-GLOBALCFGDIR=$(syscfg_dir)/$(GAME)/v$(MAJVERS).$(MINVERS)
-GLOBALCFGDIRMODE=0755
+include features.mk
 
 all:
-	(cd src && make $(GAME) )
+	(cd src && make $(GAME)$(EXECUTABLE_SUFFIX) )
 
 install: all
 	install -D -o $(games_user) -g $(games_group) -m $(suid_bin_mode) src/$(GAME) $(DESTDIR)$(games_exec_prefix)/$(GAME)

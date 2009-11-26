@@ -8,16 +8,10 @@ MAJVERS=1
 MINVERS=131
 PATCHVERS=0
 
-# The following definitions are used for Unixy systems where the administrator
-# wants to have a shared playground. You will need to tweak them to match your
-# system, and also settings in dbashcfg.hh, if you want to produce a multi-user
-# install.
-include dirs.mk
-include permissions.mk
-PLAYGROUND=$(games_vardir)/$(GAME)
-PLAYGROUNDMODE=0755
-GLOBALCFGDIR=$(syscfg_dir)/$(GAME)/v$(MAJVERS).$(MINVERS)
-GLOBALCFGDIRMODE=0755
+include ../os.mk
+include ../dirs.mk
+include ../permissions.mk
+include ../features.mk
 
 # If you are using a compiler other than g++, or building against a C runtime
 # other than (e)glibc, you may well need to review the compiler options in
@@ -26,33 +20,22 @@ GLOBALCFGDIRMODE=0755
 CXXFLAGS=-c -g -Wall -Wwrite-strings -Wredundant-decls -DMAJVERS=$(MAJVERS) \
 	-DMINVERS=$(MINVERS) -DPATCHVERS=$(PATCHVERS) -D_POSIX_SOURCE \
 	-DEXPERIMENTAL -DPLAYGROUND=\"$(PLAYGROUND)\" \
-	-DGLOBALCFGDIR=\"$(GLOBALCFGDIR)\"
+	-DGLOBALCFGDIR=\"$(GLOBALCFGDIR)\" $(DEF_MULTIUSER)
 LINKFLAGS=-lpanel -lncurses -g
 
 all: $(GAME)
 
-install: all
-	install -D -o $(games_user) -g $(games_group) -m $(suid_bin_mode) $(GAME) $(DESTDIR)$(games_exec_prefix)/$(GAME)
-	install -D -m $(man_mode) man/$(GAME).6 $(DESTDIR)$(man6dir)/$(GAME).6
-	install -D -m $(man_mode) man/dungeonbashrc.5 $(DESTDIR)$(man5dir)/dungeonbashrc.5
-	install -d -o $(games_user) -g $(games_group) -m $(PLAYGROUNDMODE) $(DESTDIR)$(PLAYGROUND)
-	install -d -o $(games_user) -g $(games_group) -m $(PLAYGROUNDMODE) $(DESTDIR)$(PLAYGROUND)/save
-	install -d -m $(GLOBALCFGDIRMODE) $(DESTDIR)$(GLOBALCFGDIR)
+$(GAME)$(EXECUTABLE_SUFFIX): $(OBJS)
+	$(CXX) $(OBJS) $(LINKFLAGS) -o $(GAME)$(EXECUTABLE_SUFFIX)
 
-$(GAME): $(OBJS)
-	$(CXX) $(OBJS) $(LINKFLAGS) -o $(GAME)
-
-$(SRCGEN): srcgen.o pmparse.o poparse.o
-	$(CXX) $^ -o $@
-
-archive: distclean
-	(cd .. && tar cvzf dungeonbash-$(MAJVERS).$(MINVERS).$(PATCHVERS).tar.gz -h dungeonbash-$(MAJVERS).$(MINVERS).$(PATCHVERS)/ )
+$(SRCGEN)$(EXECUTABLE_SUFFIX): srcgen.o pmparse.o poparse.o
+	$(CXX) $^ -o $(SRCGEN)$(EXECUTABLE_SUFFIX)
 
 distclean: clean
 	-rm -f dunbash.log msglog.txt
 
 clean:
-	-rm -f *.o $(GAME) $(SRCGEN) dunbash.sav.gz permons.cc pmonid.hh permobj.cc pobjid.hh core spiralpath.cc
+	-rm -f *~ *.bak *.o $(GAME)$(EXECUTABLE_SUFFIX) $(SRCGEN)$(EXECUTABLE_SUFFIX) dunbash.sav.gz permons.cc pmonid.hh permobj.cc pobjid.hh core spiralpath.cc
 
 astar.o: astar.cc monsters.hh dunbash.hh dbashcfg.hh
 

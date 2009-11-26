@@ -13,3 +13,6 @@ man6dir=$(mandir)/man6
 man7dir=$(mandir)/man7
 man8dir=$(mandir)/man8
 syscfg_dir=/etc
+# Multiuser installatiosn need the following paths defined
+PLAYGROUND=$(games_vardir)/$(GAME)
+GLOBALCFGDIR=$(syscfg_dir)/$(GAME)/v$(MAJVERS).$(MINVERS)
