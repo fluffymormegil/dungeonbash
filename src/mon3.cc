@@ -55,6 +55,8 @@ int weaker_demon(int pm_num)
 
 bool Mon::apply_effect(Perseff_data &peff)
 {
+    peff.victim = self;
+    perseffs.push_back(peff);
     return false;
 }
 
@@ -69,6 +71,8 @@ bool Mon::suffer(Perseff_data& peff)
         return damage_mon(self, one_die(peff.power), peff.by_you);
 
     case Perseff_tentacle_embrace:
+        /* rather theoretical since blue-on-blue melee isn't supported yet and
+         * the player character hasn't got tentacles. */
         break;
 
     default:

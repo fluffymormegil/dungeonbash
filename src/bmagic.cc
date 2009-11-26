@@ -97,6 +97,7 @@ int use_black_magic(Mon_handle mon)
     int rval = 1;	/* Default to success; failure paths will force this
                          * to an appropriate value. */
     Direction_data dir_data;
+    Perseff_data peff;
     int i;
     bool cansee;
     std::string castername;
@@ -198,8 +199,12 @@ int use_black_magic(Mon_handle mon)
         }
         else
         {
-            print_msg(0, "Your armour seems suddenly no stronger than dust!\n");
-            u.armourmelt = 10 + one_die(10);
+            peff.flavour = Perseff_armourmelt_curse;
+            peff.duration = 10 + one_die(10);
+            peff.caster = mptr->self;
+            peff.by_you = false;
+            print_msg(0, "Your armour seems uncannily fragile!\n");
+            u.apply_effect(peff);
         }
         break;
 
@@ -211,8 +216,12 @@ int use_black_magic(Mon_handle mon)
         }
         else
         {
+            peff.flavour = Perseff_leadfoot_curse;
+            peff.duration = 10 + one_die(10);
+            peff.caster = mptr->self;
+            peff.by_you = false;
             print_msg(0, "Your feet feel like lead!\n");
-            u.leadfoot = 10 + one_die(10);
+            u.apply_effect(peff);
         }
         break;
 
@@ -224,8 +233,12 @@ int use_black_magic(Mon_handle mon)
         }
         else
         {
+            peff.flavour = Perseff_wither_curse;
+            peff.duration = 10 + one_die(10);
+            peff.caster = mptr->self;
+            peff.by_you = false;
             print_msg(0, "Your limbs twist and wither!\n");
-            u.withering = 10 + one_die(10);
+            u.apply_effect(peff);
         }
         break;
 

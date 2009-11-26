@@ -661,6 +661,29 @@ int teleport_u(void)
     return -1;
 }
 
+void Player::apply_effect(Perseff_data& peff)
+{
+    peff.on_you = true;
+    perseffs.push_back(peff);
+}
+
+void Player::suffer(Perseff_data& peff)
+{
+    switch (peff.flavour)
+    {
+    case Perseff_bitter_chill:
+        print_msg(0, "Bitter cold numbs your flesh.\n");
+        damage_u(one_die(peff.power), DEATH_KILLED, "bitter cold");
+        break;
+    case Perseff_searing_flames:
+        print_msg(0, "Searing flames burn your flesh.\n");
+        damage_u(one_die(peff.power), DEATH_KILLED, "searing flames");
+        break;
+    default:
+        break;
+    }
+}
+
 void update_player(void)
 {
     if ((!(game_tick % 5)) && (u.food >= 0) && (u.hpcur < u.hpmax))
@@ -725,48 +748,72 @@ void update_player(void)
 	    break;
 	}
     }
-    if (u.leadfoot > 0)
+    if (!u.perseffs.empty())
     {
-	u.leadfoot--;
-	if (!u.leadfoot)
-	{
-	    print_msg(0, "You shed your feet of lead.\n");
-	    recalc_defence();
-	}
-    }
-    if (u.armourmelt > 0)
-    {
-	u.armourmelt--;
-	if (!u.armourmelt)
-	{
-	    print_msg(0, "Your armour seems solid once more.\n");
-	    recalc_defence();
-	}
-    }
-    if (u.withering > 0)
-    {
-	u.withering--;
-	if (!u.withering)
-	{
-	    print_msg(0, "Your limbs straighten.\n");
-	    recalc_defence();
-	}
-    }
-    if (u.shackled > 0)
-    {
-        u.shackled--;
-        if (!u.shackled)
+        bool wiped = false;
+        std::list<Perseff_data>::iterator peff_iter;
+        std::list<Perseff_data>::iterator peff_next;
+        Status_flags saved_status = u.status;
+        u.status.clear_all();
+        for (peff_iter = u.perseffs.begin();
+             peff_iter != u.perseffs.end();
+             peff_iter = peff_next)
         {
-            print_msg(0, "The chains fall away from your legs.\n");
+            peff_next = peff_iter;
+            ++peff_next;
+            if ((*peff_iter).duration > 0)
+            {
+                (*peff_iter).duration--;
+            }
+            if ((*peff_iter).duration)
+            {
+                /* Act on the debuff */
+                u.status.set_flag((*peff_iter).flavour);
+                u.suffer(*peff_iter);
+            }
+            else
+            {
+                switch (peff_iter->flavour)
+                {
+                case Perseff_bitter_chill:
+                    print_msg(0, "The bitter chill subsides.\n");
+                    break;
+
+                case Perseff_searing_flames:
+                    print_msg(0, "The flames around you subside.\n");
+                    break;
+
+                case Perseff_leadfoot_curse:
+                    print_msg(0, "You shed your feet of lead.\n");
+                    break;
+
+                case Perseff_wither_curse:
+                    print_msg(0, "Your limbs straighten.\n");
+                    break;
+
+                case Perseff_armourmelt_curse:
+                    print_msg(0, "Your armour looks less fragile now.\n");
+                    break;
+
+                case Perseff_binding_chains:
+                    print_msg(0, "The chains binding you disintegrate.\n");
+                    break;
+                    
+                case Perseff_tentacle_embrace:
+                    print_msg(0, "Your tentacular ordeal is over.\n");
+                    break;
+
+                default:
+                    break;
+                }
+                u.perseffs.erase(peff_iter);
+                recalc_defence();
+            }
+            if (wiped)
+            {
+                break;
+            }
         }
-    }
-    if (u.protection > 0)
-    {
-	u.protection--;
-	if (!u.protection)
-	{
-	    print_msg(0, "You feel like you are no longer being helped.\n");
-	}
     }
     do_vision();
     display_update();
