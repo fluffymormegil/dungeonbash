@@ -56,7 +56,11 @@ int zapeff_frost(libmrl::Coord pos)
             std::string namestr;
             mptr->get_name(&namestr, 1, true);
             print_msg(0, "Bitter cold saps %s's strength\n", namestr.c_str());
-            mptr->apply_debuff(MONDEB_FROST, 4, 10);
+            Perseff_data peff = 
+            {
+                Perseff_bitter_chill, 4, 10, true, false
+            };
+            mptr->apply_effect(peff);
         }
     }
     return rv;

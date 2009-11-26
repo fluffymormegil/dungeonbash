@@ -51,14 +51,14 @@ void recalc_defence(void)
     {
 	u.resistances[i] &= RESIST_MASK_TEMPORARY;
     }
-    u.speed = (u.status.test_flag(Malus_withered)) ? SPEED_SLOW : SPEED_NORMAL;
-    int defshift = !!u.status.test_flag(Malus_leadfooted) + !!u.status.test_flag(Malus_withered);
+    u.speed = (u.status.test_flag(Perseff_wither_curse)) ? SPEED_SLOW : SPEED_NORMAL;
+    int defshift = !!u.status.test_flag(Perseff_leadfoot_curse) + !!u.status.test_flag(Perseff_wither_curse);
     u.defence = u.net_agility() / 5;
     u.defence >>= defshift;
     u.evasion = u.net_agility();
     if (armptr)
     {
-	u.defence += u.status.test_flag(Malus_armourmelted) ? 0 : permobjs[armptr->obj_id].power;
+	u.defence += u.status.test_flag(Perseff_armourmelt_curse) ? 0 : permobjs[armptr->obj_id].power;
         u.evasion *= EVASION_PRESCALE - evasion_penalty(u.armour);
 	switch (armptr->obj_id)
 	{

@@ -123,7 +123,7 @@ struct Mon
     void incants() const;
     void notice_you(bool quiet = false);
     bool suffer(Perseff_data& peff); // true = mon dead
-    bool apply_effect(Perseff_data& peff, int power, int duration);
+    bool apply_effect(Perseff_data& peff);
 };
 
 #define AI_GUESS_RANGE 10

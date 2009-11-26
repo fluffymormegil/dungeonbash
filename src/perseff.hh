@@ -88,17 +88,6 @@ struct Status_flags
     {
         Status_flag_units = 2
     };
-    enum Flag
-    {
-        // Bonuses
-        Bonus_might, Bonus_fell_dom, Bonus_berserk, Bonus_tranced,
-        Bonus_resistant, Bonus_severe, Bonus_merciful, Bonus_balanced,
-        Bonus_deathsong, Bonus_assassin,
-        // Maluses
-        Malus_freezing, Malus_burning,
-        Malus_hentacled, Malus_shackled, Malus_armourmelted, Malus_leadfooted,
-        Malus_withered
-    };
     uint32_t data[Status_flag_units];
     void clear_all()
     {
@@ -108,14 +97,14 @@ struct Status_flags
             data[Status_flag_units] = 0u;
         }
     }
-    bool test_flag(Flag tf) const
+    bool test_flag(Persistent_effect pef) const
     {
-        int f = tf;
+        int f = pef;
         return !!(data[f >> 5] & (1 << (f & 31)));
     }
-    bool set_flag(Flag tf)
+    bool set_flag(Persistent_effect pef)
     {
-        int f = tf;
+        int f = pef;
         return !!(data[f >> 5] & (1 << (f & 31)));
     }
 };

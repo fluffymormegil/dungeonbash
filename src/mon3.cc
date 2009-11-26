@@ -32,20 +32,6 @@
 #include "bmagic.hh"
 #include "combat.hh"
 
-Mon_buff_metadata monbuff_meta[] = 
-{
-    { "exceptionally strong", Stack_renew },
-    { "guided by another mind", Stack_renew },
-    { "uncannily perceptive", Stack_extend }
-};
-
-Mon_debuff_metadata mondeb_meta[] = 
-{
-    { "freezing to death", Stack_independent },
-    { "on fire", Stack_renew },
-    { "embraced by tentacles", Stack_extend }
-};
-
 int weaker_demon(int pm_num)
 {
     switch (pm_num)
@@ -67,38 +53,29 @@ int weaker_demon(int pm_num)
     }
 }
 
-bool Mon::apply_effect(Persistent_effect eff, int power, int duration)
+bool Mon::apply_effect(Perseff_data &peff)
 {
     return false;
 }
 
-bool Mon::suffer(Mon_debuff_data& debdata)
+bool Mon::suffer(Perseff_data& peff)
 {
-    switch (debdata.flavour)
+    switch (peff.flavour)
     {
-    case MONDEB_FROST:
-        return damage_mon(self, one_die(debdata.power), debdata.by_you);
+    case Perseff_bitter_chill:
+        return damage_mon(self, one_die(peff.power), peff.by_you);
 
-    case MONDEB_IGNITED:
-        return damage_mon(self, one_die(debdata.power), debdata.by_you);
+    case Perseff_searing_flames:
+        return damage_mon(self, one_die(peff.power), peff.by_you);
 
-    case MONDEB_HENTACLE:
+    case Perseff_tentacle_embrace:
         break;
 
     default:
-        print_msg(MSGCHAN_INTERROR, "Monster has debuff of invalid/unimplemented type %d\n", debdata.flavour);
+        print_msg(MSGCHAN_INTERROR, "Monster has debuff of invalid/unimplemented type %d\n", peff.flavour);
         break;
     }
     return false;
-}
-
-void Mon::enjoy(Mon_buff_data& buffdata)
-{
-    switch (buffdata.flavour)
-    {
-    default:
-        break;
-    }
 }
 
 void aggravate_monsters(Level *lptr)
