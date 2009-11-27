@@ -47,7 +47,7 @@
 #define SHORT_VERSION SHORT_VERSTRING(MAJVERS, MINVERS)
 
 /* change WIZARD_MODE to 1 if you want the wizard mode commands. */
-#define WIZARD_MODE 1
+#define WIZARD_MODE 0
 
 /* Set the compiled default display according to taste. */
 #define COMPILED_DEFAULT_DISPLAY "tty"
