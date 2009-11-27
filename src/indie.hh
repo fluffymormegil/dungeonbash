@@ -77,7 +77,8 @@ enum Game_cmd {
     PROFCMD_0, PROFCMD_1, PROFCMD_2, PROFCMD_3, PROFCMD_4,
     PROFCMD_5, PROFCMD_6, PROFCMD_7, PROFCMD_8, PROFCMD_9,
     // Commands past this point are intended for debugging use.
-    RNG_TEST, WIZARD_LEVELUP, WIZARD_DESCEND, WIZARD_TELEPORT
+    RNG_TEST, WIZARD_LEVELUP, WIZARD_DESCEND, WIZARD_TELEPORT,
+    WIZARD_DUMP_PERSEFFS, WIZARD_CURSE_ME
 };
 
 inline bool was_move_command(int i)

@@ -694,6 +694,10 @@ Game_cmd get_command(void)
             return WIZARD_DESCEND;
         case '\x05':
             return WIZARD_LEVELUP;
+        case '\x10':
+            return WIZARD_DUMP_PERSEFFS;
+        case '\x0f':
+            return WIZARD_CURSE_ME;
         case '\x14':
             return WIZARD_TELEPORT;
         }

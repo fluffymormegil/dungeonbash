@@ -999,6 +999,7 @@ void Player::resolve_dispel(std::list<Perseff_data>::iterator peff_iter)
 
 int Player::on_remove(bool force)
 {
+    int dmg;
     Obj *optr = u.ring.snapv();
     int i;
     if (!optr)
@@ -1017,7 +1018,7 @@ int Player::on_remove(bool force)
 	    print_msg(0, "It exacts vengeance!\n");
 	    drain_body(one_die(4), "a ring of doom", 1);
 	    drain_agility(one_die(4), "a ring of doom", 1);
-	    dmg = one_die(20);
+            dmg = one_die(20);
 	    damage_u(dmg, DEATH_KILLED, "a ring of doom");
 	    u.hpmax -= dmg;
             break;
@@ -1026,7 +1027,7 @@ int Player::on_remove(bool force)
             i = zero_die(u.level);
             if (i < 4)
             {
-                print_msg("You cannot bring yourself to remove your ring.\n");
+                print_msg(0, "You cannot bring yourself to remove your ring.\n");
                 return 0;
             }
             break;

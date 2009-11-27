@@ -26,10 +26,12 @@
 
 #include "dunbash.hh"
 #include "objects.hh"
+#include "perseff.hh"
 #include "monsters.hh"
 #include "combat.hh"
 #include "pobjid.hh"
 #include "loadsave.hh"
+#include <list>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -540,6 +542,43 @@ int do_command(Game_cmd cmd)
 	print_inv(POCLASS_NONE);
 	return 0;
 
+    case WIZARD_DUMP_PERSEFFS:
+        if (wizard_mode)
+        {
+        for (std::list<Perseff_data>::iterator peff_iter = u.perseffs.begin();
+             peff_iter != u.perseffs.end();
+             ++peff_iter)
+        {
+            print_msg(0, "perseff flavour %d power %d duration %d by_you %d on_you %d\n",
+                      peff_iter->flavour, peff_iter->power,
+                      peff_iter->duration, peff_iter->by_you,
+                      peff_iter->on_you);
+        }
+        }
+        else
+        {
+            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.\n");
+        }
+        return 0;
+
+    case WIZARD_CURSE_ME:
+        if (wizard_mode)
+        {
+            Perseff_data peff = 
+            {
+                Perseff_leadfoot_curse, 10, 100, true, true
+            };
+            u.apply_effect(peff);
+            peff.flavour = Perseff_wither_curse;
+            u.apply_effect(peff);
+            peff.flavour = Perseff_armourmelt_curse;
+            u.apply_effect(peff);
+        }
+        else
+        {
+            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.\n");
+        }
+        return 0;
     case WIZARD_DESCEND:
         if (wizard_mode)
         {
