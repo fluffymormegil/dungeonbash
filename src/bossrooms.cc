@@ -28,27 +28,28 @@
 
 #include "dunbash.hh"
 #include "rooms.hh"
+#include "bossroom.hh"
 
 /* Boss rooms for different styles of level have different geometric
  * considerations. For *all* boss rooms, we have the geometric constraint that
  * the layout must interdict LOS from outside the region.
  *
- * For a Classic Rooms level, the considerations are:
+ * For a Classic Rooms level, we divide the level into nine 14x14 chunks. The
+ * last row and column are interdicted, so the boss room has to be 12x12
+ * including its perimeter wall.
  *
- * ##############
- * #............#
- * #............#
- * #............#
- * #............#
- * #............#
- * #............#
- * #............#
- * #............#
- * #............#
- * #............#
- * #............#
- * #............#
- * ##############
+ * ############
+ * #..........#
+ * #..........#
+ * #..........#
+ * #..........#
+ * #..........#
+ * #..........#
+ * #..........#
+ * #..........#
+ * #..........#
+ * #..........#
+ * ############
  */
 
 

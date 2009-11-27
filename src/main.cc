@@ -431,44 +431,7 @@ int do_command(Game_cmd cmd)
         return select_and_use_item(POCLASS_MISC, "activate", activate_misc);
 
     case REMOVE_RING:
-	if (!u.ring.valid())
-	{
-	    print_msg(MSGCHAN_MINORFAIL, "You have no ring to remove!\n");
-	    return 0;
-	}
-	if (u.ring.otyp() == PO_DOOM_RING)
-	{
-	    int dmg;
-	    print_msg(0, "You remove your ring.\n");
-	    print_msg(0, "It exacts vengeance!\n");
-	    drain_body(one_die(4), "a ring of doom", 1);
-	    drain_agility(one_die(4), "a ring of doom", 1);
-	    dmg = one_die(20);
-	    damage_u(dmg, DEATH_KILLED, "a ring of doom");
-	    u.hpmax -= dmg;
-	    status_updated = 1;
-	    u.ring = NO_OBJECT;
-	    display_update();
-	}
-	else if (u.ring.otyp() == PO_TELEPORT_RING)
-	{
-	    i = zero_die(u.level);
-	    if (i < 4)
-	    {
-		print_msg(0, "You lack the willpower to remove it.\n");
-	    }
-	    else
-	    {
-		print_msg(0, "You manage to pull the ring off.\n");
-		u.ring = NO_OBJECT;
-	    }
-	}
-	else
-	{
-	    print_msg(0, "You remove your ring.\n");
-	    u.ring = NO_OBJECT;
-	}
-	return 1;
+        return u.on_remove();
 
     case PUT_ON_RING:
 	if (u.ring.valid())

@@ -997,4 +997,56 @@ void Player::resolve_dispel(std::list<Perseff_data>::iterator peff_iter)
     u.perseffs.erase(peff_iter);
 }
 
+int Player::on_remove(bool force)
+{
+    Obj *optr = u.ring.snapv();
+    int i;
+    if (!optr)
+    {
+        print_msg(MSGCHAN_MINORFAIL, "You have no ring to remove.\n");
+        return 0;
+    }
+    if (optr)
+    {
+        switch (optr->obj_id)
+        {
+        case PO_DOOM_RING:
+            // Ouch! Rings of doom don't like being removed. OTOH, they kill
+            // you if you don't. Yes, this is cruel.
+	    print_msg(0, "You remove your ring.\n");
+	    print_msg(0, "It exacts vengeance!\n");
+	    drain_body(one_die(4), "a ring of doom", 1);
+	    drain_agility(one_die(4), "a ring of doom", 1);
+	    dmg = one_die(20);
+	    damage_u(dmg, DEATH_KILLED, "a ring of doom");
+	    u.hpmax -= dmg;
+            break;
+
+        case PO_TELEPORT_RING:
+            i = zero_die(u.level);
+            if (i < 4)
+            {
+                print_msg("You cannot bring yourself to remove your ring.\n");
+                return 0;
+            }
+            break;
+
+        case PO_REGENERATION_RING:
+        case PO_FIRE_RING:
+        case PO_FROST_RING:
+        case PO_WEDDING_RING:
+        case PO_VAMPIRE_RING:
+            break;
+
+        default:
+            print_msg(MSGCHAN_INTERROR, "IMPOSSIBLE: Non-ring in ring slot.\n");
+            break;
+        }
+    }
+    u.ring = NO_OBJECT;
+    status_updated = 1;
+    display_update();
+    return 1;
+}
+
 /* u.cc */

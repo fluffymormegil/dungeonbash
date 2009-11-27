@@ -72,6 +72,7 @@ struct Player {
     int net_body() const { return body - bdam; }
     int net_agility() const { return agility - adam; }
     bool test_mobility(bool noisy = false) const;
+    int on_remove(bool force = false);
 };
 
 /* XXX u.c data and funcs */
