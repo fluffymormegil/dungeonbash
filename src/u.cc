@@ -1048,11 +1048,10 @@ int Player::on_remove(bool force)
     }
     if (!suppress_msg)
     {
-        print_msg("You remove your ring.\n");
+        print_msg(0, "You remove your ring.\n");
     }
     u.ring = NO_OBJECT;
-    status_updated = 1;
-    display_update();
+    recalc_defence();
     return 1;
 }
 

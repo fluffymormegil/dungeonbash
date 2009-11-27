@@ -112,6 +112,7 @@ int read_scroll(Obj_handle obj)
 	break;
     case PO_PROTECTION_SCROLL:
 	print_msg(0, "You feel like something is helping you.\n");
+        peff.flavour = Perseff_protection;
         peff.power = 100;
         peff.duration = 100;
         peff.by_you = true;
