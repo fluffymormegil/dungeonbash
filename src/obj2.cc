@@ -190,7 +190,6 @@ bool terrainblast_func(libmrl::Coord c, void *data)
 
 int zapeff_shattering(libmrl::Coord pos)
 {
-    // TODO implement shattering
     int rv = 0;
     bool remove = false;
     Terrain_num remove_result;
