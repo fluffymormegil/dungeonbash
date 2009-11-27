@@ -1002,6 +1002,7 @@ int Player::on_remove(bool force)
     int dmg;
     Obj *optr = u.ring.snapv();
     int i;
+    bool suppress_msg = false;
     if (!optr)
     {
         print_msg(MSGCHAN_MINORFAIL, "You have no ring to remove.\n");
@@ -1021,6 +1022,7 @@ int Player::on_remove(bool force)
             dmg = one_die(20);
 	    damage_u(dmg, DEATH_KILLED, "a ring of doom");
 	    u.hpmax -= dmg;
+            suppress_msg = true;
             break;
 
         case PO_TELEPORT_RING:
@@ -1043,6 +1045,10 @@ int Player::on_remove(bool force)
             print_msg(MSGCHAN_INTERROR, "IMPOSSIBLE: Non-ring in ring slot.\n");
             break;
         }
+    }
+    if (!suppress_msg)
+    {
+        print_msg("You remove your ring.\n");
     }
     u.ring = NO_OBJECT;
     status_updated = 1;
