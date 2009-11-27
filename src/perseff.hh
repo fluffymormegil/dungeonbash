@@ -27,6 +27,10 @@
 #ifndef PERSEFF_HH
 #define PERSEFF_HH
 
+#ifndef DUNBASH_HH
+#include "dunbash.hh"
+#endif
+
 #ifndef MONSTERS_HH
 #include "monsters.hh"
 #endif
@@ -41,6 +45,8 @@ enum Persistent_effect
     Perseff_aspect_severity, Perseff_aspect_mercy,
     // Buffs: thanatophile
     Perseff_death_song, Perseff_assassin_soul,
+    // Buffs: scroll
+    Perseff_protection,
     // Debuffs: elemental
     Perseff_bitter_chill, Perseff_searing_flames,
     // Debuffs: curses
@@ -71,6 +77,8 @@ struct Perseff_metadata
     Eff_stacking_mode stacking_mode;
 };
 
+extern Perseff_metadata perseff_meta[Total_perseffs];
+
 struct Perseff_data
 {
     Persistent_effect flavour;
@@ -80,6 +88,12 @@ struct Perseff_data
     bool on_you; // if true, ignore the victim field
     Mon_handle caster;
     Mon_handle victim;
+    // negative = we got prevented
+    // positive = other got dispelled
+    // zero = no conflict
+    int conflicts(const Perseff_data& other) const;
+    void extend_using(const Perseff_data& other);
+    void renew_using(const Perseff_data& other);
 };
 
 struct Status_flags
@@ -108,6 +122,7 @@ struct Status_flags
         return !!(data[f >> 5] & (1 << (f & 31)));
     }
 };
+
 
 #endif
 

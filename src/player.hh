@@ -49,11 +49,6 @@ struct Player {
     uint32_t experience;	/* Experience points earned. */
     int defence;	/* To-hit target number for monsters */
     int evasion;	/* To-hit target number for armour-ignoring attacks */
-    int protection;	/* Temporary protection from cursing */
-    int leadfoot;	/* Feet-of-lead curse */
-    int withering;	/* Vile withering curse */
-    int armourmelt;	/* Armour-like-dust curse */
-    int shackled;       /* Cannot move. */
     int speed;
     uint32_t resistances[DT_COUNT];	/* Resistances to damage types. */
     int level;	/* Each level gets you +1 body, +1 agility, +1 random
@@ -71,10 +66,12 @@ struct Player {
     // Persistent effect application
     void apply_effect(Perseff_data& peff);
     void suffer(Perseff_data& peff);
+    void resolve_dispel(std::list<Perseff_data>::iterator peff_iter);
 
     // computed-value functions
     int net_body() const { return body - bdam; }
     int net_agility() const { return agility - adam; }
+    bool test_mobility(bool noisy = false) const;
 };
 
 /* XXX u.c data and funcs */

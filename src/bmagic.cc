@@ -193,7 +193,7 @@ int use_black_magic(Mon_handle mon)
 
     case MS_CURSE_ARMOURMELT:
         mptr->curses();
-        if (u.protection)
+        if (u.status.test_flag(Perseff_protection))
         {
             malignant_aura();
         }
@@ -210,7 +210,7 @@ int use_black_magic(Mon_handle mon)
 
     case MS_CURSE_LEADFOOT:
         mptr->curses();
-        if (u.protection)
+        if (u.status.test_flag(Perseff_protection))
         {
             malignant_aura();
         }
@@ -227,7 +227,7 @@ int use_black_magic(Mon_handle mon)
 
     case MS_CURSE_WITHERING:
         mptr->curses();
-        if (u.protection)
+        if (u.status.test_flag(Perseff_protection))
         {
             malignant_aura();
         }
@@ -237,7 +237,7 @@ int use_black_magic(Mon_handle mon)
             peff.duration = 10 + one_die(10);
             peff.caster = mptr->self;
             peff.by_you = false;
-            print_msg(0, "Your limbs twist and wither!\n");
+            print_msg(0, "Crippling decrepitude afflicts you!\n");
             u.apply_effect(peff);
         }
         break;
@@ -377,7 +377,7 @@ Monspell selector_dominator(Mon const *mptr, bool cansee, const Direction_data& 
         {
             return MS_CHAINSTRIKE;
         }
-        else if (!u.shackled)
+        else if (!u.test_mobility(false))
         {
             return MS_SHACKLE;
         }
@@ -401,18 +401,18 @@ Monspell selector_deathlord(Mon const *mptr, bool cansee, const Direction_data& 
             switch (zero_die(7))
             {
             case 6:
-                if (!u.withering)
+                if (!u.status.test_flag(Perseff_wither_curse))
                 {
                     return MS_CURSE_WITHERING;
                 }
             case 4:
-                if (!u.leadfoot)
+                if (!u.status.test_flag(Perseff_leadfoot_curse))
                 {
                     return MS_CURSE_LEADFOOT;
                 }
                 /* fall through */
             case 5:
-                if (!u.armourmelt)
+                if (!u.status.test_flag(Perseff_armourmelt_curse))
                 {
                     return MS_CURSE_ARMOURMELT;
                 }
@@ -441,18 +441,18 @@ Monspell selector_immolator(Mon const *mptr, bool cansee, const Direction_data& 
             switch (zero_die(7))
             {
             case 6:
-                if (!u.withering)
+                if (!u.status.test_flag(Perseff_wither_curse))
                 {
                     return MS_CURSE_WITHERING;
                 }
             case 4:
-                if (!u.leadfoot)
+                if (!u.status.test_flag(Perseff_leadfoot_curse))
                 {
                     return MS_CURSE_LEADFOOT;
                 }
                 /* fall through */
             case 5:
-                if (!u.armourmelt)
+                if (!u.status.test_flag(Perseff_armourmelt_curse))
                 {
                     return MS_CURSE_ARMOURMELT;
                 }
@@ -481,18 +481,18 @@ Monspell selector_defiler(Mon const *mptr, bool cansee, const Direction_data& di
             switch (zero_die(7))
             {
             case 6:
-                if (!u.withering)
+                if (!u.status.test_flag(Perseff_wither_curse))
                 {
                     return MS_CURSE_WITHERING;
                 }
             case 4:
-                if (!u.leadfoot)
+                if (!u.status.test_flag(Perseff_leadfoot_curse))
                 {
                     return MS_CURSE_LEADFOOT;
                 }
                 /* fall through */
             case 5:
-                if (!u.armourmelt)
+                if (!u.status.test_flag(Perseff_armourmelt_curse))
                 {
                     return MS_CURSE_ARMOURMELT;
                 }
@@ -523,13 +523,13 @@ Monspell selector_lich(Mon const *mptr, bool cansee, const Direction_data& dir_d
             switch (dieroll)
             {
             case 4:
-                if (!u.leadfoot)
+                if (!u.status.test_flag(Perseff_leadfoot_curse))
                 {
                     return MS_CURSE_LEADFOOT;
                 }
                 /* fall through */
             case 5:
-                if (!u.armourmelt)
+                if (!u.status.test_flag(Perseff_armourmelt_curse))
                 {
                     return MS_CURSE_ARMOURMELT;
                 }
@@ -545,13 +545,13 @@ Monspell selector_lich(Mon const *mptr, bool cansee, const Direction_data& dir_d
                 switch (zero_die(6))
                 {
                 case 4:
-                    if (!u.leadfoot)
+                    if (!u.status.test_flag(Perseff_leadfoot_curse))
                     {
                         return MS_CURSE_LEADFOOT;
                     }
                     /* fall through */
                 case 5:
-                    if (!u.armourmelt)
+                    if (!u.status.test_flag(Perseff_armourmelt_curse))
                     {
                         return MS_CURSE_ARMOURMELT;
                     }
@@ -582,18 +582,18 @@ Monspell selector_master_lich(Mon const *mptr, bool cansee, const Direction_data
             switch (zero_die(7))
             {
             case 6:
-                if (!u.withering)
+                if (!u.status.test_flag(Perseff_wither_curse))
                 {
                     return MS_CURSE_WITHERING;
                 }
             case 4:
-                if (!u.leadfoot)
+                if (!u.status.test_flag(Perseff_leadfoot_curse))
                 {
                     return MS_CURSE_LEADFOOT;
                 }
                 /* fall through */
             case 5:
-                if (!u.armourmelt)
+                if (!u.status.test_flag(Perseff_armourmelt_curse))
                 {
                     return MS_CURSE_ARMOURMELT;
                 }
@@ -607,18 +607,18 @@ Monspell selector_master_lich(Mon const *mptr, bool cansee, const Direction_data
             switch (zero_die(10))
             {
             case 9:
-                if (!u.withering)
+                if (!u.status.test_flag(Perseff_wither_curse))
                 {
                     return MS_CURSE_WITHERING;
                 }
             case 8:
-                if (!u.leadfoot)
+                if (!u.status.test_flag(Perseff_leadfoot_curse))
                 {
                     return MS_CURSE_LEADFOOT;
                 }
                 /* fall through */
             case 7:
-                if (!u.armourmelt)
+                if (!u.status.test_flag(Perseff_armourmelt_curse))
                 {
                     return MS_CURSE_ARMOURMELT;
                 }
@@ -632,18 +632,18 @@ Monspell selector_master_lich(Mon const *mptr, bool cansee, const Direction_data
             switch (zero_die(7))
             {
             case 6:
-                if (!u.withering)
+                if (!u.status.test_flag(Perseff_wither_curse))
                 {
                     return MS_CURSE_WITHERING;
                 }
             case 4:
-                if (!u.leadfoot)
+                if (!u.status.test_flag(Perseff_leadfoot_curse))
                 {
                     return MS_CURSE_LEADFOOT;
                 }
                 /* fall through */
             case 5:
-                if (!u.armourmelt)
+                if (!u.status.test_flag(Perseff_armourmelt_curse))
                 {
                     return MS_CURSE_ARMOURMELT;
                 }
@@ -814,12 +814,20 @@ void chainstrike_spell(Mon const *mptr)
 void shackle_spell(Mon const *mptr)
 {
     mptr->curses();
-    if (!u.shackled)
+    if (u.test_mobility(false))
     {
-        u.shackled = libmrl::max(15 - zero_die((u.body + u.agility) / 5), 0);
-        if (u.shackled)
+        int dur = libmrl::max(15 - zero_die((u.body + u.agility) / 5), 0);
+        if (dur > 0)
         {
-            print_msg(0, "Chains reach up from the floor to bind your legs!\n");
+            Perseff_data peff = {
+                Perseff_binding_chains,
+                20,
+            };
+            u.apply_effect(peff);
+        }
+        else
+        {
+            print_msg(0, "Chains reach up from the floor to seize you, but you elude their grasp.\n");
         }
     }
 }

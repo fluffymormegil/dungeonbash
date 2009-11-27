@@ -120,9 +120,6 @@ static void deserialise(FILE *fp, Player *ptmp)
     ptmp->hpcur = deserialise_uint32(fp);
     ptmp->food = deserialise_uint32(fp);
     ptmp->experience = deserialise_uint32(fp);
-    ptmp->protection = deserialise_uint32(fp);
-    ptmp->leadfoot = deserialise_uint32(fp);
-    ptmp->armourmelt = deserialise_uint32(fp);
     ptmp->speed = deserialise_uint32(fp);
     deserialise(fp, ptmp->resistances, DT_COUNT);
     ptmp->level = deserialise_uint32(fp);
@@ -132,6 +129,24 @@ static void deserialise(FILE *fp, Player *ptmp)
     ptmp->weapon = deserialise_uint32(fp);
     ptmp->armour = deserialise_uint32(fp);
     ptmp->ring = deserialise_uint32(fp);
+    uint32_t flav = deserialise_uint32(fp);
+    while (flav != 0xffffffffu)
+    {
+        Perseff_data peff;
+        uint64_t t64;
+        peff.flavour = Persistent_effect(flav);
+        peff.power = deserialise_uint32(fp);
+        peff.duration = deserialise_uint32(fp);
+        peff.by_you = deserialise_uint32(fp);
+        peff.on_you = deserialise_uint32(fp);
+        t64 = deserialise_uint64(fp);
+        peff.caster = Mon_handle(t64);
+        t64 = deserialise_uint64(fp);
+        peff.victim = Mon_handle(t64);
+        u.perseffs.push_back(peff);
+        u.status.set_flag(peff.flavour);
+        flav = deserialise_uint32(fp);
+    }
 }
 
 void deserialise(FILE *fp, libmrl::Coord *c)
@@ -407,9 +422,6 @@ static void serialise(FILE *fp, Player const *ptmp)
     serialise(fp, uint32_t(ptmp->hpcur));
     serialise(fp, uint32_t(ptmp->food));
     serialise(fp, ptmp->experience);
-    serialise(fp, uint32_t(ptmp->protection));
-    serialise(fp, uint32_t(ptmp->leadfoot));
-    serialise(fp, uint32_t(ptmp->armourmelt));
     serialise(fp, uint32_t(ptmp->speed));
     serialise(fp, ptmp->resistances, DT_COUNT);
     serialise(fp, uint32_t(ptmp->level));
@@ -418,6 +430,18 @@ static void serialise(FILE *fp, Player const *ptmp)
     serialise(fp, uint32_t(ptmp->weapon.value));
     serialise(fp, uint32_t(ptmp->armour.value));
     serialise(fp, uint32_t(ptmp->ring.value));
+    std::list<Perseff_data>::const_iterator peffiter;
+    for (peffiter = u.perseffs.begin(); peffiter != u.perseffs.end(); ++peffiter)
+    {
+        serialise(fp, uint32_t(peffiter->flavour));
+        serialise(fp, uint32_t(peffiter->power));
+        serialise(fp, uint32_t(peffiter->duration));
+        serialise(fp, uint32_t(peffiter->by_you));
+        serialise(fp, uint32_t(peffiter->on_you));
+        serialise(fp, peffiter->caster.value);
+        serialise(fp, peffiter->victim.value);
+    }
+    serialise(fp, 0xffffffffu);
 }
 
 void serialise(FILE *fp, const Level_tag *ptag)

@@ -56,6 +56,7 @@ int weaker_demon(int pm_num)
 bool Mon::apply_effect(Perseff_data &peff)
 {
     peff.victim = self;
+    status.set_flag(peff.flavour);
     perseffs.push_back(peff);
     return false;
 }

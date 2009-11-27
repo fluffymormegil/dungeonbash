@@ -33,7 +33,7 @@
 
 #include "monsters.hh"
 
-#define agility_modifier() (u.withering ? (u.agility / 10) : (u.agility / 5))
+#define agility_modifier() (u.status.test_flag(Perseff_wither_curse) ? (u.agility / 10) : (u.agility / 5))
 #define EVASION_PRESCALE        100
 #define EVASION_POSTSCALE       200
 /* XXX combat.c data and funcs */

@@ -26,6 +26,7 @@
 
 #include "dunbash.hh"
 #include "combat.hh"
+#include "perseff.hh"
 #include "objects.hh"
 #include "pobjid.hh"
 #include "pmonid.hh"
@@ -252,9 +253,11 @@ int mhitu(Mon_handle mon, Damtyp dtype)
             print_msg(0, "%s misses you.\n", Attackername.c_str());
         }
         return 0;
-    } damage = one_die(mptr->mdam); unaffected = player_resists_dtype(dtype);
+    }
+    damage = one_die(mptr->mdam);
+    unaffected = player_resists_dtype(dtype);
     print_msg(0, "%s hits you.\n", Attackername.c_str());
-    if (u.armourmelt && (!zero_die(3)))
+    if ((u.armour.valid()) && u.status.test_flag(Perseff_armourmelt_curse) && (!zero_die(3)))
     {
         /* If you're subject to armourmelt, it is decreed that one
          * hit in three tears bits off your dust-weak armour. */

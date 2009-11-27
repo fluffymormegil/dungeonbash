@@ -65,6 +65,7 @@ int read_scroll(Obj_handle obj)
 {
     Obj *optr = obj.snapv();
     int i;
+    Perseff_data peff;
     switch (optr->obj_id)
     {
     case PO_IDENTIFY_SCROLL:
@@ -111,22 +112,11 @@ int read_scroll(Obj_handle obj)
 	break;
     case PO_PROTECTION_SCROLL:
 	print_msg(0, "You feel like something is helping you.\n");
-        u.protection = 100;
-	if (u.withering)
-	{
-	    print_msg(0, "Your limbs straighten.\n");
-	    u.withering = 0;
-	}
-	if (u.armourmelt)
-	{
-	    print_msg(0, "Your armour regains its strength.\n");
-	    u.armourmelt = 0;
-	}
-	if (u.leadfoot)
-	{
-	    print_msg(0,"You shed your feet of lead.\n");
-	    u.leadfoot = 0;
-	}
+        peff.power = 100;
+        peff.duration = 100;
+        peff.by_you = true;
+        peff.on_you = true;
+        u.apply_effect(peff);
 	break;
     default:
 	print_msg(MSGCHAN_INTERROR, "Impossible: reading non-scroll\n");

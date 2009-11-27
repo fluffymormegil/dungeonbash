@@ -141,9 +141,8 @@ int move_player(libmrl::Coord step)
     /* Now that we know it isn't an attack attempt, check for shackling and
      * impassable terrain.
      */
-    if (u.shackled)
+    if (!u.test_mobility())
     {
-        print_msg(MSGCHAN_MINORFAIL, "Your legs are chained to the spot.\n");
         disturb_u();
         return 0;
     }
@@ -663,7 +662,56 @@ int teleport_u(void)
 
 void Player::apply_effect(Perseff_data& peff)
 {
+    std::list<Perseff_data>::iterator peff_iter;
+    std::list<Perseff_data>::iterator peff_next;
     peff.on_you = true;
+    for (peff_iter = perseffs.begin(); peff_iter != perseffs.end(); peff_iter = peff_next)
+    {
+        peff_next = peff_iter;
+        ++peff_next;
+        if (peff_iter->flavour == peff.flavour)
+        {
+            switch (perseff_meta[peff.flavour].stacking_mode)
+            {
+            case Stack_renew:
+                peff_iter->renew_using(peff);
+                return;
+
+            case Stack_extend:
+                peff_iter->extend_using(peff);
+                return;
+
+            case Stack_none:
+                *peff_iter = peff;
+                return;
+
+            default:
+                break;
+            }
+        }
+        else
+        {
+            switch (peff.conflicts(*peff_iter))
+            {
+            case -1:
+                // give up, we got cancelled. Either it's an opposing effect we
+                // couldn't overcome, or it's a matching effect and we're
+                // Stack_none. Remember, in the latter case power trumps duration.
+                return;
+            case 2:
+                // Perfectly matched power. Dispel the other, then give up.
+                resolve_dispel(peff_iter);
+                return;
+            case 1:
+                // non-matching effect we overcome.
+                resolve_dispel(peff_iter);
+                break;
+            case 0:
+                break;
+            }
+        }
+    }
+    status.set_flag(peff.flavour);
     perseffs.push_back(peff);
 }
 
@@ -688,65 +736,65 @@ void update_player(void)
 {
     if ((!(game_tick % 5)) && (u.food >= 0) && (u.hpcur < u.hpmax))
     {
-	/* Heal player for one hit point; do not allow HP gain,
-	 * and don't say anything. */
-	heal_u(1, 0, 0);
+        /* Heal player for one hit point; do not allow HP gain,
+         * and don't say anything. */
+        heal_u(1, 0, 0);
     }
     else if (!(game_tick % 60) && (u.hpcur < u.hpmax * 3 / 4))
     {
-	/* Hungry player heals much, much slower, and cannot regain
-	 * all their hit points. */
-	heal_u(1, 0, 0);
+        /* Hungry player heals much, much slower, and cannot regain
+         * all their hit points. */
+        heal_u(1, 0, 0);
     }
     /* Once you hit the nutrition endstop, your ring of regeneration stops
      * working, and like normal regen, it won't raise you above 75% HP if
      * your food counter is negative. */
     if (((game_tick % 10) == 5) &&
-	(u.ring.otyp() == PO_REGENERATION_RING) &&
-	(u.hpcur < ((u.food >= 0) ? u.hpmax : ((u.hpmax * 3) / 4))) &&
-	(u.food >= -1950))
+        (u.ring.otyp() == PO_REGENERATION_RING) &&
+        (u.hpcur < ((u.food >= 0) ? u.hpmax : ((u.hpmax * 3) / 4))) &&
+        (u.food >= -1950))
     {
-	/* Heal player for 1d3 hit points; do not allow HP gain,
-	 * and don't say anything apart from the regen ring message. */
-	print_msg(MSGCHAN_FLUFF, "Your ring pulses soothingly.\n");
-	heal_u(one_die(3), 0, 0);
-	permobjs[PO_REGENERATION_RING].known = 1;
+        /* Heal player for 1d3 hit points; do not allow HP gain,
+         * and don't say anything apart from the regen ring message. */
+        print_msg(MSGCHAN_FLUFF, "Your ring pulses soothingly.\n");
+        heal_u(one_die(3), 0, 0);
+        permobjs[PO_REGENERATION_RING].known = 1;
     }
     if (u.food >= -1950)
     {
         // Base food use is 1 on SPEED_NORMAL or slower ticks, 0 on SPEED_FAST
         // or faster ticks.
-	int food_use = (action_speed <= SPEED_NORMAL) ? 1 : 0;
-	int squeal = 0;
-	if ((u.ring.otyp() == PO_REGENERATION_RING) && !(game_tick % 2) && (u.food >= -1950))
-	{
-	    /* If you are still less hungry than -1950 nutrition,
-	     * use one more food every second game tick if you are
-	     * wearing a ring of regeneration. */
-	    food_use++;
-	}
-	if ((u.food >= 100) && (u.food - food_use < 100))
-	{
-	    squeal = 1;
-	}
-	if ((u.food >= 0) && (u.food < food_use))
-	{
-	    squeal = 2;
-	}
-	u.food -= food_use;
-	status_updated = 1;
-	switch (squeal)
-	{
-	case 0:
-	default:
-	    break;
-	case 1:
-	    print_msg(0, "You are getting quite hungry.\n");
-	    break;
-	case 2:
-	    print_msg(0, "You are feeling hunger pangs, and will recover\nmore slowly from your injuries.\n");
-	    break;
-	}
+        int food_use = (action_speed <= SPEED_NORMAL) ? 1 : 0;
+        int squeal = 0;
+        if ((u.ring.otyp() == PO_REGENERATION_RING) && !(game_tick % 2) && (u.food >= -1950))
+        {
+            /* If you are still less hungry than -1950 nutrition,
+             * use one more food every second game tick if you are
+             * wearing a ring of regeneration. */
+            food_use++;
+        }
+        if ((u.food >= 100) && (u.food - food_use < 100))
+        {
+            squeal = 1;
+        }
+        if ((u.food >= 0) && (u.food < food_use))
+        {
+            squeal = 2;
+        }
+        u.food -= food_use;
+        status_updated = 1;
+        switch (squeal)
+        {
+        case 0:
+        default:
+            break;
+        case 1:
+            print_msg(0, "You are getting quite hungry.\n");
+            break;
+        case 2:
+            print_msg(0, "You are feeling hunger pangs, and will recover\nmore slowly from your injuries.\n");
+            break;
+        }
     }
     if (!u.perseffs.empty())
     {
@@ -773,46 +821,13 @@ void update_player(void)
             }
             else
             {
-                switch (peff_iter->flavour)
-                {
-                case Perseff_bitter_chill:
-                    print_msg(0, "The bitter chill subsides.\n");
-                    break;
-
-                case Perseff_searing_flames:
-                    print_msg(0, "The flames around you subside.\n");
-                    break;
-
-                case Perseff_leadfoot_curse:
-                    print_msg(0, "You shed your feet of lead.\n");
-                    break;
-
-                case Perseff_wither_curse:
-                    print_msg(0, "Your limbs straighten.\n");
-                    break;
-
-                case Perseff_armourmelt_curse:
-                    print_msg(0, "Your armour looks less fragile now.\n");
-                    break;
-
-                case Perseff_binding_chains:
-                    print_msg(0, "The chains binding you disintegrate.\n");
-                    break;
-                    
-                case Perseff_tentacle_embrace:
-                    print_msg(0, "Your tentacular ordeal is over.\n");
-                    break;
-
-                default:
-                    break;
-                }
-                u.perseffs.erase(peff_iter);
-                recalc_defence();
+                u.resolve_dispel(peff_iter);
             }
             if (wiped)
             {
                 break;
             }
+            recalc_defence();
         }
     }
     do_vision();
@@ -920,6 +935,66 @@ void describe_profession(Player_profession prof)
                   "   great violence.\n\n");
         break;
     }
+}
+
+bool Player::test_mobility(bool noisy) const
+{
+    bool retval = true;
+    if (status.test_flag(Perseff_binding_chains))
+    {
+        if (noisy)
+        {
+            print_msg(0, "You are held in place by magical chains.\n");
+        }
+        retval = false;
+    }
+    if (status.test_flag(Perseff_tentacle_embrace))
+    {
+        if (noisy)
+        {
+            print_msg(0, "Tentacles are wrapped around you, holding you in place.\n");
+        }
+        retval = false;
+    }
+    return retval;
+}
+
+void Player::resolve_dispel(std::list<Perseff_data>::iterator peff_iter)
+{
+    switch (peff_iter->flavour)
+    {
+    case Perseff_bitter_chill:
+        print_msg(0, "The bitter chill subsides.\n");
+        break;
+
+    case Perseff_searing_flames:
+        print_msg(0, "The flames around you subside.\n");
+        break;
+
+    case Perseff_leadfoot_curse:
+        print_msg(0, "You shed your feet of lead.\n");
+        break;
+
+    case Perseff_wither_curse:
+        print_msg(0, "You feel less decrepit.\n");
+        break;
+
+    case Perseff_armourmelt_curse:
+        print_msg(0, "Your armour looks less fragile now.\n");
+        break;
+
+    case Perseff_binding_chains:
+        print_msg(0, "The chains binding you disintegrate.\n");
+        break;
+
+    case Perseff_tentacle_embrace:
+        print_msg(0, "Your tentacular ordeal is over.\n");
+        break;
+
+    default:
+        break;
+    }
+    u.perseffs.erase(peff_iter);
 }
 
 /* u.cc */

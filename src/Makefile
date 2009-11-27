@@ -1,6 +1,6 @@
 # Makefile for Dungeon Bash
 
-OBJS=astar.o bmagic.o cfgfile.o cloud.o combat.o display.o hexpi.o loadsave.o main.o map.o misc.o mon1.o mon2.o mon3.o obj1.o obj2.o permobj.o permons.o pmon2.o radiance.o rng.o rooms.o spiralpath.o u.o vector.o vision.o
+OBJS=astar.o bmagic.o cfgfile.o cloud.o combat.o display.o hexpi.o loadsave.o main.o map.o misc.o mon1.o mon2.o mon3.o obj1.o obj2.o permobj.o permons.o perseff.o pmon2.o radiance.o rng.o rooms.o spiralpath.o u.o vector.o vision.o
 
 GAME=dungeonbash
 SRCGEN=srcgen

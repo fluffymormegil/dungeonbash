@@ -26,6 +26,7 @@
 
 #define PERSEFF_CC
 
+#include "dunbash.hh"
 #include "perseff.hh"
 
 Perseff_metadata perseff_meta[Total_perseffs] =
@@ -96,5 +97,73 @@ Perseff_metadata perseff_meta[Total_perseffs] =
     },
 };
 
+int Perseff_data::conflicts(const Perseff_data& other) const
+{
+    switch (flavour)
+    {
+    default:
+        return 0;
+
+    case Perseff_bitter_chill:
+        if (other.flavour == Perseff_searing_flames)
+        {
+            return (power < other.power) ? -1 : ((power == other.power) ? 2 : 1);
+        }
+        return 0;
+
+    case Perseff_searing_flames:
+        if (other.flavour == Perseff_bitter_chill)
+        {
+            return (power < other.power) ? -1 : ((power == other.power) ? 2 : 1);
+        }
+        return 0;
+
+    case Perseff_protection:
+        if ((other.flavour == Perseff_wither_curse) ||
+            (other.flavour == Perseff_leadfoot_curse) ||
+            (other.flavour == Perseff_armourmelt_curse))
+        {
+            return 1;
+        }
+        return 0;
+
+    case Perseff_leadfoot_curse:
+    case Perseff_armourmelt_curse:
+    case Perseff_wither_curse:
+        if (other.flavour == Perseff_protection)
+        {
+            return -1;
+        }
+        return 0;
+    }
+}
+
+void Perseff_data::extend_using(const Perseff_data& other)
+{
+    int p, d;
+    p = libmrl::max(power, other.power);
+    d = power * duration + other.power * other.duration;
+    if ( power < other.power)
+    {
+        caster = other.caster;
+        by_you = other.by_you;
+    }
+    power = p;
+    duration = d / p;
+}
+
+void Perseff_data::renew_using(const Perseff_data& other)
+{
+    if (power < other.power)
+    {
+        *this = other;
+    }
+    else
+    {
+        // Weak effects will not effectively renew strong ones that aren't on
+        // the edge of expiry.
+        duration = libmrl::max((other.duration * other.power) / power, duration);
+    }
+}
 
 /* perseff.cc */
