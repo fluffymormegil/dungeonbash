@@ -37,6 +37,7 @@
 #include <string>
 #include <stdio.h>
 #include "cfgfile.hh"
+#include "loadsave.hh"
 
 Player u;
 bool levelup_wait;
@@ -464,6 +465,7 @@ int do_death(Death d, const char *what)
     }
     if (!wizard_mode)
     {
+        kill_game();
 #ifdef MULTIUSER
         filename = PLAYGROUND;
         filename += "/dunbash.log";

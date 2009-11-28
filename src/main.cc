@@ -531,6 +531,7 @@ int do_command(Game_cmd cmd)
 	if (j > 0)
 	{
 	    game_finished = true;
+	    kill_game();
 	}
 	else
 	{

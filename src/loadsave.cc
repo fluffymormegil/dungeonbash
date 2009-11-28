@@ -809,10 +809,6 @@ int load_game(void)
         fclose(fp);
         rebuild_mapmons();
         rebuild_mapobjs();
-        if (!wizard_mode)
-        {
-            unlink(filename.c_str());
-        }
         touch_back_buffer();
         do_vision();
         status_updated = 1;
@@ -828,6 +824,27 @@ int load_game(void)
         return 0;
     }
     return -1;
+}
+
+void kill_game(void)
+{
+    std::string filename;
+#ifdef MULTIUSER
+    char uidbuf[16];
+    filename = configured_system_playground;
+    filename += "/save/dunbash-";
+    sprintf(uidbuf, "%x", getuid());
+    filename += uidbuf;
+    game_permissions();
+#else
+    filename = "dunbash";
+#endif
+    filename += ".sav";
+
+    if (!wizard_mode)
+    {
+        unlink(filename.c_str());
+    }
 }
 
 /* loadsave.c */
