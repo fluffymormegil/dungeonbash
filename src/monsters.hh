@@ -69,6 +69,7 @@ struct Mon_handle
     Mon *snapv() const;
     Mon const *snapc() const;
     Mon_handle(uint64_t v = 0ull) : value(v) { }
+    ~Mon_handle() { }
     bool operator <(const Mon_handle& m) const { return value < m.value; }
     bool operator ==(const Mon_handle& m) const { return value == m.value; }
     bool valid() const { return value; }

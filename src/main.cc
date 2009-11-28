@@ -747,27 +747,23 @@ void main_loop(void)
         // TODO add timed-event queue
         for (miter = currlev->denizens.begin(); miter != currlev->denizens.end();)
         {
-            bool monwiped = false;
-            Mon_handle saved_id = *miter;
+            bool monwiped;
+            Mon_handle saved_id;
             std::set<Mon_handle>::iterator tmpiter;
-            Mon *mptr = miter->snapv();
-            if (mptr)
+            Mon *mptr;
+            mptr = miter->snapv();
+            saved_id = *miter;
+            monwiped = false;
+            if (!mptr)
             {
-                /* Update the monster's status. */
-                if (update_mon(*miter))
-                {
-                    if (action_speed <= permons[mptr->mon_id].speed)
-                    {
-                        if (!mon_acts(*miter))
-                        {
-                            monwiped = true;
-                        }
-                    }
-                }
-                else
-                {
-                    monwiped = true;
-                }
+                print_msg(MSGCHAN_INTERROR, "current map's denizen list contains bad handles\n");
+                abort();
+            }
+            /* Update the monster's status. */
+            monwiped = update_mon(*miter);
+            if (!monwiped && (action_speed <= permons[mptr->mon_id].speed))
+            {
+                monwiped = mon_acts(*miter);
             }
             if (game_finished)
             {

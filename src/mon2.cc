@@ -564,13 +564,13 @@ bool mon_acts(Mon_handle mon)
         print_msg(MSGCHAN_INTERROR, "Discarding misplaced monster.\n");
         release_monster(mon);
         currlev->set_mon_at(pos, -1);
-        return false;
+        return true;
     }
     if (!(currlev->monster_at(mptr->pos) == mon))
     {
         print_msg(MSGCHAN_INTERROR, "Program disordered: monster(s) misplaced.\n");
         release_monster(mon);
-        return false;
+        return true;
     }
     compute_directions(u.pos, mptr->pos, &dir_data);
     if (dir_data.meleerange)
@@ -611,7 +611,7 @@ bool mon_acts(Mon_handle mon)
             }
             if (special_used)
             {
-                return true;
+                return false;
             }
             /* Didn't, or couldn't, use black magic; converge
              * as if an archer. */
@@ -626,7 +626,7 @@ bool mon_acts(Mon_handle mon)
             }
             if (special_used)
             {
-                return true;
+                return false;
             }
             select_space(&pos, dir_data.delta, AI_ARCHER);
         }
@@ -646,7 +646,7 @@ bool mon_acts(Mon_handle mon)
     }
     else if (!mptr->awake)
     {
-        return true;
+        return false;
     }
     else
     {
@@ -661,7 +661,7 @@ bool mon_acts(Mon_handle mon)
         }
         if (special_used)
         {
-            return true;
+            return false;
         }
         if (pmon_is_smart(mptr->mon_id))
         {
@@ -693,7 +693,7 @@ bool mon_acts(Mon_handle mon)
             mptr->ai_lastpos = mptr->in_fov() ? u.pos : get_mon_scatter(mptr->ai_lastpos);
         }
     }
-    return true;
+    return false;
 }
 
 void Mon::notice_you(bool quiet)

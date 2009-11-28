@@ -131,6 +131,7 @@ Mon_handle get_free_mon(void)
 Mon_handle create_mon(int pm_idx, libmrl::Coord c, Level *lptr)
 {
     Mon_handle mon;
+    Mon *mptr;
     if (!lptr)
     {
         lptr = currlev;
@@ -149,8 +150,8 @@ Mon_handle create_mon(int pm_idx, libmrl::Coord c, Level *lptr)
         }
     }
     mon = get_free_mon();
-    monsters[mon.value] = new Mon;
-    Mon *mptr = mon.snapv();
+    mptr = new Mon;
+    monsters[mon.value] = mptr;
     mptr->self = mon;
     mptr->lev = lptr->self;
     mptr->mon_id = pm_idx;
@@ -521,12 +522,13 @@ void move_mon(Mon_handle mon, libmrl::Coord pos, Level *lptr)
     }
     if (pos == mptr->pos)
     {
-        abort();
+        print_msg(MSGCHAN_INTERROR, "Warning: moving mon %lld to its own position!\n", mon.value);
+        return;
     }
     Mon_handle foo = currlev->monster_at(mptr->pos);
     if (!mptr->can_pass(pos))
     {
-	print_msg(MSGCHAN_INTERROR, "Warning: mon %d could not pass %d, %d.\n", mon.value, pos.y, pos.x);
+	print_msg(MSGCHAN_INTERROR, "Warning: mon %lld could not pass %d, %d.\n", mon.value, pos.y, pos.x);
 	return;
     }
     if (!(mon == foo))
@@ -562,11 +564,13 @@ void summon_mon_near(int pm_idx, libmrl::Coord pos, Level *lptr)
 bool update_mon(Mon_handle mon)
 {
     int cansee;
-    bool wiped;
+    bool wiped = false;
     Mon *mptr = mon.snapv();
     if (!mptr)
     {
-        return false;
+        print_msg(MSGCHAN_INTERROR, "FATAL: null pointer.\n");
+        press_enter();
+        abort();
     }
     mptr->last_update = game_tick;
     if (mptr->hpcur < mptr->hpmax)
@@ -634,7 +638,7 @@ bool update_mon(Mon_handle mon)
             }
         }
     }
-    return !wiped;
+    return wiped;
 }
 
 libmrl::Coord get_mon_scatter(libmrl::Coord pos, Level *lptr)
@@ -670,16 +674,24 @@ libmrl::Coord get_mon_scatter(libmrl::Coord pos, Level *lptr)
 void release_monster(Mon_handle mon)
 {
     Mon *mptr = mon.snapv();
+    if (!mptr)
+    {
+        print_msg(MSGCHAN_INTERROR, "releasing null monster\n");
+        press_enter();
+        abort();
+    }
     Level *lptr = mptr->lev.snapv();
     if (!lptr)
     {
-        fprintf(stderr, "levelsnap failed\n");
+        print_msg(MSGCHAN_INTERROR, "levelsnap failed\n");
+        press_enter();
         abort();
     }
     std::set<Mon_handle>::iterator iter = lptr->denizens.find(mon);
     if (iter == lptr->denizens.end())
     {
-        fprintf(stderr, "iter == lptr->denizens.end()\n");
+        print_msg(MSGCHAN_INTERROR, "iter == lptr->denizens.end()\n");
+        press_enter();
         abort();
     }
     else
@@ -698,17 +710,25 @@ void release_monster(Mon_handle mon)
     }
     delete mptr;
     std::map<uint64_t, Mon *>::iterator miter = monsters.find(mon.value);
+    if (miter == monsters.end())
+    {
+        print_msg(MSGCHAN_INTERROR, "miter == monsters.end() before erase from monsters\n");
+        press_enter();
+        abort();
+    }
     monsters.erase(miter);
     miter = monsters.find(mon.value);
     if (miter != monsters.end())
     {
-        fprintf(stderr, "miter != monsters.end()\n");
+        print_msg(MSGCHAN_INTERROR, "miter != monsters.end()\n");
+        press_enter();
         abort();
     }
     mptr = mon.snapv();
     if (mptr)
     {
-        fprintf(stderr, "mptr non-null\n");
+        print_msg(MSGCHAN_INTERROR, "mptr non-null\n");
+        press_enter();
         abort();
     }
 }

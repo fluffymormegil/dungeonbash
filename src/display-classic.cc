@@ -317,6 +317,9 @@ int display_init(void)
     idcok(status_window, FALSE);
     idcok(world_window, FALSE);
     idcok(message_window, FALSE);
+    idlok(status_window, FALSE);
+    idlok(world_window, FALSE);
+    idlok(message_window, FALSE);
     mvwprintw(world_window, 6, 5, "  Martin's");
     mvwprintw(world_window, 7, 5, "Dungeon Bash");
     mvwprintw(world_window, 9, 5, "Version %s", LONG_VERSION);
@@ -621,6 +624,8 @@ Game_cmd get_command(void)
             return SHOW_INVENTORY;
         case 'I':
             return INSPECT_ITEM;
+        case 'E':
+            return SHOW_EQUIPPED;
         case ';':
             return FARLOOK;
         case ':':
@@ -800,6 +805,7 @@ static void print_help_en_GB(void)
     print_msg(0, "X   quit without saving\n");
     print_msg(0, "i   print your inventory\n");
     print_msg(0, "I   examine an item you are carrying\n");
+    print_msg(0, "E   show your equipped items\n");
     print_msg(0, "#   show underlying terrain of occupied squares\n");
     print_msg(0, "\\   list all recognised items\n");
     print_msg(0, "D   dump your character's details to <name>.dump\n");
@@ -812,7 +818,7 @@ static void print_help_en_GB(void)
     print_msg(0, ".   floor\n");
     print_msg(0, "<   stairs up\n");
     print_msg(0, ">   stairs down\n");
-    print_msg(0, "\"   a pool of liquid\n");
+    print_msg(0, "\"   a pool of liquid, possibly baleful\n");
     print_msg(0, "_   an altar\n");
     print_msg(0, "-   an anvil or other unobstructive fitting\n");
     print_msg(0, "|   a furnace or other obstructive fitting\n");

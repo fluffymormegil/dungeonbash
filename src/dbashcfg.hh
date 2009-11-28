@@ -56,6 +56,7 @@
  * written any of the localization support. */
 #define INCLUDE_LANG_en_GB
 
+#define LOG_MESSAGES
 #endif
 
 
