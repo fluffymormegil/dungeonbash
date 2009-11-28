@@ -85,6 +85,7 @@ struct Mon
     int mon_id;
     Mon_handle self;
     Level_tag lev;
+    uint32_t last_update;
     libmrl::Coord pos;
     libmrl::Coord ai_lastpos;
     int used;
@@ -144,8 +145,8 @@ inline Mon const *Mon_handle::snapc() const
 
 /* XXX monsters.cc data and funcs */
 extern void monsters_init(void);
-extern void update_mon(Mon_handle mon);
-extern void mon_acts(Mon_handle mon);
+extern bool update_mon(Mon_handle mon);
+extern bool mon_acts(Mon_handle mon);
 extern void death_drop(Mon_handle mon);
 extern void print_mon_name(Mon_handle mon, int article, bool shortname = false);
 extern void summon_mon_near(int pm_idx, libmrl::Coord pos, Level *lptr = 0);

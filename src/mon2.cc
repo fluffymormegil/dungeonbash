@@ -542,36 +542,37 @@ void select_space(libmrl::Coord *ppos, libmrl::Coord delta, int selection_mode)
     *ppos = pos2;
 }
 
-void mon_acts(Mon_handle mon)
+bool mon_acts(Mon_handle mon)
 {
     Mon *mptr = mon.snapv();
     Direction_data dir_data;
     libmrl::Coord pos;
     int special_used = 0;
+    bool retval = true;
     std::string name;
 
     if (pmon_is_peaceful(mptr->mon_id))
     {
         // peaceful monsters do nothing.
-        return;
+        return retval;
     }
     /* delta.y,delta.x == direction monster must go to reach you. */
     pos = mptr->pos;
-    compute_directions(u.pos, mptr->pos, &dir_data);
     if (pos == u.pos)
     {
         print_msg(MSGCHAN_INTERROR, "Program disordered: monster in player's square.\n");
         print_msg(MSGCHAN_INTERROR, "Discarding misplaced monster.\n");
         release_monster(mon);
         currlev->set_mon_at(pos, -1);
-        return;
+        return false;
     }
     if (!(currlev->monster_at(mptr->pos) == mon))
     {
         print_msg(MSGCHAN_INTERROR, "Program disordered: monster(s) misplaced.\n");
         release_monster(mon);
-        return;
+        return false;
     }
+    compute_directions(u.pos, mptr->pos, &dir_data);
     if (dir_data.meleerange)
     {
         /* Adjacent! Attack you.  Demons have a 1 in 10 chance of
@@ -610,7 +611,7 @@ void mon_acts(Mon_handle mon)
             }
             if (special_used)
             {
-                return;
+                return true;
             }
             /* Didn't, or couldn't, use black magic; converge
              * as if an archer. */
@@ -625,7 +626,7 @@ void mon_acts(Mon_handle mon)
             }
             if (special_used)
             {
-                return;
+                return true;
             }
             select_space(&pos, dir_data.delta, AI_ARCHER);
         }
@@ -645,7 +646,7 @@ void mon_acts(Mon_handle mon)
     }
     else if (!mptr->awake)
     {
-        return;
+        return true;
     }
     else
     {
@@ -660,7 +661,7 @@ void mon_acts(Mon_handle mon)
         }
         if (special_used)
         {
-            return;
+            return true;
         }
         if (pmon_is_smart(mptr->mon_id))
         {
@@ -692,6 +693,7 @@ void mon_acts(Mon_handle mon)
             mptr->ai_lastpos = mptr->in_fov() ? u.pos : get_mon_scatter(mptr->ai_lastpos);
         }
     }
+    return true;
 }
 
 void Mon::notice_you(bool quiet)

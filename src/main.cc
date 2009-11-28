@@ -745,21 +745,45 @@ void main_loop(void)
             }
         }
         // TODO add timed-event queue
-        for (miter = currlev->denizens.begin(); miter != currlev->denizens.end(); ++miter)
+        for (miter = currlev->denizens.begin(); miter != currlev->denizens.end();)
         {
+            bool monwiped = false;
+            Mon_handle saved_id = *miter;
+            std::set<Mon_handle>::iterator tmpiter;
             Mon *mptr = miter->snapv();
             if (mptr)
             {
                 /* Update the monster's status. */
-                update_mon(*miter);
-                if (action_speed <= permons[mptr->mon_id].speed)
+                if (update_mon(*miter))
                 {
-                    mon_acts(*miter);
+                    if (action_speed <= permons[mptr->mon_id].speed)
+                    {
+                        if (!mon_acts(*miter))
+                        {
+                            monwiped = true;
+                        }
+                    }
+                }
+                else
+                {
+                    monwiped = true;
                 }
             }
             if (game_finished)
             {
                 break;
+            }
+            if (monwiped)
+            {
+                // miter is no longer valid; find the earliest insertion point
+                // for the saved handle value instead.
+                tmpiter = currlev->denizens.lower_bound(saved_id);
+                miter = tmpiter;
+            }
+            else
+            {
+                // advance miter.
+                ++miter;
             }
         }
         if (game_finished)

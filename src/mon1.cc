@@ -151,6 +151,7 @@ Mon_handle create_mon(int pm_idx, libmrl::Coord c, Level *lptr)
     mon = get_free_mon();
     monsters[mon.value] = new Mon;
     Mon *mptr = mon.snapv();
+    mptr->self = mon;
     mptr->lev = lptr->self;
     mptr->mon_id = pm_idx;
     mptr->pos = c;
@@ -558,15 +559,16 @@ void summon_mon_near(int pm_idx, libmrl::Coord pos, Level *lptr)
     }
 }
 
-void update_mon(Mon_handle mon)
+bool update_mon(Mon_handle mon)
 {
     int cansee;
     bool wiped;
     Mon *mptr = mon.snapv();
     if (!mptr)
     {
-        return;
+        return false;
     }
+    mptr->last_update = game_tick;
     if (mptr->hpcur < mptr->hpmax)
     {
 	cansee = mptr->in_fov();
@@ -632,6 +634,7 @@ void update_mon(Mon_handle mon)
             }
         }
     }
+    return !wiped;
 }
 
 libmrl::Coord get_mon_scatter(libmrl::Coord pos, Level *lptr)

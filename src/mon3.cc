@@ -63,12 +63,16 @@ bool Mon::apply_effect(Perseff_data &peff)
 
 bool Mon::suffer(Perseff_data& peff)
 {
+    std::string victim_name;
+    get_name(&victim_name, 1, false);
     switch (peff.flavour)
     {
     case Perseff_bitter_chill:
+        print_msg(0, "Bitter cold freezes %s.\n", victim_name.c_str());
         return damage_mon(self, one_die(peff.power), peff.by_you);
 
     case Perseff_searing_flames:
+        print_msg(0, "Searing flames burn %s.\n", victim_name.c_str());
         return damage_mon(self, one_die(peff.power), peff.by_you);
 
     case Perseff_tentacle_embrace:

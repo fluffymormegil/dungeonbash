@@ -36,9 +36,15 @@
 
 int zapeff_frost(libmrl::Coord pos)
 {
+    // wallwalking mons are immune to frost zaps (the only current wallwalking
+    // mon is immune to cold *anyway*, but whatever).
+    int rv = 0;
+    if (terrain_data[currlev->terrain_at(pos)].opaque)
+    {
+        rv = 2;
+    }
     // TODO test and refine balance of frost bolts
     Mon_handle mon = currlev->monster_at(pos);
-    int rv = 0;
     if (mon.valid())
     {
         rv = 1;
@@ -55,7 +61,7 @@ int zapeff_frost(libmrl::Coord pos)
         {
             std::string namestr;
             mptr->get_name(&namestr, 1, true);
-            print_msg(0, "Bitter cold saps %s's strength\n", namestr.c_str());
+            print_msg(0, "Bitter cold saps %s's strength.\n", namestr.c_str());
             Perseff_data peff = 
             {
                 Perseff_bitter_chill, 4, 10, true, false
