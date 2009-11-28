@@ -459,7 +459,7 @@ int inv_select(Poclass_num filter, const char *action, int accept_blank)
     {
         print_msg(MSGCHAN_PROMPT, "-) no item\n");
     }
-    print_msg(MSGCHAN_PROMPT, "[ESC or SPACE to cancel]\n");
+    print_msg(MSGCHAN_PROMPT, "[ESC/SPACE to cancel]\n");
 tryagain:
     print_msg(MSGCHAN_PROMPT, "What do you want to %s? ", action);
     ch = wgetch(message_window);
@@ -568,8 +568,7 @@ int select_dir(libmrl::Coord *psign, bool silent)
         default:
             if (!silent)
             {
-                print_msg(MSGCHAN_PROMPT, "Bad direction (use movement keys).\n");
-                print_msg(MSGCHAN_PROMPT, "[Press ESC or space to cancel.]\n");
+                print_msg(MSGCHAN_PROMPT, "Bad direction (use movement keys; ESC or space to cancel.)\n");
             }
             break;
         }
@@ -873,8 +872,7 @@ void farlook(void)
     int i;
 
     print_msg(MSGCHAN_PROMPT, "Use the movement keys to move the cursor.\n");
-    print_msg(MSGCHAN_PROMPT, "Press '.' to examine a square.\n");
-    print_msg(MSGCHAN_PROMPT, "Press ESC or SPACE when finished.\n");
+    print_msg(MSGCHAN_PROMPT, "Press '.' to examine a square, ESC/SPACE to finish.\n");
     wmove(world_window, screenpos.y, screenpos.x);
     wrefresh(world_window);
     while (!done)
@@ -951,8 +949,7 @@ void get_smite_target(libmrl::Coord *ppos)
     int i;
 
     print_msg(MSGCHAN_PROMPT, "Use the movement keys to move the cursor.\n");
-    print_msg(MSGCHAN_PROMPT, "Press '.' or ENTER to select a target square.\n");
-    print_msg(MSGCHAN_PROMPT, "Press ESC or SPACE to cancel.\n");
+    print_msg(MSGCHAN_PROMPT, "Use '.'/ENTER to select a square, ESC/SPACE to cancel.\n");
     wmove(world_window, screenpos.y, screenpos.x);
     wrefresh(world_window);
     while (!done)
