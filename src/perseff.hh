@@ -108,7 +108,7 @@ struct Status_flags
         int i;
         for (i = 0; i < Status_flag_units; ++i)
         {
-            data[Status_flag_units] = 0u;
+            data[i] = 0u;
         }
     }
     bool test_flag(Persistent_effect pef) const
