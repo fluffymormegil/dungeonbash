@@ -161,7 +161,7 @@ extern void deserialise_monsters(FILE *fp);
 extern void deserialise_objects(FILE *fp);
 extern void deserialise_permobj_vars(FILE *fp);
 
-extern void save_game(void);
+extern int save_game(void);
 extern int load_game(void);
 extern void kill_game(void);
 

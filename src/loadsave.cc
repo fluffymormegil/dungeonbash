@@ -43,6 +43,11 @@
 #include "cfgfile.hh"
 #include "loadsave.hh"
 
+// A bit of an invariant on the file handling: since dunbash.sav.gz is only
+// accessed by gzip, which we assume to be stable, it is considered
+// uncorrupted and used in preference to dunbash.sav, which we could have
+// crashed in the middle of writing.
+
 bool save_wait;
 bool reload_wait;
 bool always_fsync;
@@ -679,7 +684,7 @@ void serialise_permobj_vars(FILE *fp)
     }
 }
 
-void save_game(void)
+int save_game(void)
 {
     FILE *fp;
     int fd;
@@ -696,13 +701,13 @@ void save_game(void)
 #else
     filename = "dunbash.sav";
 #endif
-    fd = open(filename.c_str(), O_WRONLY | O_EXCL | O_CREAT, S_IRUSR | S_IWUSR);
+    fd = open(filename.c_str(), O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
     if (fd == -1)
     {
         print_msg(MSGCHAN_INTERROR, "could not save to %s: %s\n", filename.c_str(),
                   strerror(errno));
         press_enter();
-        return;
+        return -1;
     }
     fp = fdopen(fd, "wb");
     serialise_gamestate(fp);
@@ -723,16 +728,13 @@ void save_game(void)
     command += " ";
     command += filename;
     i = system(command.c_str());
-    if (i == 0)
+    if (i != 0)
     {
-        print_msg(0, "Game saved; exiting.\n");
-        game_finished = true;
-    }
-    if (save_wait)
-    {
+        print_msg(MSGCHAN_INTERROR, "could not compress save file\n");
         press_enter();
+        return -1;
     }
-    return;
+    return 0;
 }
 
 int load_game(void)
@@ -843,6 +845,8 @@ void kill_game(void)
 
     if (!wizard_mode)
     {
+        unlink(filename.c_str());
+        filename += COMPRESSED_SUFFIX;
         unlink(filename.c_str());
     }
 }

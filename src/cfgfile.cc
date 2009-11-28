@@ -97,6 +97,7 @@ Bool_config_var bool_config_vars[] =
     { "name_prompt", &name_prompt, true },
     { "levelup_wait", &levelup_wait, true },
     { "save_wait", &save_wait, true },
+    { "save_on_stairs", &save_on_stairs, true },
     { "reload_wait", &reload_wait, false },
     { "inventory_colours", &fruit_salad_inventory, false },
     { 0, 0, false }

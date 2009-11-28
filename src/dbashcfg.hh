@@ -33,9 +33,10 @@
 //#define MULTIUSER
 
 /* COMPRESSOR and DECOMPRESSOR are invoked by the load/save code. */
-#define COMPRESSOR "/bin/gzip"
+/* Note that they must be willing to overwrite old files. */
+#define COMPRESSOR "/bin/gzip -f"
 
-#define DECOMPRESSOR "/bin/gunzip"
+#define DECOMPRESSOR "/bin/gunzip -f"
 
 #define COMPRESSED_SUFFIX ".gz"
 

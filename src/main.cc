@@ -524,7 +524,16 @@ int do_command(Game_cmd cmd)
 	write_char_dump();
 	return 0;
     case SAVE_GAME:
-	save_game();
+	i = save_game();
+	if (i == 0)
+	{
+	    print_msg(0, "Game saved; exiting.\n");
+	    game_finished = true;
+	}
+	if (save_wait)
+	{
+	    press_enter();
+	}
 	return 0;
     case QUIT:
 	j = getYN("Really quit?\n");

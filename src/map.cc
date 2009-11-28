@@ -28,6 +28,7 @@
 #include "monsters.hh"
 #include "objects.hh"
 #include "rooms.hh"
+#include "loadsave.hh"
 
 #include <string.h>
 #include <limits.h>
@@ -36,6 +37,8 @@ uint32_t dungeon = 0;
 Level *currlev = 0;
 std::map<Level_tag, Level *> levels;
 const Level_tag no_level = { Total_dungeons, UINT_MAX };
+
+bool save_on_stairs;
 
 Level::Level(int h, int w) : height(h), width(w)
 {
@@ -177,6 +180,12 @@ void go_to_level(Level_tag lt, Leventry_mode lem)
         currlev = levels[lt];
     }
     inject_player(currlev, lem);
+
+    if (save_on_stairs)
+    {
+        save_game();
+    }
+
     touch_back_buffer();
     display_update();
 }

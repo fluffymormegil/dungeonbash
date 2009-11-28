@@ -42,6 +42,7 @@ extern bool save_wait;
 extern bool reload_wait;
 extern bool always_fsync;
 extern bool name_prompt;
+extern bool save_on_stairs;
 
 extern int run_delay;
 extern int projectile_delay;
