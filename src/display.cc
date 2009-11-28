@@ -1,6 +1,6 @@
-/* display.cc
+/* display-common.cc
  * 
- * Copyright 2005-2009 Martin Read
+ * Copyright 2009 Martin Read
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,24 +24,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define DISPLAY_C
+#define DISP_CURSES_COMMON_CC
 #include "dunbash.hh"
 #include "monsters.hh"
 #include "objects.hh"
 #include "player.hh"
+#include "display-common.hh"
 #include <curses.h>
 #include <stdio.h>
 #include <panel.h>
 #include <stdarg.h>
 #include <unistd.h>
 #include <string.h>
-
-WINDOW *status_window;
-WINDOW *world_window;
-WINDOW *message_window;
-PANEL *status_panel;
-PANEL *world_panel;
-PANEL *message_panel;
 
 FILE *msglog_fp;
 
@@ -60,206 +54,23 @@ libmrl::Coord curr_projectile_pos = libmrl::NOWHERE;
 Dbash_colour projectile_colour = DBCLR_L_GREY;
 int projectile_delay = 40;
 
-int wall_colour;
 int you_colour;
 int status_updated;
 int map_updated;
 int show_terrain;
 int hard_redraw;
 
-/* If your terminal defaults to black text on a white background instead of
- * light grey text on a black background, this will fuck up. */
-chtype colour_attrs[15] =
-{
-    0,
-    COLOR_PAIR(DBCLR_D_GREY) | A_BOLD,
-    COLOR_PAIR(DBCLR_RED),
-    COLOR_PAIR(DBCLR_BLUE),
-    COLOR_PAIR(DBCLR_GREEN),
-    COLOR_PAIR(DBCLR_PURPLE),
-    COLOR_PAIR(DBCLR_BROWN),
-    COLOR_PAIR(DBCLR_CYAN),
-    A_BOLD,
-    COLOR_PAIR(DBCLR_RED) | A_BOLD,
-    COLOR_PAIR(DBCLR_BLUE) | A_BOLD,
-    COLOR_PAIR(DBCLR_GREEN) | A_BOLD,
-    COLOR_PAIR(DBCLR_PURPLE) | A_BOLD,
-    COLOR_PAIR(DBCLR_BROWN) | A_BOLD,
-    COLOR_PAIR(DBCLR_CYAN) | A_BOLD
-};
-
 #define DISP_HEIGHT 21
 #define DISP_WIDTH 21
-
-chtype back_buffer[MAX_DUN_HEIGHT][MAX_DUN_WIDTH];
-chtype front_buffer[DISP_HEIGHT][DISP_WIDTH];
-
-/* Prototypes for static funcs */
-static chtype object_char(int object_id);
-static chtype monster_char(int monster_id);
-static chtype terrain_char(Terrain_num terrain_type);
-static void draw_status_line(void);
-static void draw_world(void);
-static void print_help_en_GB(void);
-
-/* Static funcs */
-static void draw_status_line(void)
-{
-    mvwprintw(status_window, 0, 0, "%-16.16s", u.name);
-    mvwprintw(status_window, 0, 17, "HP: %3d/%3d", u.hpcur, u.hpmax);
-    mvwprintw(status_window, 0, 30, "Depth: %d", u.lev.level);
-    mvwprintw(status_window, 0, 47, "Bod: %2d/%2d", u.body - u.bdam, u.body);
-    mvwprintw(status_window, 0, 62, "Gold: %d", u.gold);
-    mvwprintw(status_window, 1, 0, "Def/Eva: %2d/%2d", u.defence, u.evasion);
-    mvwprintw(status_window, 1, 19, "Food: %6d", u.food);
-    mvwprintw(status_window, 1, 62, "Exp: %2d/%7d", u.level, u.experience);
-    mvwprintw(status_window, 1, 47, "Agi: %2d/%2d", u.agility - u.adam, u.agility);
-}
-
-static chtype terrain_char(Terrain_num terrain_type)
-{
-    return colour_attrs[terrain_data[terrain_type].colour] | terrain_data[terrain_type].symbol;
-}
-
-static chtype monster_char(int monster_id)
-{
-    return (permons[monster_id].sym) | colour_attrs[permons[monster_id].colour];
-}
-
-static chtype object_char(int object_id)
-{
-    return permobjs[object_id].sym | colour_attrs[permobjs[object_id].colour];
-}
-
-void touch_back_buffer(void)
-{
-    libmrl::Coord c;
-    for (c.y = 0; c.y < MAX_DUN_HEIGHT; c.y++)
-    {
-        for (c.x = 0; c.x < MAX_DUN_WIDTH; c.x++)
-        {
-            newsym(c);
-        }
-    }
-    map_updated = 1;
-    hard_redraw = 1;
-}
 
 void newsym(libmrl::Coord c)
 {
     chtype ch;
 
-    if ((c.y < 0) || (c.x < 0) || (c.y >= MAX_DUN_HEIGHT) || (c.x >= MAX_DUN_WIDTH))
-    {
-        return;
-    }
-    ch = back_buffer[c.y][c.x];
-    if ((c.y >= currlev->height) || (c.x >= currlev->width))
-    {
-        back_buffer[c.y][c.x] = ' ';
-    }
-    else
-    {
-        Mon_handle mon = currlev->monster_at(c);
-        Mon *mptr = mon.snapv();
-        if (c == curr_projectile_pos)
-        {
-            back_buffer[c.y][c.x] = '*' | colour_attrs[projectile_colour];
-        }
-        else if (c == u.pos)
-        {
-            back_buffer[c.y][c.x] = '@' | colour_attrs[you_colour];
-        }
-        else if (!show_terrain && mptr && mon_visible(mon))
-        {
-            back_buffer[c.y][c.x] = monster_char(mptr->mon_id);
-        }
-        else if (currlev->flags_at(c) & MAPFLAG_EXPLORED)
-        {
-            if (!show_terrain && currlev->object_at(c).valid())
-            {
-                back_buffer[c.y][c.x] = object_char(currlev->object_at(c).otyp());
-            }
-            else
-            {
-                back_buffer[c.y][c.x] = terrain_char(currlev->terrain_at(c));
-            }
-        }
-        else
-        {
-            back_buffer[c.y][c.x] = ' ';
-        }
-    }
-    if (ch != back_buffer[c.y][c.x])
-    {
-        map_updated = 1;
-    }
+    newsym_hook(c);
 }
 
-static void draw_world(void)
-{
-    int i;
-    int j;
-    int x;
-    int y;
-
-    for (i = 0; i < 21; i++)
-    {
-        y = u.pos.y + i - 10;
-        for (j = 0; j < 21; j++)
-        {
-            x = u.pos.x + j - 10;
-            if ((y < 0) || (x < 0) ||
-                (y >= DUN_HEIGHT) || (x >= DUN_WIDTH))
-            {
-                if ((front_buffer[i][j] != ' ') || hard_redraw)
-                {
-                    mvwaddch(world_window, i, j, ' ');
-                }
-                front_buffer[i][j] = ' ';
-            }
-            else if (hard_redraw || (front_buffer[i][j] != back_buffer[y][x]))
-            {
-                mvwaddch(world_window, i, j, back_buffer[y][x]);
-                front_buffer[i][j] = back_buffer[y][x];
-            }
-        }
-    }
-}
-
-/* extern funcs */
-
-void press_enter(void)
-{
-    int ch;
-    print_msg(0, "Press RETURN or SPACE to continue\n");
-    while (1)
-    {
-        ch = wgetch(message_window);
-        if ((ch == ' ') || (ch == '\n') || (ch == '\r'))
-        {
-            break;
-        }
-    }
-}
-
-void display_update(void)
-{
-    if (status_updated)
-    {
-        status_updated = 0;
-        draw_status_line();
-    }
-    if (map_updated)
-    {
-        map_updated = 0;
-        draw_world();
-    }
-    update_panels();
-    doupdate();
-}
-
-int display_init(void)
+void display_init(void)
 {
     int i, j;
 #ifdef LOG_MESSAGES
@@ -272,70 +83,35 @@ int display_init(void)
     game_permissions();
 #endif
 #endif
-    for (i = 0; i < DISP_HEIGHT; ++i)
+
+    if (preferred_display == std::string(""))
     {
-        for (j = 0; j < DISP_WIDTH; ++j)
-        {
-            front_buffer[i][j] = ' ';
-        }
+        fprintf(stderr, "failure: no display preference specified.\n");
     }
-    initscr();
-    for (i = 0; i < DUN_HEIGHT; ++i)
+#ifdef INCLUDE_DISP_SDL
+    else if (preferred_display == std::string("sdl"))
     {
-        for (j = 0; j < DUN_WIDTH; ++j)
-        {
-            back_buffer[i][j] = ' ';
-        }
+        fprintf(stderr, "failure: SDL display not implemented yet.\n");
     }
-    initscr();
-    noecho();
-    cbreak();
-    start_color();
-    init_pair(DBCLR_BROWN, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(DBCLR_RED, COLOR_RED, COLOR_BLACK);
-    init_pair(DBCLR_GREEN, COLOR_GREEN, COLOR_BLACK);
-    init_pair(DBCLR_BLUE, COLOR_BLUE, COLOR_BLACK);
-    init_pair(DBCLR_D_GREY, COLOR_BLACK, COLOR_BLACK);
-    init_pair(DBCLR_PURPLE, COLOR_MAGENTA, COLOR_BLACK);
-    init_pair(DBCLR_CYAN, COLOR_CYAN, COLOR_BLACK);
-    wall_colour = DBCLR_BROWN;
-    you_colour = DBCLR_WHITE;
-    /* OK. We want a 21x21 viewport (player at centre), a 21x58 message
-     * window, and a 2x80 status line. */
-    status_window = newwin(2, 80, 22, 0);
-    status_panel = new_panel(status_window);
-    world_window = newwin(21, 21, 0, 0);
-    world_panel = new_panel(world_window);
-    message_window = newwin(21, 58, 0, 22);
-    message_panel = new_panel(message_window);
-    wclear(status_window);
-    wclear(world_window);
-    wclear(message_window);
-    scrollok(status_window, FALSE);
-    scrollok(world_window, FALSE);
-    scrollok(message_window, TRUE);
-    idcok(status_window, FALSE);
-    idcok(world_window, FALSE);
-    idcok(message_window, FALSE);
-    mvwprintw(world_window, 6, 5, "  Martin's");
-    mvwprintw(world_window, 7, 5, "Dungeon Bash");
-    mvwprintw(world_window, 9, 5, "Version %s", LONG_VERSION);
-    wmove(message_window, 0, 0);
-    map_updated = FALSE;
-    status_updated = FALSE;
-    update_panels();
-    doupdate();
-    return 0;
+#endif
+#ifdef INCLUDE_DISP_CURSES
+    else if ((preferred_display == std::string("tty-classic")) ||
+             (preferred_display == std::string("tty")))
+    {
+        // select classic ncurses display
+        tty_classic_display_init();
+    }
+    else if (preferred_display == std::string("tty-new"))
+    {
+        // select new ncurses display
+        tty_new_display_init();
+    }
+#endif
 }
 
 int read_input(char *buffer, int length)
 {
-    echo();
-    display_update();
-    buffer[0] = '\0';
-    wgetnstr(message_window, buffer, length);
-    noecho();
-    return strlen(buffer);
+    return read_input_hook(buffer, length);
 }
 
 void print_msg(int channel, const char *fmt, ...)
@@ -349,17 +125,18 @@ void print_msg(int channel, const char *fmt, ...)
     /* Note that every message forces a call to display_update().
      * Events that cause changes to the map or the player should flag
      * the change before calling printmsg. */
-    if (!suppressions[channel])
-    {
-        va_start(ap, fmt);
-        vw_printw(message_window, fmt, ap);
-        va_end(ap);
-    }
+    // Even suppressed messages get logged.
     if (msglog_fp)
     {
         va_start(ap2, fmt);
-        vfprintf(msglog_fp, fmt, ap);
+        vfprintf(msglog_fp, fmt, ap2);
         va_end(ap2);
+    }
+    if (!suppressions[channel])
+    {
+        va_start(ap, fmt);
+        print_msg_hook(channel, fmt, ap);
+        va_end(ap);
     }
     display_update();
 }
