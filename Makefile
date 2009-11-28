@@ -20,7 +20,7 @@ all:
 	(cd src && make $(GAME)$(EXECUTABLE_SUFFIX) )
 
 install: all
-	install -D -o $(games_user) -g $(games_group) -m $(suid_bin_mode) src/$(GAME) $(DESTDIR)$(games_exec_prefix)/$(GAME)
+	install -D -o $(games_user) -g $(games_group) -m $(suid_bin_mode) src/$(GAME)$(EXECUTABLE_SUFFIX) $(DESTDIR)$(games_exec_prefix)/$(GAME)$(EXECUTABLE_SUFFIX)
 	install -D -m $(man_mode) man/$(GAME).6 $(DESTDIR)$(man6dir)/$(GAME).6
 	install -D -m $(man_mode) man/dungeonbashrc.5 $(DESTDIR)$(man5dir)/dungeonbashrc.5
 	install -d -o $(games_user) -g $(games_group) -m $(PLAYGROUNDMODE) $(DESTDIR)$(PLAYGROUND)
@@ -34,8 +34,7 @@ archive: distclean
 
 # distclean removes 
 distclean:
-	find . -name '*~' -print0 | xargs -0 rm
-	find . -name '*.o' -print0 | xargs -0 rm
+	(cd src && make distclean)
 
 clean:
 	(cd src && make clean)
