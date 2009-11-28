@@ -1,0 +1,21 @@
+# Automatically generated
+src/spiralpath.cc
+src/permons.cc
+src/pmonid.hh
+src/permobj.cc
+src/pobjid.hh
+
+# Build files
+src/*.o
+src/dungeonbash
+src/srcgen
+
+# Editor files
+tags
+
+# Runtime files
+dunbash.sav
+dunbash.sav.gz
+dunbash.log
+msglog.txt
+core
