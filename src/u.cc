@@ -608,7 +608,6 @@ void u_init(void)
     {
 	print_msg(MSGCHAN_INTERROR, "Couldn't create ration!\n");
     }
-    u.inventory[2] = create_obj(PO_WAND_OF_FROST, 1, 1, libmrl::NOWHERE);
     u.weapon = u.inventory[0];
     u.ring = NO_OBJECT;
     u.armour = NO_OBJECT;
