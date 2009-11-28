@@ -211,6 +211,43 @@ void encounter_terrain(void)
     Cloud cld = currlev->cloud_at(u.pos);
     if (terrain_data[terr].hostile)
     {
+        switch (terr)
+        {
+        default:
+            break;
+        case ACID_POOL:
+            if (player_resists_dtype(DT_ACID))
+            {
+                print_msg(0, "Your legs tingle as you wade through the acid.\n");
+            }
+            else
+            {
+                int dmg = dice(1, 10);
+                if (u.armour.valid())
+                {
+                    dmg /= 2;
+                    print_msg(0, "Your armour and flesh are eroded by caustic acid!\n");
+                    damage_obj(u.armour);
+                    damage_u(dice(1, 10), DEATH_KILLED, "a pool of acid");
+                }
+                else
+                {
+                    print_msg(0, "Caustic acid burns your flesh!\n");
+                }
+            }
+            break;
+        case LAVA_POOL:
+            if (player_resists_dtype(DT_FIRE))
+            {
+                print_msg(0, "The molten rock is soothingly warm.\n");
+            }
+            else
+            {
+                print_msg(0, "The lava burns you!\n");
+                damage_u(dice(2, 10), DEATH_KILLED, "a pool of lava");
+            }
+            break;
+        }
     }
     if (cld != no_cloud)
     {

@@ -35,7 +35,7 @@
 
 /* XXX enum damtyp - types of damage. */
 enum Damtyp {
-    DT_PHYS = 0, DT_COLD, DT_FIRE, DT_NECRO, DT_ELEC, DT_POISON, DT_COUNT
+    DT_PHYS = 0, DT_COLD, DT_FIRE, DT_NECRO, DT_ELEC, DT_POISON, DT_ACID, DT_COUNT
 };
 
 /* XXX enum terrain_num */

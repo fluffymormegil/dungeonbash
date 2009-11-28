@@ -116,9 +116,9 @@ const Terrain_desc terrain_data[] =
     {
         "tombstone", false, false, true, false, '+', DBCLR_D_GREY
     },
-    // Pools are about mid-thigh depth.
+    // Pools are about mid-thigh depth. Water isn't hostile... yet.
     {
-        "pool of water", false, false, true, true, '\"', DBCLR_BLUE
+        "pool of water", false, false, true, false, '\"', DBCLR_BLUE
     },
     {
         "pool of acid", false, false, true, true, '\"', DBCLR_GREEN

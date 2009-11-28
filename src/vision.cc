@@ -41,7 +41,7 @@ Square_radiance vismap = {
 
 bool block_vision(libmrl::Coord pos)
 {
-    if (currlev->monster_at(pos).valid())
+    if (currlev->monster_at(pos).valid() && currlev->terrain_at(pos) == DOOR)
     {
         return false;
     }
