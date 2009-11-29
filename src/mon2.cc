@@ -548,13 +548,12 @@ bool mon_acts(Mon_handle mon)
     Direction_data dir_data;
     libmrl::Coord pos;
     int special_used = 0;
-    bool retval = true;
     std::string name;
 
     if (pmon_is_peaceful(mptr->mon_id))
     {
         // peaceful monsters do nothing.
-        return retval;
+        return false;
     }
     /* delta.y,delta.x == direction monster must go to reach you. */
     pos = mptr->pos;
