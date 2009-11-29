@@ -1,4 +1,4 @@
-/* loadsave.c
+/* loadsave.cc
  * 
  * Copyright 2009 Martin Read
  * 
@@ -42,6 +42,8 @@
 #include <string>
 #include "cfgfile.hh"
 #include "loadsave.hh"
+
+//#define DEBUG_LOADSAVE
 
 // A bit of an invariant on the file handling: since dunbash.sav.gz is only
 // accessed by gzip, which we assume to be stable, it is considered
@@ -192,7 +194,7 @@ void deserialise(FILE *fp, Obj *optr)
     optr->durability = int(deserialise_uint32(fp));
     optr->meta = int(deserialise_uint32(fp));
 #ifdef DEBUG_LOADSAVE
-    print_msg(0, "deserialised obj_id %x quan %d wy %d\n", optr->obj_id, optr->quan, optr->with_you);
+    print_msg(0, "   deserialised object of type %d pos %d %d levtag %d %d withyou %d\n", optr->obj_id, optr->pos.y, optr->pos.x, optr->lev.dungeon, optr->lev.level, optr->with_you);
 #endif
 }
 
@@ -457,6 +459,9 @@ void serialise(FILE *fp, const Level_tag *ptag)
 
 void serialise(FILE *fp, Obj const *optr)
 {
+#ifdef DEBUG_LOADSAVE
+    print_msg(0, "   serialised object of type %d pos %d %d levtag %d %d withyou %d\n", optr->obj_id, optr->pos.y, optr->pos.x, optr->lev.dungeon, optr->lev.level, optr->with_you);
+#endif
     serialise(fp, uint32_t(optr->obj_id));
     serialise(fp, uint32_t(optr->quan));
     serialise(fp, uint32_t(optr->with_you));
@@ -474,6 +479,9 @@ void serialise_objects(FILE *fp)
     serialise(fp, uint32_t(count));
     for (iter = objects.begin(); iter != objects.end(); ++iter)
     {
+#ifdef DEBUG_LOADSAVE
+        print_msg(0, "serialising object ID %llx\n", iter->first);
+#endif
         serialise(fp, iter->first);
         serialise(fp, iter->second);
     }

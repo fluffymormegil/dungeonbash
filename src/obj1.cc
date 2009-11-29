@@ -166,6 +166,7 @@ int release_obj(Obj_handle obj)
 		}
 	    }
 	}
+        objects.erase(obj.value);
         delete optr;
         return 0;
     }

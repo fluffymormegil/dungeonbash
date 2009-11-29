@@ -22,6 +22,8 @@ CXXFLAGS=-c -g -Wall -Wwrite-strings -Wredundant-decls -DMAJVERS=$(MAJVERS) \
 	-DEXPERIMENTAL -DPLAYGROUND=\"$(PLAYGROUND)\" \
 	-DGLOBALCFGDIR=\"$(GLOBALCFGDIR)\" $(DEF_MULTIUSER)
 LINKFLAGS=-lpanel -lncurses -g
+# Following line is here for heap-corruption investigations
+#LINKFLAGS=-lpanel -lncurses -lefence -g
 
 all: $(GAME)
 

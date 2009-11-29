@@ -1,6 +1,8 @@
 Authors
 =======
-dungeonbash is largely the work of one person, Martin Read.
+
+Original project: Martin Read
+Contributors: Stefan O'Rear
 
 Acknowledgements
 ================
@@ -14,7 +16,7 @@ acknowledgements are due to numerous people.
 - Gero Kunter (bug reports; balance suggestions)
 - David Damerell (bug reports)
 - Jed Davis (bug reports)
-- Stefan O'Rear (bug reports, playtesting)
+- Stefan O'Rear (bug reports, playtesting, code)
 - Richard Kettlewell (portability advice regarding building on Darwin)
 - Jeff Lait (progenitor of the Seven Day Roguelike Challenge; author of
   POWDER, an approximate ripoff of whose speed system still underpins 
