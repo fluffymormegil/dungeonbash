@@ -43,6 +43,7 @@ flags MEATY STUPID
 mon "smith" "smiths"
 descripton An innocent artisan, devoid of any malice.
 symbol HUMAN
+species human
 colour CYAN
 rarity 100
 threat 0
