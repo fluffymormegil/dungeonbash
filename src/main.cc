@@ -828,6 +828,7 @@ int main(void)
 #endif
     get_config();
     display_init();
+    ui_init();
     ptac_init();
     monsters_init();
     i = load_game();
