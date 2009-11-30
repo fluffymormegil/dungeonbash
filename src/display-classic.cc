@@ -331,42 +331,109 @@ int display_init(void)
     return 0;
 }
 
-int read_input(char *buffer, int length)
+/* For now, assume (1) that the player will never be so inundated
+ * with messages that it's dangerous to let them just fly past (2)
+ * that messages will be of sane length and nicely formatted. THIS
+ * IS VERY BAD CODING PRACTICE! */
+/* Note that every message forces a call to display_update().
+ * Events that cause changes to the map or the player should flag
+ * the change before calling printmsg. */
+std::string message_line(bool visible, const std::string& msg, int reply)
 {
-    echo();
-    display_update();
-    buffer[0] = '\0';
-    wgetnstr(message_window, buffer, length);
-    noecho();
-    return strlen(buffer);
+    std::string ret;
+
+    if (visible)
+    {
+        waddnstr(message_window, msg.data(), msg.size());
+
+        if (reply)
+        {
+            echo();
+            display_update();
+            // Bletch.  Why must curses force a fixed-size buffer upon us?
+            char buf[100];
+            buf[0] = '\0';
+
+            if (reply == 1)
+            {
+                buf[0] = wgetch(message_window);
+                buf[1] = '\0';
+            }
+            else
+            {
+                wgetnstr(message_window, buf, std::min(99, reply));
+            }
+            ret = buf;
+            noecho();
+        }
+
+        if (reply == 0 || reply == 1)
+        {
+            // wgetnstr handles this internally
+            waddch(message_window, '\n');
+        }
+
+        display_update();
+    }
+
+    if (msglog_fp)
+    {
+        fputs(msg.c_str(), msglog_fp);
+        fputs(ret.c_str(), msglog_fp);
+        fputs("\n", msglog_fp);
+    }
+
+    return ret;
+}
+
+static std::string vstlprintf(const char *fmt, va_list args)
+{
+    va_list ap;
+    int bsize = 80;
+
+    do
+    {
+        char* buf = new char[bsize];
+
+        va_copy(ap, args);
+        int ret = vsnprintf(buf, bsize, fmt, ap);
+        va_end(ap);
+
+        // glibc2.0 compatibility;
+        if (ret == -1)
+            ret = bsize * 2;
+
+        if (ret <= bsize)
+        {
+            std::string retv(buf, ret);
+            delete buf;
+            return retv;
+        }
+
+        delete buf;
+        bsize = ret + 1;
+    }
+    while(1);
+}
+
+static std::string stlprintf(const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    std::string ret = vstlprintf(fmt, ap);
+    va_end(ap);
+    return ret;
 }
 
 void print_msg(int channel, const char *fmt, ...)
 {
     va_list ap;
-    va_list ap2;
-    /* For now, assume (1) that the player will never be so inundated
-     * with messages that it's dangerous to let them just fly past (2)
-     * that messages will be of sane length and nicely formatted. THIS
-     * IS VERY BAD CODING PRACTICE! */
-    /* Note that every message forces a call to display_update().
-     * Events that cause changes to the map or the player should flag
-     * the change before calling printmsg. */
-    if (!suppressions[channel])
-    {
-        va_start(ap, fmt);
-        vw_printw(message_window, fmt, ap);
-        wprintw(message_window, "\n");
-        va_end(ap);
-    }
-    if (msglog_fp)
-    {
-        va_start(ap2, fmt);
-        vfprintf(msglog_fp, fmt, ap);
-        fprintf(msglog_fp, "\n");
-        va_end(ap2);
-    }
-    display_update();
+
+    va_start(ap, fmt);
+    std::string msg = vstlprintf(fmt, ap);
+    va_end(ap);
+
+    message_line(!suppressions[channel], msg, 0);
 }
 
 void show_discoveries(void)
@@ -466,20 +533,18 @@ int inv_select(Poclass_num filter, const char *action, int accept_blank)
     }
     print_msg(MSGCHAN_PROMPT, "[ESC/SPACE to cancel]");
 tryagain:
-    print_msg(MSGCHAN_PROMPT, "What do you want to %s? ", action);
-    ch = wgetch(message_window);
+    std::string prompt = stlprintf("What do you want to %s? ", action);
+    ch = (message_line(true, prompt, 1))[0];
     switch (ch)
     {
     case '-':
         if (accept_blank)
         {
-            print_msg(MSGCHAN_PROMPT, "");
             return -2;
         }
     case 'x':
     case '\x1b':
     case ' ':
-        print_msg(MSGCHAN_PROMPT, "");
         print_msg(MSGCHAN_PROMPT, "Never mind.");
         return -1;
     case 'a':
@@ -723,16 +788,14 @@ int display_shutdown(void)
 
 void pressanykey(void)
 {
-    print_msg(MSGCHAN_PROMPT, "Press any key to continue.");
-    wgetch(message_window);
+    message_line(true, "Press any key to continue...", 1);
 }
 
 int getYN(const char *msg)
 {
     int ch;
     print_msg(MSGCHAN_PROMPT, "%s", msg);
-    print_msg(MSGCHAN_PROMPT, "Press capital Y to confirm, any other key to cancel");
-    ch = wgetch(message_window);
+    ch = message_line(true, "Press capital Y to confirm, any other key to cancel", 1)[0];
     if (ch == 'Y')
     {
         return 1;
@@ -743,10 +806,9 @@ int getYN(const char *msg)
 int getyn(const char *msg)
 {
     int ch;
-    print_msg(MSGCHAN_PROMPT, "%s", msg);
+    ch = message_line(true, msg, 1)[0];
     while (1)
     {
-        ch = wgetch(message_window);
         switch (ch)
         {
         case 'y':
@@ -759,7 +821,7 @@ int getyn(const char *msg)
         case ' ':
             return -1;
         default:
-            print_msg(MSGCHAN_PROMPT, "Invalid response. Press y or n (ESC or space to cancel)");
+            ch = message_line(true, "Invalid response. Press y or n (ESC or space to cancel)", 1)[0];
         }
     }
 }

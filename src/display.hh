@@ -28,6 +28,7 @@
 #define DISPLAY_HH
 
 #include "coord.hh"
+#include <string>
 
 #define MSGCHAN_DEFAULT 0
 #define MSGCHAN_TAUNT 1
@@ -41,7 +42,7 @@
 #define MSGCHAN_DEBUG 9
 
 /* XXX display.c data and funcs */
-extern int read_input(char *buffer, int length);
+extern std::string message_line(bool vs, const std::string& msg, int expected = 0);
 extern void print_msg(int channel, const char *fmt, ...);
 extern void print_help(void);
 extern void print_version(void);

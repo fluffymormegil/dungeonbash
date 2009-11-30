@@ -560,8 +560,8 @@ void u_init(void)
     if (name_prompt)
     {
         do {
-            print_msg(0, "What is your name, stranger?");
-            read_input(u.name, 16);
+            std::string name = message_line(true, "What is your name, stranger?", 16);
+            strcpy(u.name, name.c_str());
             hasslash = strchr(u.name, '/');
             /* Now that we create a named dump file, we must not
              * permit the player's name to contain a slash, colon,
