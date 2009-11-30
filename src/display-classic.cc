@@ -36,6 +36,8 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <vector>
+
 WINDOW *status_window;
 WINDOW *world_window;
 WINDOW *message_window;
@@ -97,8 +99,12 @@ const char *colour_names[15] =
 #define DISP_HEIGHT 21
 #define DISP_WIDTH 21
 
+#define MSGLINES 21
+
 chtype back_buffer[MAX_DUN_HEIGHT][MAX_DUN_WIDTH];
 chtype front_buffer[DISP_HEIGHT][DISP_WIDTH];
+
+std::vector<std::string> messages;
 
 /* Prototypes for static funcs */
 static chtype object_char(int object_id);
@@ -319,7 +325,7 @@ int display_init(void)
     wclear(message_window);
     scrollok(status_window, FALSE);
     scrollok(world_window, FALSE);
-    scrollok(message_window, TRUE);
+    scrollok(message_window, FALSE);
     idcok(status_window, FALSE);
     idcok(world_window, FALSE);
     idcok(message_window, FALSE);
@@ -337,6 +343,85 @@ int display_init(void)
     return 0;
 }
 
+static void update_message(unsigned int line)
+{
+    std::string msg;
+
+    if (line < messages.size())
+        msg = messages[line];
+
+    wmove(message_window, line, 0);
+
+    size_t i = 0;
+    size_t max = msg.size();
+
+    while (i < max)
+    {
+        size_t close;
+
+        if (msg[i] != '<')
+            goto literal;
+
+        close = msg.find('>', i + 1);
+
+        if (close == std::string::npos)
+            goto literal;
+
+        for (int cand = 0; cand < 15; ++cand)
+        {
+            if (msg.compare(i + 1, close - i - 1, colour_names[cand]) == 0)
+            {
+                wattrset(message_window, colour_attrs[cand]);
+                i = close;
+                goto next;
+            }
+        }
+literal:
+        waddch(message_window, msg[i]);
+next:
+        ++i;
+    }
+    wattrset(message_window, 0);
+
+    wclrtoeol(message_window);
+}
+
+std::string get_reply(int mid, unsigned nmax)
+{
+    std::string& out( messages[mid] );
+    std::string buf;
+    int keep = out.size();
+
+    while(1)
+    {
+        out.erase(keep);
+
+        for (unsigned i = 0; i < buf.size(); ++i)
+        {
+            if (buf[i] == '<')
+                out += "<<lgrey>";
+            else
+                out += buf[i];
+        }
+
+        update_message(mid);
+        int key = wgetch(message_window);
+
+        if (isprint(key) && buf.size() < nmax)
+        {
+            buf.push_back(key);
+        }
+        else if (key == 8 || key == 127)
+        {
+            buf.resize(buf.size() ? buf.size() - 1 : 0);
+        }
+        else if (key == '\r' || key == '\n')
+        {
+            return buf;
+        }
+    }
+}
+
 /* For now, assume (1) that the player will never be so inundated
  * with messages that it's dangerous to let them just fly past (2)
  * that messages will be of sane length and nicely formatted. THIS
@@ -350,63 +435,44 @@ std::string message_line(bool visible, const std::string& msg, int reply)
 
     if (visible)
     {
-        size_t i = 0;
-        size_t max = msg.size();
-
-        while (i < max)
+        if (messages.size() == MSGLINES)
         {
-            size_t close;
+            // Scroll off the oldest message
+            messages.erase(messages.begin());
 
-            if (msg[i] != '<')
-                goto literal;
-
-            close = msg.find('>', i + 1);
-
-            if (close == std::string::npos)
-                goto literal;
-
-            for (int cand = 0; cand < 15; ++cand)
-            {
-                if (msg.compare(i + 1, close - i - 1, colour_names[cand]) == 0)
-                {
-                    wattrset(message_window, colour_attrs[cand]);
-                    i = close;
-                    goto next;
-                }
-            }
-literal:
-            waddch(message_window, msg[i]);
-next:
-            ++i;
+            for (int i = 0; i < MSGLINES - 1; ++i)
+                update_message(i);
         }
-        wattrset(message_window, 0);
 
-        if (reply)
+        int msg_num = messages.size();
+        messages.push_back(msg);
+        update_message(msg_num);
+
+        if (reply == 1)
         {
-            echo();
-            display_update();
-            // Bletch.  Why must curses force a fixed-size buffer upon us?
-            char buf[100];
-            buf[0] = '\0';
+            int key = wgetch(message_window);
 
-            if (reply == 1)
+            ret = static_cast<char>(key);
+
+            if (key < 32)
             {
-                buf[0] = wgetch(message_window);
-                buf[1] = '\0';
+                messages[msg_num] += '^';
+                messages[msg_num] += static_cast<char>(key + '@');
+            }
+            else if (key == 127)
+                messages[msg_num] += "^?";
+            else if (key >= 128 && key < 160)
+            {
+                messages[msg_num] += '~';
+                messages[msg_num] += static_cast<char>(key - 128 + '@');
             }
             else
-            {
-                wgetnstr(message_window, buf, std::min(99, reply));
-            }
-            ret = buf;
-            noecho();
-        }
+                messages[msg_num] += key;
 
-        if (reply == 0 || reply == 1)
-        {
-            // wgetnstr handles this internally
-            waddch(message_window, '\n');
+            update_message(msg_num);
         }
+        else if (reply)
+            ret = get_reply(msg_num, reply);
 
         display_update();
     }
