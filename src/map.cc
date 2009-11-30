@@ -187,6 +187,7 @@ void go_to_level(Level_tag lt, Leventry_mode lem)
     }
 
     touch_back_buffer();
+    full_redraw();
     display_update();
 }
 

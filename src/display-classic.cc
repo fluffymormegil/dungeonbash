@@ -62,6 +62,8 @@ libmrl::Coord curr_projectile_pos = libmrl::NOWHERE;
 Dbash_colour projectile_colour = DBCLR_L_GREY;
 int projectile_delay = 40;
 
+int dgamelaunch_karma;
+
 int wall_colour;
 int you_colour;
 int status_updated;
@@ -100,6 +102,10 @@ const char *colour_names[15] =
 #define DISP_WIDTH 21
 
 #define MSGLINES 21
+
+// The screen will be redrawn from scratch once every this-many updates, to
+// prevent view corruption with simple clients like dgamelaunch and termcast.
+#define DGL_MAX_KARMA 200
 
 chtype back_buffer[MAX_DUN_HEIGHT][MAX_DUN_WIDTH];
 chtype front_buffer[DISP_HEIGHT][DISP_WIDTH];
@@ -255,8 +261,20 @@ void press_enter(void)
     }
 }
 
+void full_redraw(void)
+{
+    // This will probably cause lossage on non-ANSI terminals, but dgamelaunch
+    // and termcast look for this exact string so there aren't much options.
+    fputs("\e[2J", stdout);
+    clearok(curscr, 1);
+    dgamelaunch_karma = DGL_MAX_KARMA;
+}
+
 void display_update(void)
 {
+    if ((--dgamelaunch_karma) == 0)
+        full_redraw();
+
     if (status_updated)
     {
         status_updated = 0;
@@ -340,6 +358,7 @@ int display_init(void)
     status_updated = FALSE;
     update_panels();
     doupdate();
+    dgamelaunch_karma = DGL_MAX_KARMA;
     return 0;
 }
 

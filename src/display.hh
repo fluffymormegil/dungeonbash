@@ -48,6 +48,7 @@ extern void print_help(void);
 extern void print_version(void);
 extern int display_init(void);
 extern void display_update(void);
+extern void full_redraw(void);
 extern int display_shutdown(void);
 extern void newsym(libmrl::Coord c);
 extern void touch_back_buffer(void);
