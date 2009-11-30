@@ -88,6 +88,12 @@ chtype colour_attrs[15] =
     COLOR_PAIR(DBCLR_CYAN) | A_BOLD
 };
 
+const char *colour_names[15] =
+{
+    "lgrey", "dgrey", "red", "blue", "green", "purple", "brown", "cyan",
+    "white", "lred", "lblue", "lgreen", "lpurple", "yellow", "lcyan"
+};
+
 #define DISP_HEIGHT 21
 #define DISP_WIDTH 21
 
@@ -344,7 +350,36 @@ std::string message_line(bool visible, const std::string& msg, int reply)
 
     if (visible)
     {
-        waddnstr(message_window, msg.data(), msg.size());
+        size_t i = 0;
+        size_t max = msg.size();
+
+        while (i < max)
+        {
+            size_t close;
+
+            if (msg[i] != '<')
+                goto literal;
+
+            close = msg.find('>', i + 1);
+
+            if (close == std::string::npos)
+                goto literal;
+
+            for (int cand = 0; cand < 15; ++cand)
+            {
+                if (msg.compare(i + 1, close - i - 1, colour_names[cand]) == 0)
+                {
+                    wattrset(message_window, colour_attrs[cand]);
+                    i = close;
+                    goto next;
+                }
+            }
+literal:
+            waddch(message_window, msg[i]);
+next:
+            ++i;
+        }
+        wattrset(message_window, 0);
 
         if (reply)
         {
@@ -462,32 +497,33 @@ void print_inv(Poclass_num filter)
     Obj const *optr;
     for (i = 0; i < 19; i++)
     {
-        wattrset(message_window, 0);
         optr = u.inventory[i].snapc();
         if (optr && ((filter == POCLASS_NONE) || (permobjs[optr->obj_id].poclass == filter)))
         {
+            u.inventory[i].snapc()->get_name(&namestr);
+            std::string colour = "";
+
             if (fruit_salad_inventory)
             {
                 switch (optr->quality())
                 {
                 case Itemqual_bad:
-                    wattrset(message_window, colour_attrs[DBCLR_RED]);
+                    colour = "<red>";
                     break;
                 case Itemqual_normal:
-                    wattrset(message_window, 0);
                     break;
                 case Itemqual_good:
-                    wattrset(message_window, colour_attrs[DBCLR_GREEN]);
+                    colour = "<lgreen>";
                     break;
                 case Itemqual_great:
-                    wattrset(message_window, colour_attrs[DBCLR_L_BLUE]);
+                    colour = "<lblue>";
                     break;
                 case Itemqual_excellent:
-                    wattrset(message_window, colour_attrs[DBCLR_PURPLE]);
+                    colour = "<purple>";
                     break;
                 }
             }
-            u.inventory[i].snapc()->get_name(&namestr);
+            namestr = colour + namestr;
             if (u.ring == u.inventory[i])
             {
                 namestr += " (on finger)";
@@ -503,7 +539,6 @@ void print_inv(Poclass_num filter)
             print_msg(0, "%c) %s", 'a' + i, namestr.c_str());
             // XXX avoid coloring the letter
         }
-        wattrset(message_window, 0);
     }
 }
 
