@@ -559,15 +559,15 @@ bool mon_acts(Mon_handle mon)
     pos = mptr->pos;
     if (pos == u.pos)
     {
-        print_msg(MSGCHAN_INTERROR, "Program disordered: monster in player's square.\n");
-        print_msg(MSGCHAN_INTERROR, "Discarding misplaced monster.\n");
+        print_msg(MSGCHAN_INTERROR, "Program disordered: monster in player's square.");
+        print_msg(MSGCHAN_INTERROR, "Discarding misplaced monster.");
         release_monster(mon);
         currlev->set_mon_at(pos, -1);
         return true;
     }
     if (!(currlev->monster_at(mptr->pos) == mon))
     {
-        print_msg(MSGCHAN_INTERROR, "Program disordered: monster(s) misplaced.\n");
+        print_msg(MSGCHAN_INTERROR, "Program disordered: monster(s) misplaced.");
         release_monster(mon);
         return true;
     }
@@ -703,7 +703,7 @@ void Mon::notice_you(bool quiet)
         get_name(&tmp, 2);
         if (!quiet)
         {
-            print_msg(MSGCHAN_MON_ALERT, "%s notices you.\n", tmp.c_str());
+            print_msg(MSGCHAN_MON_ALERT, "%s notices you.", tmp.c_str());
         }
         awake = true;
     }

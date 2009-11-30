@@ -138,7 +138,7 @@ Mon_handle create_mon(int pm_idx, libmrl::Coord c, Level *lptr)
     }
     if (lptr->monster_at(c).valid())
     {
-	print_msg(MSGCHAN_INTERROR, "Attempt to create monster at occupied space %d %d\n", c.y, c.x);
+	print_msg(MSGCHAN_INTERROR, "Attempt to create monster at occupied space %d %d", c.y, c.x);
 	return NO_MONSTER;
     }
     if (pm_idx == NO_PM)
@@ -396,7 +396,7 @@ void heal_mon(Mon_handle mon, int amount, int cansee)
     {
         if (cansee)
         {
-            print_msg(0, "%s looks healthier.\n", name.c_str());
+            print_msg(0, "%s looks healthier.", name.c_str());
         }
         mptr->hpcur += amount;
     }
@@ -426,12 +426,12 @@ bool damage_mon(Mon_handle mon, int amount, int by_you)
     {
         if (by_you)
         {
-            print_msg(0, "You kill %s!\n", name.c_str());
+            print_msg(0, "You kill %s!", name.c_str());
             gain_experience(permons[mptr->mon_id].exp);
         }
         else if (mptr->in_fov())
         {
-            print_msg(0, "%s dies.\n", name.c_str());
+            print_msg(0, "%s dies.", name.c_str());
         }
         death_drop(mon);
         release_monster(mon);
@@ -483,7 +483,7 @@ int teleport_mon_to_you(Mon_handle mon)
         std::string namestr;
         move_mon(mon, pos);
         mptr->get_name(&namestr, 2);
-        print_msg(0, "%s appears in a puff of smoke.\n", namestr.c_str());
+        print_msg(0, "%s appears in a puff of smoke.", namestr.c_str());
         return 1;
     }
     return 0;
@@ -522,18 +522,18 @@ void move_mon(Mon_handle mon, libmrl::Coord pos, Level *lptr)
     }
     if (pos == mptr->pos)
     {
-        print_msg(MSGCHAN_INTERROR, "Warning: moving mon %lld to its own position!\n", mon.value);
+        print_msg(MSGCHAN_INTERROR, "Warning: moving mon %lld to its own position!", mon.value);
         return;
     }
     Mon_handle foo = currlev->monster_at(mptr->pos);
     if (!mptr->can_pass(pos))
     {
-	print_msg(MSGCHAN_INTERROR, "Warning: mon %lld could not pass %d, %d.\n", mon.value, pos.y, pos.x);
+	print_msg(MSGCHAN_INTERROR, "Warning: mon %lld could not pass %d, %d.", mon.value, pos.y, pos.x);
 	return;
     }
     if (!(mon == foo))
     {
-	print_msg(MSGCHAN_INTERROR, "Monster map array in disorder...\n");
+	print_msg(MSGCHAN_INTERROR, "Monster map array in disorder...");
 	press_enter();
 	return;
     }
@@ -557,7 +557,7 @@ void summon_mon_near(int pm_idx, libmrl::Coord pos, Level *lptr)
     mon = create_mon(pm_idx, pos2, lptr);
     if ((lptr == currlev) && !mon.valid())
     {
-        print_msg(0, "You feel lonely.\n");
+        print_msg(0, "You feel lonely.");
     }
 }
 
@@ -568,7 +568,7 @@ bool update_mon(Mon_handle mon)
     Mon *mptr = mon.snapv();
     if (!mptr)
     {
-        print_msg(MSGCHAN_INTERROR, "FATAL: null pointer.\n");
+        print_msg(MSGCHAN_INTERROR, "FATAL: null pointer.");
         press_enter();
         abort();
     }
@@ -583,7 +583,7 @@ bool update_mon(Mon_handle mon)
 	    {
 		if (cansee)
 		{
-		    print_msg(0, "The troll regenerates.\n");
+		    print_msg(0, "The troll regenerates.");
 		}
 		heal_mon(mon, one_die(3) + 3, 0);
 	    }
@@ -605,7 +605,7 @@ bool update_mon(Mon_handle mon)
     {
         wiped = false;
 #ifdef DEBUG_PEFFS
-        print_msg(0, "Monster %p has %d persistent effects.\n", mptr->perseffs.size());
+        print_msg(0, "Monster %p has %d persistent effects.", mptr->perseffs.size());
         press_enter();
 #endif
         std::list<Perseff_data>::iterator peff_iter;
@@ -676,21 +676,21 @@ void release_monster(Mon_handle mon)
     Mon *mptr = mon.snapv();
     if (!mptr)
     {
-        print_msg(MSGCHAN_INTERROR, "releasing null monster\n");
+        print_msg(MSGCHAN_INTERROR, "releasing null monster");
         press_enter();
         abort();
     }
     Level *lptr = mptr->lev.snapv();
     if (!lptr)
     {
-        print_msg(MSGCHAN_INTERROR, "levelsnap failed\n");
+        print_msg(MSGCHAN_INTERROR, "levelsnap failed");
         press_enter();
         abort();
     }
     std::set<Mon_handle>::iterator iter = lptr->denizens.find(mon);
     if (iter == lptr->denizens.end())
     {
-        print_msg(MSGCHAN_INTERROR, "iter == lptr->denizens.end()\n");
+        print_msg(MSGCHAN_INTERROR, "iter == lptr->denizens.end()");
         press_enter();
         abort();
     }
@@ -712,7 +712,7 @@ void release_monster(Mon_handle mon)
     std::map<uint64_t, Mon *>::iterator miter = monsters.find(mon.value);
     if (miter == monsters.end())
     {
-        print_msg(MSGCHAN_INTERROR, "miter == monsters.end() before erase from monsters\n");
+        print_msg(MSGCHAN_INTERROR, "miter == monsters.end() before erase from monsters");
         press_enter();
         abort();
     }
@@ -720,14 +720,14 @@ void release_monster(Mon_handle mon)
     miter = monsters.find(mon.value);
     if (miter != monsters.end())
     {
-        print_msg(MSGCHAN_INTERROR, "miter != monsters.end()\n");
+        print_msg(MSGCHAN_INTERROR, "miter != monsters.end()");
         press_enter();
         abort();
     }
     mptr = mon.snapv();
     if (mptr)
     {
-        print_msg(MSGCHAN_INTERROR, "mptr non-null\n");
+        print_msg(MSGCHAN_INTERROR, "mptr non-null");
         press_enter();
         abort();
     }

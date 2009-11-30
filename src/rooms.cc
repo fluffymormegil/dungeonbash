@@ -131,7 +131,7 @@ void Levext_rooms::excavate_shrine(int rnum)
         parent->set_terrain(c + libmrl::SOUTH, SKIN_FLOOR);
         break;
     default:
-        print_msg(MSGCHAN_INTERROR, "excavate_shrine() called on level with non-shrine zoo_style\n");
+        print_msg(MSGCHAN_INTERROR, "excavate_shrine() called on level with non-shrine zoo_style");
         return;
     }
     parent->set_terrain(c, ALTAR);
@@ -554,7 +554,7 @@ void Levext_rooms::populate_shrine()
         create_mon(PM_DEATH_PRIEST, c, parent);
         break;
     default:
-        print_msg(MSGCHAN_INTERROR, "error: attempt to populate_shrine() on non-shrine level.\n");
+        print_msg(MSGCHAN_INTERROR, "error: attempt to populate_shrine() on non-shrine level.");
         break;
     }
 }
@@ -745,7 +745,7 @@ int Levext_rooms::enter_region(libmrl::Coord c)
     {
         if (roomflav[parent->region_at(c)] != Rflav_dull)
         {
-            print_msg(MSGCHAN_FLUFF, "You enter %s.\n", room_flavour_strings[roomflav[parent->region_at(c)]]);
+            print_msg(MSGCHAN_FLUFF, "You enter %s.", room_flavour_strings[roomflav[parent->region_at(c)]]);
         }
     }
     return 1;
@@ -757,7 +757,7 @@ int Levext_rooms::leave_region(libmrl::Coord c)
     {
         if (roomflav[parent->region_at(c)] != Rflav_dull)
         {
-            print_msg(MSGCHAN_FLUFF, "You leave %s.\n", room_flavour_strings[roomflav[parent->region_at(c)]]);
+            print_msg(MSGCHAN_FLUFF, "You leave %s.", room_flavour_strings[roomflav[parent->region_at(c)]]);
         }
     }
     return 1;

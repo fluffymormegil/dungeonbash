@@ -97,10 +97,11 @@ static void deserialise_gamestate(FILE *fp)
     uint32_t version_check = deserialise_uint32(fp);
     if ((version_check & 0xffff0000u) != ((MAJVERS << 24) | (MINVERS << 16)))
     {
-        print_msg(0, "version mismatch in saved game\ncurrent version is %d.%d, saved game is version %d.%d\n",
+        print_msg(0, "version mismatch in saved game");
+        print_msg(0, "current version is %d.%d, saved game is version %d.%d",
                   MAJVERS, MINVERS, version_check >> 24, (version_check >> 16) & 0xffu);
 #ifdef MULTIUSER
-        print_msg(0, "Please contact your system's administrator to remove your obsolete saved game file.\n");
+        print_msg(0, "Please contact your system's administrator to remove your obsolete saved game file.");
 #endif
         press_enter();
         display_shutdown();
@@ -194,7 +195,7 @@ void deserialise(FILE *fp, Obj *optr)
     optr->durability = int(deserialise_uint32(fp));
     optr->meta = int(deserialise_uint32(fp));
 #ifdef DEBUG_LOADSAVE
-    print_msg(0, "   deserialised object of type %d pos %d %d levtag %d %d withyou %d\n", optr->obj_id, optr->pos.y, optr->pos.x, optr->lev.dungeon, optr->lev.level, optr->with_you);
+    print_msg(0, "   deserialised object of type %d pos %d %d levtag %d %d withyou %d", optr->obj_id, optr->pos.y, optr->pos.x, optr->lev.dungeon, optr->lev.level, optr->with_you);
 #endif
 }
 
@@ -380,7 +381,7 @@ Level * deserialise_level(FILE *fp, Level_tag lt)
 Levext_rooms *deserialise_levext_rooms(FILE *fp)
 {
 #ifdef DEBUG_LOADSAVE
-    print_msg(0, "deserialising Levext_rooms\n");
+    print_msg(0, "deserialising Levext_rooms");
 #endif
     Levext_rooms *lerp = new Levext_rooms;
     lerp->overridden_monsel = deserialise_uint32(fp);
@@ -413,7 +414,7 @@ Levext_rooms *deserialise_levext_rooms(FILE *fp)
 static void serialise(FILE *fp, Player const *ptmp)
 {
 #ifdef DEBUG_LOADSAVE
-    print_msg(0, "serialising player\n");
+    print_msg(0, "serialising player");
 #endif
     fwrite(ptmp->name, 1, 16, fp);
     serialise(fp, uint32_t(ptmp->lev.dungeon));
@@ -460,7 +461,7 @@ void serialise(FILE *fp, const Level_tag *ptag)
 void serialise(FILE *fp, Obj const *optr)
 {
 #ifdef DEBUG_LOADSAVE
-    print_msg(0, "   serialised object of type %d pos %d %d levtag %d %d withyou %d\n", optr->obj_id, optr->pos.y, optr->pos.x, optr->lev.dungeon, optr->lev.level, optr->with_you);
+    print_msg(0, "   serialised object of type %d pos %d %d levtag %d %d withyou %d", optr->obj_id, optr->pos.y, optr->pos.x, optr->lev.dungeon, optr->lev.level, optr->with_you);
 #endif
     serialise(fp, uint32_t(optr->obj_id));
     serialise(fp, uint32_t(optr->quan));
@@ -480,7 +481,7 @@ void serialise_objects(FILE *fp)
     for (iter = objects.begin(); iter != objects.end(); ++iter)
     {
 #ifdef DEBUG_LOADSAVE
-        print_msg(0, "serialising object ID %llx\n", iter->first);
+        print_msg(0, "serialising object ID %llx", iter->first);
 #endif
         serialise(fp, iter->first);
         serialise(fp, iter->second);
@@ -591,7 +592,7 @@ void serialise(FILE *fp, Level const *lp)
 void serialise(FILE *fp, Levext_rooms const *lerp)
 {
 #ifdef DEBUG_LOADSAVE
-    print_msg(0, "serialising Levext_rooms\n");
+    print_msg(0, "serialising Levext_rooms");
 #endif
     serialise(fp, uint32_t(lerp->overridden_monsel));
     serialise(fp, uint32_t(lerp->actual_rooms));
@@ -712,7 +713,7 @@ int save_game(void)
     fd = open(filename.c_str(), O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
     if (fd == -1)
     {
-        print_msg(MSGCHAN_INTERROR, "could not save to %s: %s\n", filename.c_str(),
+        print_msg(MSGCHAN_INTERROR, "could not save to %s: %s", filename.c_str(),
                   strerror(errno));
         press_enter();
         return -1;
@@ -738,7 +739,7 @@ int save_game(void)
     i = system(command.c_str());
     if (i != 0)
     {
-        print_msg(MSGCHAN_INTERROR, "could not compress save file\n");
+        print_msg(MSGCHAN_INTERROR, "could not compress save file");
         press_enter();
         return -1;
     }
@@ -775,7 +776,7 @@ int load_game(void)
         i = system(command.c_str());
         if (i != 0)
         {
-            print_msg(MSGCHAN_INTERROR, "compressed save file found but unable to decompress. Giving up...\n");
+            print_msg(MSGCHAN_INTERROR, "compressed save file found but unable to decompress. Giving up...");
             press_enter();
             display_shutdown();
             exit(1);
@@ -787,21 +788,21 @@ int load_game(void)
         fp = fopen(filename.c_str(), "rb");
         if (!fp)
         {
-            print_msg(MSGCHAN_INTERROR, "could not open uncompressed save file. Giving up...\n");
+            print_msg(MSGCHAN_INTERROR, "could not open uncompressed save file. Giving up...");
             press_enter();
             display_shutdown();
             exit(1);
         }
         try
         {
-            print_msg(0, "Loading saved game...\n");
+            print_msg(0, "Loading saved game...");
             deserialise_gamestate(fp);
             deserialise(fp, &u);
             deserialise_levels(fp);
             currlev = u.lev.snapv();
             if (!currlev)
             {
-                print_msg(0, "fatal error: invalid u.lev\n");
+                print_msg(0, "fatal error: invalid u.lev");
                 sleep(1);
                 abort();
             }
@@ -811,7 +812,7 @@ int load_game(void)
         }
         catch (...)
         {
-            print_msg(MSGCHAN_INTERROR, "read error parsing save file.\n");
+            print_msg(MSGCHAN_INTERROR, "read error parsing save file.");
             press_enter();
             display_shutdown();
             exit(1);
@@ -825,7 +826,7 @@ int load_game(void)
         map_updated = 1;
         hard_redraw = 1;
         recalc_defence();
-        print_msg(0, "Game loaded.\n");
+        print_msg(0, "Game loaded.");
         if (reload_wait)
         {
             press_enter();

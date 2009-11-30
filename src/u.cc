@@ -116,7 +116,7 @@ int move_player(libmrl::Coord step)
     if ((c.y < 0) || (c.y >= DUN_HEIGHT) ||
 	(c.x < 0) || (c.x >= DUN_WIDTH))
     {
-	print_msg(MSGCHAN_INTERROR, "Attempted move out of bounds.\n");
+	print_msg(MSGCHAN_INTERROR, "Attempted move out of bounds.");
         disturb_u();
 	return 0;	/* No movement. */
     }
@@ -133,7 +133,7 @@ int move_player(libmrl::Coord step)
 	    if ((optr->obj_id == PO_BOW) ||
 		(optr->obj_id == PO_CROSSBOW))
 	    {
-		print_msg(MSGCHAN_MINORFAIL, "You can't use that weapon in melee!\n");
+		print_msg(MSGCHAN_MINORFAIL, "You can't use that weapon in melee!");
 		return -1;
 	    }
 	}
@@ -151,7 +151,7 @@ int move_player(libmrl::Coord step)
     {
 	if (!u.farmoving)
         {
-            print_msg(MSGCHAN_BORINGFAIL, "You cannot go there.\n");
+            print_msg(MSGCHAN_BORINGFAIL, "You cannot go there.");
         }
         disturb_u();
         return 0;
@@ -219,7 +219,7 @@ void encounter_terrain(void)
         case ACID_POOL:
             if (player_resists_dtype(DT_ACID))
             {
-                print_msg(0, "Your legs tingle as you wade through the acid.\n");
+                print_msg(0, "Your legs tingle as you wade through the acid.");
             }
             else
             {
@@ -227,24 +227,24 @@ void encounter_terrain(void)
                 if (u.armour.valid())
                 {
                     dmg /= 2;
-                    print_msg(0, "Your armour and flesh are eroded by caustic acid!\n");
+                    print_msg(0, "Your armour and flesh are eroded by caustic acid!");
                     damage_obj(u.armour);
                     damage_u(dice(1, 10), DEATH_KILLED, "a pool of acid");
                 }
                 else
                 {
-                    print_msg(0, "Caustic acid burns your flesh!\n");
+                    print_msg(0, "Caustic acid burns your flesh!");
                 }
             }
             break;
         case LAVA_POOL:
             if (player_resists_dtype(DT_FIRE))
             {
-                print_msg(0, "The molten rock is soothingly warm.\n");
+                print_msg(0, "The molten rock is soothingly warm.");
             }
             else
             {
-                print_msg(0, "The lava burns you!\n");
+                print_msg(0, "The lava burns you!");
                 damage_u(dice(2, 10), DEATH_KILLED, "a pool of lava");
             }
             break;
@@ -263,12 +263,12 @@ void look_at_floor(void)
     if (optr)
     {
         optr->get_name(&itemname);
-	print_msg(0,"You see here %s.\n", itemname.c_str());
+	print_msg(0,"You see here %s.", itemname.c_str());
     }
     int t = currlev->terrain_at(u.pos);
     if (terrain_data[t].feature)
     {
-        print_msg(0, "There is a%s %s here.\n", is_vowel(terrain_data[t].name[0]) ? "n" : "",
+        print_msg(0, "There is a%s %s here.", is_vowel(terrain_data[t].name[0]) ? "n" : "",
                   terrain_data[t].name);
     }
 }
@@ -277,7 +277,7 @@ int gain_body(int amount, int loud)
 {
     if (amount < 1)
     {
-	print_msg(MSGCHAN_INTERROR, "Absurd body gain %d\n", amount);
+	print_msg(MSGCHAN_INTERROR, "Absurd body gain %d", amount);
     }
     if (u.body < 99)
     {
@@ -289,7 +289,7 @@ int gain_body(int amount, int loud)
 	status_updated = 1;
 	if (loud)
 	{
-	    print_msg(0, "You feel stronger!\n");
+	    print_msg(0, "You feel stronger!");
 	}
 	else
 	{
@@ -299,7 +299,7 @@ int gain_body(int amount, int loud)
     }
     else
     {
-	print_msg(0, "You feel disappointed.\n");
+	print_msg(0, "You feel disappointed.");
 	return 0;
     }
 }
@@ -311,7 +311,7 @@ int drain_body(int amount, const char *what, int permanent)
         return 0;
     }
     disturb_u();
-    print_msg(0, "You feel weaker!\n");
+    print_msg(0, "You feel weaker!");
     if (permanent)
     {
 	u.body -= amount;
@@ -323,7 +323,7 @@ int drain_body(int amount, const char *what, int permanent)
     status_updated = 1;
     if ((u.body - u.bdam) < 0)
     {
-	print_msg(0, "Your heart is too weak to beat.\n");
+	print_msg(0, "Your heart is too weak to beat.");
 	return do_death(DEATH_BODY, what);
     }
     display_update();
@@ -334,7 +334,7 @@ int gain_agility(int amount, int loud)
 {
     if (amount < 1)
     {
-	print_msg(MSGCHAN_INTERROR, "Absurd agility gain %d\n", amount);
+	print_msg(MSGCHAN_INTERROR, "Absurd agility gain %d", amount);
     }
     if (u.agility < 99)
     {
@@ -347,7 +347,7 @@ int gain_agility(int amount, int loud)
 	recalc_defence();
 	if (loud)
 	{
-	    print_msg(0, "You feel more agile!\n");
+	    print_msg(0, "You feel more agile!");
 	}
 	else
 	{
@@ -357,7 +357,7 @@ int gain_agility(int amount, int loud)
     }
     else
     {
-	print_msg(0, "You feel disappointed.\n");
+	print_msg(0, "You feel disappointed.");
 	return 0;
     }
 }
@@ -369,7 +369,7 @@ int drain_agility(int amount, const char *what, int permanent)
         return 0;
     }
     disturb_u();
-    print_msg(0, "You feel clumsy!\n");
+    print_msg(0, "You feel clumsy!");
     if (permanent)
     {
 	u.agility -= amount;
@@ -381,7 +381,7 @@ int drain_agility(int amount, const char *what, int permanent)
     status_updated = 1;
     if ((u.agility - u.adam) < 0)
     {
-	print_msg(0, "You forget how to breathe.\n");
+	print_msg(0, "You forget how to breathe.");
 	return do_death(DEATH_AGILITY, what);
     }
     recalc_defence();
@@ -392,7 +392,7 @@ int damage_u(int amount, Death d, const char *what)
 {
     if (!amount)
     {
-        print_msg(MSGCHAN_INTERROR, "How odd. You just took 0 damage.\n");
+        print_msg(MSGCHAN_INTERROR, "How odd. You just took 0 damage.");
         return 0;
     }
     disturb_u();
@@ -428,11 +428,11 @@ void heal_u(int amount, int boost, int loud)
 	/* Tell the player how much better he feels. */
 	if (u.hpcur == u.hpmax)
 	{
-	    print_msg(0, "You feel great.\n");
+	    print_msg(0, "You feel great.");
 	}
 	else
 	{
-	    print_msg(0, "You feel %sbetter.\n", amount > 10 ? "much " : "");
+	    print_msg(0, "You feel %sbetter.", amount > 10 ? "much " : "");
 	}
     }
     else
@@ -459,7 +459,8 @@ int do_death(Death d, const char *what)
 	    u.adam = 0;
 	    u.bdam = 0;
 	    status_updated = 1;
-	    print_msg(0, "\nYou survived that attempt on your life.\n");
+	    print_msg(0, "");
+	    print_msg(0, "You survived that attempt on your life.");
 	    return 0;
 	}
     }
@@ -487,26 +488,26 @@ int do_death(Death d, const char *what)
             }
         }
     }
-    print_msg(0, "THOU ART SLAIN!\n");
+    print_msg(0, "THOU ART SLAIN!");
     game_finished = 1;
     switch (d)
     {
     case DEATH_KILLED:
-        print_msg(0, "You were killed by %s.\n", what);
+        print_msg(0, "You were killed by %s.", what);
         break;
     case DEATH_KILLED_MON:
-        print_msg(0, "You were killed by a nasty %s.\n", what);
+        print_msg(0, "You were killed by a nasty %s.", what);
         break;
     case DEATH_BODY:
-	print_msg(0, "Your heart was stopped by %s.\n", what);
+	print_msg(0, "Your heart was stopped by %s.", what);
 	break;
     case DEATH_AGILITY:
-	print_msg(0, "Your nerves were destroyed by %s.\n", what); 
+	print_msg(0, "Your nerves were destroyed by %s.", what); 
 	break;
     }
-    print_msg(0, "Your game lasted %d ticks.\n", game_tick);
-    print_msg(0, "You killed monsters worth %d experience.\n", u.experience);
-    print_msg(0, "You found %d pieces of gold.\n", u.gold);
+    print_msg(0, "Your game lasted %d ticks.", game_tick);
+    print_msg(0, "You killed monsters worth %d experience.", u.experience);
+    print_msg(0, "You found %d pieces of gold.", u.gold);
     press_enter();
 
     return 1;
@@ -526,7 +527,7 @@ void write_char_dump(void)
     fp = fopen(filename.c_str(), "w");
     if (fp == NULL)
     {
-	print_msg(MSGCHAN_INTERROR, "Couldn't create dump file. Dump failed.\n");
+	print_msg(MSGCHAN_INTERROR, "Couldn't create dump file. Dump failed.");
 	return;
     }
     fprintf(fp, "%s, level %d adventurer (%d XP)\n", u.name, u.level, u.experience);
@@ -559,7 +560,7 @@ void u_init(void)
     if (name_prompt)
     {
         do {
-            print_msg(0, "What is your name, stranger?\n");
+            print_msg(0, "What is your name, stranger?");
             read_input(u.name, 16);
             hasslash = strchr(u.name, '/');
             /* Now that we create a named dump file, we must not
@@ -567,19 +568,19 @@ void u_init(void)
              * or backslash. */
             if (hasslash)
             {
-                print_msg(0, "No slashes permitted.\n");
+                print_msg(0, "No slashes permitted.");
                 continue;
             }
             hasslash = strchr(u.name, '\\');
             if (hasslash)
             {
-                print_msg(0, "No backslashes permitted.\n");
+                print_msg(0, "No backslashes permitted.");
                 continue;
             }
             hasslash = strchr(u.name, ':');
             if (hasslash)
             {
-                print_msg(0, "No colons permitted.\n");
+                print_msg(0, "No colons permitted.");
                 continue;
             }
         } while (hasslash != NULL);
@@ -603,12 +604,12 @@ void u_init(void)
     u.inventory[0] = create_obj(PO_DAGGER, 1, 1, libmrl::NOWHERE);
     if (!u.inventory[0].valid())
     {
-	print_msg(MSGCHAN_INTERROR, "Couldn't create dagger!\n");
+	print_msg(MSGCHAN_INTERROR, "Couldn't create dagger!");
     }
     u.inventory[1] = create_obj(PO_IRON_RATION, 1, 1, libmrl::NOWHERE);
     if (!u.inventory[1].valid())
     {
-	print_msg(MSGCHAN_INTERROR, "Couldn't create ration!\n");
+	print_msg(MSGCHAN_INTERROR, "Couldn't create ration!");
     }
     u.weapon = u.inventory[0];
     u.ring = NO_OBJECT;
@@ -643,7 +644,7 @@ void gain_experience(int amount)
     if (u.experience > lev_threshold(u.level))
     {
 	u.level++;
-	print_msg(0, "You gained a level!\n");
+	print_msg(0, "You gained a level!");
 	if (!zero_die(2))
 	{
 	    bodygain = gain_body(2, 0);
@@ -654,7 +655,7 @@ void gain_experience(int amount)
 	    bodygain = gain_body(1, 0);
 	    agilgain = gain_agility(2, 0);
 	}
-	print_msg(MSGCHAN_NUMERIC, "You gained %d body and %d agility.\n", bodygain, agilgain);
+	print_msg(MSGCHAN_NUMERIC, "You gained %d body and %d agility.", bodygain, agilgain);
 	hpgain = u.body / 10 + 10;
 	if (u.hpmax + hpgain > 999)
 	{
@@ -666,7 +667,7 @@ void gain_experience(int amount)
 	    u.hpcur += hpgain;
 	    u.hpmax += hpgain;
 	    status_updated = 1;
-	    print_msg(MSGCHAN_NUMERIC, "You gained %d hit points.\n", hpgain);
+	    print_msg(MSGCHAN_NUMERIC, "You gained %d hit points.", hpgain);
 	}
         if (levelup_wait)
         {
@@ -690,12 +691,12 @@ int teleport_u(void)
         pos.x = exclusive_flat(0, currlev->width - 1);
         if ((currlev->monster_at(pos) == NO_MONSTER) && (!terrain_data[currlev->terrain_at(pos)].impassable) && (pos != u.pos))
         {
-            print_msg(0, "You are whisked away!\n");
+            print_msg(0, "You are whisked away!");
             reloc_player(pos);
             return 0;
         }
     }
-    print_msg(MSGCHAN_MINORFAIL, "You feel briefly dislocated.\n");
+    print_msg(MSGCHAN_MINORFAIL, "You feel briefly dislocated.");
     return -1;
 }
 
@@ -759,11 +760,11 @@ void Player::suffer(Perseff_data& peff)
     switch (peff.flavour)
     {
     case Perseff_bitter_chill:
-        print_msg(0, "Bitter cold numbs your flesh.\n");
+        print_msg(0, "Bitter cold numbs your flesh.");
         damage_u(one_die(peff.power), DEATH_KILLED, "bitter cold");
         break;
     case Perseff_searing_flames:
-        print_msg(0, "Searing flames burn your flesh.\n");
+        print_msg(0, "Searing flames burn your flesh.");
         damage_u(one_die(peff.power), DEATH_KILLED, "searing flames");
         break;
     default:
@@ -795,7 +796,7 @@ void update_player(void)
     {
         /* Heal player for 1d3 hit points; do not allow HP gain,
          * and don't say anything apart from the regen ring message. */
-        print_msg(MSGCHAN_FLUFF, "Your ring pulses soothingly.\n");
+        print_msg(MSGCHAN_FLUFF, "Your ring pulses soothingly.");
         heal_u(one_die(3), 0, 0);
         permobjs[PO_REGENERATION_RING].known = 1;
     }
@@ -828,10 +829,11 @@ void update_player(void)
         default:
             break;
         case 1:
-            print_msg(0, "You are getting quite hungry.\n");
+            print_msg(0, "You are getting quite hungry.");
             break;
         case 2:
-            print_msg(0, "You are feeling hunger pangs, and will recover\nmore slowly from your injuries.\n");
+            print_msg(0, "You are feeling hunger pangs, and will recover");
+            print_msg(0, "more slowly from your injuries.");
             break;
         }
     }
@@ -909,69 +911,69 @@ void describe_profession(Player_profession prof)
     switch (prof)
     {
     case Prof_fighter:
-        print_msg(0,
-                  "As a fighter, you have an instinct for weaponry and an\n"
-                  "unparallelled talent for physical violence. The Violence\n"
-                  "score on your status bar is kind of like 'mana' for your\n"
-                  "special abilities; it accumulates whenever a monster\n"
-                  "attempts to do you harm, and is spent when you use your\n"
-                  "active abilities.\n\n");
-        print_msg(0,
-                  "   Vigour - This passive ability means you gain two Body\n"
-                  "   and one Agility per level.\n\n");
-        print_msg(0,
-                  "1: Whirlwind - This active ability attacks all adjacent\n"
-                  "   monsters at once. Costs 30 Violence and has a 20-turn\n"
-                  "   cooldown timer.\n\n");
-        print_msg(0,
-                  "2: Slam - This active ability knocks a monster backwards\n"
-                  "   one square, moves you into the square it was knocked\n"
-                  "   out of, and stuns it for one turn. Costs 30 Violence\n"
-                  "   and has a 5-turn cooldown timer.\n\n");
-        print_msg(0,
-                  "3: Smash - Attack an adjacent monster for double damage.\n"
-                  "   Costs 20 Violence and has no cooldown timer.\n\n");
-        print_msg(0,
-                  "4: Berserker Rage - Increases your physical damage done\n"
-                  "   by 50%% for 20 turns. Empties your Violence pool and\n"
-                  "   has a 200-turn cooldown timer.\n\n");
+        print_msg(0, "As a fighter, you have an instinct for weaponry and an");
+        print_msg(0, "unparallelled talent for physical violence. The Violence");
+        print_msg(0, "score on your status bar is kind of like 'mana' for your");
+        print_msg(0, "special abilities; it accumulates whenever a monster");
+        print_msg(0, "attempts to do you harm, and is spent when you use your");
+        print_msg(0, "active abilities.");
+        print_msg(0, "");
+        print_msg(0, "   Vigour - This passive ability means you gain two Body");
+        print_msg(0, "   and one Agility per level.");
+        print_msg(0, "");
+        print_msg(0, "1: Whirlwind - This active ability attacks all adjacent");
+        print_msg(0, "   monsters at once. Costs 30 Violence and has a 20-turn");
+        print_msg(0, "   cooldown timer.");
+        print_msg(0, "");
+        print_msg(0, "2: Slam - This active ability knocks a monster backwards");
+        print_msg(0, "   one square, moves you into the square it was knocked");
+        print_msg(0, "   out of, and stuns it for one turn. Costs 30 Violence");
+        print_msg(0, "   and has a 5-turn cooldown timer.");
+        print_msg(0, "");
+        print_msg(0, "3: Smash - Attack an adjacent monster for double damage.");
+        print_msg(0, "   Costs 20 Violence and has no cooldown timer.");
+        print_msg(0, "");
+        print_msg(0, "4: Berserker Rage - Increases your physical damage done");
+        print_msg(0, "   by 50%% for 20 turns. Empties your Violence pool and");
+        print_msg(0, "   has a 200-turn cooldown timer.");
+        print_msg(0, "");
         break;
 
     case Prof_preacher:
         break;
 
     case Prof_thanatophile:
-        print_msg(0,
-                  "The thanatophile is obsessed with death. Not the daed,\n"
-                  "*death*. (S)he kills to make death.\n\n");
-        print_msg(0,
-                  "   Fell Spirit - This passive ability means you gain one\n"
-                  "   Body, one Agility, and a ten-point increase to your\n"
-                  "   Power pool per level.\n\n");
-        print_msg(0,
-                  "1: Assassin Soul - When you activate this ability, the\n"
-                  "   darkness of your soul will hide you from the senses\n"
-                  "   of those around you. Attacking an enemy will break\n"
-                  "   the concealment immediately. You cannot activate\n"
-                  "   this power if you have engaged in combat recently,\n"
-                  "   and some monsters will see straight through it. You\n"
-                  "   do not regenerate Power while this ability is active.\n\n");
-        print_msg(0,
-                  "2: Death Song - While this ability is active, your melee\n"
-                  "   attacks do bonus Death damage based on your level. Each\n"
-                  "   melee attack while this ability is active consumes two\n"
-                  "   points of power.\n\n");
-        print_msg(0,
-                  "3: Life Leech - This ability drains hit points from an\n"
-                  "   adjacent target. Even undead and demons have something\n"
-                  "   worth draining. Particularly powerful opponents may\n"
-                  "   partially resist this effect.\n\n");
-        print_msg(0,
-                  "4: Corpse Explosion - Undeath offends you. Those granted\n"
-                  "   the gift of Death should not be deprived of it. To this\n"
-                  "   end, you have learned how to use your fell power to make\n"
-                  "   the mortal remains of the recently slain explode with\n"
-                  "   great violence.\n\n");
+        print_msg(0, "The thanatophile is obsessed with death. Not the daed,");
+        print_msg(0, "*death*. (S)he kills to make death.");
+        print_msg(0, "");
+        print_msg(0, "   Fell Spirit - This passive ability means you gain one");
+        print_msg(0, "   Body, one Agility, and a ten-point increase to your");
+        print_msg(0, "   Power pool per level.");
+        print_msg(0, "");
+        print_msg(0, "1: Assassin Soul - When you activate this ability, the");
+        print_msg(0, "   darkness of your soul will hide you from the senses");
+        print_msg(0, "   of those around you. Attacking an enemy will break");
+        print_msg(0, "   the concealment immediately. You cannot activate");
+        print_msg(0, "   this power if you have engaged in combat recently,");
+        print_msg(0, "   and some monsters will see straight through it. You");
+        print_msg(0, "   do not regenerate Power while this ability is active.");
+        print_msg(0, "");
+        print_msg(0, "2: Death Song - While this ability is active, your melee");
+        print_msg(0, "   attacks do bonus Death damage based on your level. Each");
+        print_msg(0, "   melee attack while this ability is active consumes two");
+        print_msg(0, "   points of power.");
+        print_msg(0, "");
+        print_msg(0, "3: Life Leech - This ability drains hit points from an");
+        print_msg(0, "   adjacent target. Even undead and demons have something");
+        print_msg(0, "   worth draining. Particularly powerful opponents may");
+        print_msg(0, "   partially resist this effect.");
+        print_msg(0, "");
+        print_msg(0, "4: Corpse Explosion - Undeath offends you. Those granted");
+        print_msg(0, "   the gift of Death should not be deprived of it. To this");
+        print_msg(0, "   end, you have learned how to use your fell power to make");
+        print_msg(0, "   the mortal remains of the recently slain explode with");
+        print_msg(0, "   great violence.");
+        print_msg(0, "");
         break;
     }
 }
@@ -983,7 +985,7 @@ bool Player::test_mobility(bool noisy) const
     {
         if (noisy)
         {
-            print_msg(0, "You are held in place by magical chains.\n");
+            print_msg(0, "You are held in place by magical chains.");
         }
         retval = false;
     }
@@ -991,7 +993,7 @@ bool Player::test_mobility(bool noisy) const
     {
         if (noisy)
         {
-            print_msg(0, "Tentacles are wrapped around you, holding you in place.\n");
+            print_msg(0, "Tentacles are wrapped around you, holding you in place.");
         }
         retval = false;
     }
@@ -1003,31 +1005,31 @@ void Player::resolve_dispel(std::list<Perseff_data>::iterator peff_iter)
     switch (peff_iter->flavour)
     {
     case Perseff_bitter_chill:
-        print_msg(0, "The bitter chill subsides.\n");
+        print_msg(0, "The bitter chill subsides.");
         break;
 
     case Perseff_searing_flames:
-        print_msg(0, "The flames around you subside.\n");
+        print_msg(0, "The flames around you subside.");
         break;
 
     case Perseff_leadfoot_curse:
-        print_msg(0, "You shed your feet of lead.\n");
+        print_msg(0, "You shed your feet of lead.");
         break;
 
     case Perseff_wither_curse:
-        print_msg(0, "You feel less decrepit.\n");
+        print_msg(0, "You feel less decrepit.");
         break;
 
     case Perseff_armourmelt_curse:
-        print_msg(0, "Your armour looks less fragile now.\n");
+        print_msg(0, "Your armour looks less fragile now.");
         break;
 
     case Perseff_binding_chains:
-        print_msg(0, "The chains binding you disintegrate.\n");
+        print_msg(0, "The chains binding you disintegrate.");
         break;
 
     case Perseff_tentacle_embrace:
-        print_msg(0, "Your tentacular ordeal is over.\n");
+        print_msg(0, "Your tentacular ordeal is over.");
         break;
 
     default:
@@ -1044,7 +1046,7 @@ int Player::on_remove(bool force)
     bool suppress_msg = false;
     if (!optr)
     {
-        print_msg(MSGCHAN_MINORFAIL, "You have no ring to remove.\n");
+        print_msg(MSGCHAN_MINORFAIL, "You have no ring to remove.");
         return 0;
     }
     if (optr)
@@ -1054,8 +1056,8 @@ int Player::on_remove(bool force)
         case PO_DOOM_RING:
             // Ouch! Rings of doom don't like being removed. OTOH, they kill
             // you if you don't. Yes, this is cruel.
-	    print_msg(0, "You remove your ring.\n");
-	    print_msg(0, "It exacts vengeance!\n");
+	    print_msg(0, "You remove your ring.");
+	    print_msg(0, "It exacts vengeance!");
 	    drain_body(one_die(4), "a ring of doom", 1);
 	    drain_agility(one_die(4), "a ring of doom", 1);
             dmg = one_die(20);
@@ -1068,7 +1070,7 @@ int Player::on_remove(bool force)
             i = zero_die(u.level);
             if (i < 4)
             {
-                print_msg(0, "You cannot bring yourself to remove your ring.\n");
+                print_msg(0, "You cannot bring yourself to remove your ring.");
                 return 0;
             }
             break;
@@ -1081,13 +1083,13 @@ int Player::on_remove(bool force)
             break;
 
         default:
-            print_msg(MSGCHAN_INTERROR, "IMPOSSIBLE: Non-ring in ring slot.\n");
+            print_msg(MSGCHAN_INTERROR, "IMPOSSIBLE: Non-ring in ring slot.");
             break;
         }
     }
     if (!suppress_msg)
     {
-        print_msg(0, "You remove your ring.\n");
+        print_msg(0, "You remove your ring.");
     }
     u.ring = NO_OBJECT;
     recalc_defence();

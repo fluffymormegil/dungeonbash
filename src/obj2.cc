@@ -55,13 +55,13 @@ int zapeff_frost(libmrl::Coord pos)
         {
             std::string namestr;
             mptr->get_name(&namestr, 3, true);
-            print_msg(0, "%s seems unbothered by the cold.\n", namestr.c_str());
+            print_msg(0, "%s seems unbothered by the cold.", namestr.c_str());
         }
         else
         {
             std::string namestr;
             mptr->get_name(&namestr, 1, true);
-            print_msg(0, "Bitter cold saps %s's strength.\n", namestr.c_str());
+            print_msg(0, "Bitter cold saps %s's strength.", namestr.c_str());
             Perseff_data peff = 
             {
                 Perseff_bitter_chill, 4, 10, true, false
@@ -85,7 +85,7 @@ bool corpseblast_func(libmrl::Coord c, void *data)
         int dmg;
         Corpseblast_data *deref = (Corpseblast_data *) data;
         dmg = one_die(deref->max);
-        print_msg(0, "You are blasted by the exploding corpse.\n");
+        print_msg(0, "You are blasted by the exploding corpse.");
         damage_u(dmg, DEATH_KILLED, "an exploding corpse");
         return false;
     }
@@ -95,7 +95,7 @@ bool corpseblast_func(libmrl::Coord c, void *data)
         Corpseblast_data *deref = (Corpseblast_data *) data;
         std::string namestr;
         currlev->monster_at(c).snapc()->get_name(&namestr, 3);
-        namestr += " is blasted.\n";
+        namestr += " is blasted.";
         dmg = one_die(deref->max);
         print_msg(0, "%s", namestr.c_str());
         damage_mon(currlev->monster_at(c), dmg, true);
@@ -120,7 +120,7 @@ int zapeff_corpse_explosion(libmrl::Coord pos)
         std::string m_namestr;
         Corpseblast_data data;
         mptr->get_name(&m_namestr, 3, true);
-        print_msg(0, "Arcane energy erupts from %s!\n", m_namestr.c_str());
+        print_msg(0, "Arcane energy erupts from %s!", m_namestr.c_str());
         if (mptr->mon_id == PM_ZOMBIE)
         {
             data.max = libmrl::min(permons[mptr->meta].hp, 20);
@@ -143,7 +143,7 @@ int zapeff_corpse_explosion(libmrl::Coord pos)
         Corpseblast_data data;
         optr->get_name(&namestr);
         data.max = libmrl::min(permons[optr->meta].hp, 20);
-        print_msg(0, "Arcane energy detonates %s!\n", namestr.c_str());
+        print_msg(0, "Arcane energy detonates %s!", namestr.c_str());
         release_obj(obj);
         newsym(pos);
         map_updated = true;
@@ -175,7 +175,7 @@ bool terrainblast_func(libmrl::Coord c, void *data)
         int dmg;
         Shatter_data *deref = (Shatter_data *) data;
         dmg = one_die(deref->max);
-        print_msg(0, "You are blasted by the exploding %s.\n", deref->name);
+        print_msg(0, "You are blasted by the exploding %s.", deref->name);
         damage_u(dmg, DEATH_KILLED, "flying debris");
         return false;
     }
@@ -185,7 +185,7 @@ bool terrainblast_func(libmrl::Coord c, void *data)
         Shatter_data *deref = (Shatter_data *) data;
         std::string namestr;
         currlev->monster_at(c).snapc()->get_name(&namestr, 3);
-        namestr += " is blasted.\n";
+        namestr += " is blasted.";
         dmg = one_die(deref->max);
         print_msg(0, "%s", namestr.c_str());
         damage_mon(currlev->monster_at(c), dmg, true);
@@ -258,7 +258,7 @@ int zapeff_shattering(libmrl::Coord pos)
             map_updated = 1;
             do_vision();
         }
-        print_msg(0, "The %s explodes!\n", data.name);
+        print_msg(0, "The %s explodes!", data.name);
         terrainsquare.array[10][10] = true;
         irradiate_square(&terrainsquare);
         spiral_square(&terrainsquare, terrainblast_func, &data);
@@ -280,7 +280,7 @@ int zap_wand(Obj_handle obj)
         {
             if ((dir.y == 0) && (dir.x == 0))
             {
-                print_msg(MSGCHAN_MINORFAIL, "You think zapping yourself would be unwise.\n");
+                print_msg(MSGCHAN_MINORFAIL, "You think zapping yourself would be unwise.");
             }
             else
             {
@@ -308,7 +308,7 @@ int zap_wand(Obj_handle obj)
                         }
                         break;
                     default:
-                        print_msg(MSGCHAN_INTERROR, "ERROR: Zapping nonwand.\n");
+                        print_msg(MSGCHAN_INTERROR, "ERROR: Zapping nonwand.");
                         i = 1;
                         break;
                     }
@@ -325,7 +325,7 @@ int zap_wand(Obj_handle obj)
     {
         // We shouldn't be here, since wands disintegrate on depletion.
         rv = 1;
-        print_msg(0, "The wand sputters a little, then fizzles out.\n");
+        print_msg(0, "The wand sputters a little, then fizzles out.");
     }
     return rv;
 }
@@ -336,23 +336,23 @@ int activate_misc(Obj_handle obj)
     switch (optr->obj_id)
     {
     case PO_LICH_SKULL:
-        print_msg(0, "You look into the skull's empty eye sockets, and see bone.\n");
+        print_msg(0, "You look into the skull's empty eye sockets, and see bone.");
         return 0;
 
     case PO_ORNATE_EBONY_CUBE:
-        print_msg(0, "You puzzle briefly over the ebony and brass cube.\n");
+        print_msg(0, "You puzzle briefly over the ebony and brass cube.");
         return 0;
 
     case PO_LAMEN_OF_TORMENT:
-        print_msg(0, "You shudder at the obscenity of the manhide badge.\n");
+        print_msg(0, "You shudder at the obscenity of the manhide badge.");
         return 0;
 
     case PO_LAMEN_OF_DEATH:
-        print_msg(0, "You admire the intricately carved bone badge.\n");
+        print_msg(0, "You admire the intricately carved bone badge.");
         return 0;
 
     default:
-        print_msg(MSGCHAN_INTERROR, "ERROR: Activating nonmisc.\n");
+        print_msg(MSGCHAN_INTERROR, "ERROR: Activating nonmisc.");
         break;
     }
     return 0;

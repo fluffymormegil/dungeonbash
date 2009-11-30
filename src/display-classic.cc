@@ -232,7 +232,7 @@ static void draw_world(void)
 void press_enter(void)
 {
     int ch;
-    print_msg(0, "Press RETURN or SPACE to continue\n");
+    print_msg(0, "Press RETURN or SPACE to continue");
     while (1)
     {
         ch = wgetch(message_window);
@@ -356,12 +356,14 @@ void print_msg(int channel, const char *fmt, ...)
     {
         va_start(ap, fmt);
         vw_printw(message_window, fmt, ap);
+        wprintw(message_window, "\n");
         va_end(ap);
     }
     if (msglog_fp)
     {
         va_start(ap2, fmt);
         vfprintf(msglog_fp, fmt, ap);
+        fprintf(msglog_fp, "\n");
         va_end(ap2);
     }
     display_update();
@@ -370,12 +372,12 @@ void print_msg(int channel, const char *fmt, ...)
 void show_discoveries(void)
 {
     int i, j;
-    print_msg(0, "You recognise the following items:\n");
+    print_msg(0, "You recognise the following items:");
     for (i = 0, j = 1; i < PO_COUNT; i++)
     {
         if (permobjs[i].known)
         {
-            print_msg(0, "%s\n", permobjs[i].name);
+            print_msg(0, "%s", permobjs[i].name);
             j++;
         }
         if (j == 19)
@@ -397,7 +399,6 @@ void print_inv(Poclass_num filter)
         optr = u.inventory[i].snapc();
         if (optr && ((filter == POCLASS_NONE) || (permobjs[optr->obj_id].poclass == filter)))
         {
-            print_msg(0, "%c) ", 'a' + i);
             if (fruit_salad_inventory)
             {
                 switch (optr->quality())
@@ -432,7 +433,8 @@ void print_inv(Poclass_num filter)
             {
                 namestr += " (being worn)";
             }
-            print_msg(0, "%s\n", namestr.c_str());
+            print_msg(0, "%c) %s", 'a' + i, namestr.c_str());
+            // XXX avoid coloring the letter
         }
         wattrset(message_window, 0);
     }
@@ -453,16 +455,16 @@ int inv_select(Poclass_num filter, const char *action, int accept_blank)
     }
     if (items == 0)
     {
-        print_msg(MSGCHAN_PROMPT, "You have nothing to %s.\n", action);
+        print_msg(MSGCHAN_PROMPT, "You have nothing to %s.", action);
         return -1;
     }
-    print_msg(MSGCHAN_PROMPT, "Items available to %s\n", action);
+    print_msg(MSGCHAN_PROMPT, "Items available to %s", action);
     print_inv(filter);
     if (accept_blank)
     {
-        print_msg(MSGCHAN_PROMPT, "-) no item\n");
+        print_msg(MSGCHAN_PROMPT, "-) no item");
     }
-    print_msg(MSGCHAN_PROMPT, "[ESC/SPACE to cancel]\n");
+    print_msg(MSGCHAN_PROMPT, "[ESC/SPACE to cancel]");
 tryagain:
     print_msg(MSGCHAN_PROMPT, "What do you want to %s? ", action);
     ch = wgetch(message_window);
@@ -471,13 +473,14 @@ tryagain:
     case '-':
         if (accept_blank)
         {
-            print_msg(MSGCHAN_PROMPT, "\n");
+            print_msg(MSGCHAN_PROMPT, "");
             return -2;
         }
     case 'x':
     case '\x1b':
     case ' ':
-        print_msg(MSGCHAN_PROMPT, "\nNever mind.\n");
+        print_msg(MSGCHAN_PROMPT, "");
+        print_msg(MSGCHAN_PROMPT, "Never mind.");
         return -1;
     case 'a':
     case 'b':
@@ -501,7 +504,6 @@ tryagain:
         /* I am assuming that we're in a place where the character
          * set is a strict superset of ASCII. If we're not, the
          * following code may break. */
-        print_msg(MSGCHAN_PROMPT, "\n");
         selection = ch - 'a';
         if ((u.inventory[selection].valid()) && ((filter == POCLASS_NONE) || (permobjs[u.inventory[selection].otyp()].poclass == filter)))
         {
@@ -509,7 +511,7 @@ tryagain:
         }
         /* Fall through */
     default:
-        print_msg(MSGCHAN_PROMPT, "\nBad selection\n");
+        print_msg(MSGCHAN_PROMPT, "Bad selection");
         goto tryagain;
     }
 }
@@ -520,7 +522,8 @@ int select_dir(libmrl::Coord *psign, bool silent)
     int done = 0;
     if (!silent)
     {
-        print_msg(MSGCHAN_PROMPT, "Select a direction with movement keys.\n[ESC or space to cancel].\n");
+        print_msg(MSGCHAN_PROMPT, "Select a direction with movement keys.");
+        print_msg(MSGCHAN_PROMPT, "[ESC or space to cancel].");
     }
     while (!done)
     {
@@ -571,7 +574,7 @@ int select_dir(libmrl::Coord *psign, bool silent)
         default:
             if (!silent)
             {
-                print_msg(MSGCHAN_PROMPT, "Bad direction (use movement keys; ESC or space to cancel.)\n");
+                print_msg(MSGCHAN_PROMPT, "Bad direction (use movement keys; ESC or space to cancel.)");
             }
             break;
         }
@@ -720,7 +723,7 @@ int display_shutdown(void)
 
 void pressanykey(void)
 {
-    print_msg(MSGCHAN_PROMPT, "Press any key to continue.\n");
+    print_msg(MSGCHAN_PROMPT, "Press any key to continue.");
     wgetch(message_window);
 }
 
@@ -728,7 +731,7 @@ int getYN(const char *msg)
 {
     int ch;
     print_msg(MSGCHAN_PROMPT, "%s", msg);
-    print_msg(MSGCHAN_PROMPT, "Press capital Y to confirm, any other key to cancel\n");
+    print_msg(MSGCHAN_PROMPT, "Press capital Y to confirm, any other key to cancel");
     ch = wgetch(message_window);
     if (ch == 'Y')
     {
@@ -756,7 +759,7 @@ int getyn(const char *msg)
         case ' ':
             return -1;
         default:
-            print_msg(MSGCHAN_PROMPT, "Invalid response. Press y or n (ESC or space to cancel)\n");
+            print_msg(MSGCHAN_PROMPT, "Invalid response. Press y or n (ESC or space to cancel)");
         }
     }
 }
@@ -768,77 +771,84 @@ void print_help(void)
 
 static void print_help_en_GB(void)
 {
-    print_msg(0, "MOVEMENT\n");
-    print_msg(0, "y  k  u\n");
-    print_msg(0, " \\ | /\n");
-    print_msg(0, "  \\|/\n");
-    print_msg(0, "h--*--l\n");
-    print_msg(0, "  /|\\\n");
-    print_msg(0, " / | \\\n");
-    print_msg(0, "b  j  n\n");
-    print_msg(0, "Attack monsters in melee by bumping into them.\n");
-    print_msg(0, "Doors do not have to be opened before you go through.\n");
-    print_msg(0, "Turn on NUM LOCK to use the numeric keypad for movement.\n");
-    print_msg(0, "Capitals HJKLYUBN move in the corresponding direction\n"
-              "until something interesting happens or is found.\n");
+    print_msg(0, "MOVEMENT");
+    print_msg(0, "y  k  u");
+    print_msg(0, " \\ | /");
+    print_msg(0, "  \\|/");
+    print_msg(0, "h--*--l");
+    print_msg(0, "  /|\\");
+    print_msg(0, " / | \\");
+    print_msg(0, "b  j  n");
+    print_msg(0, "Attack monsters in melee by bumping into them.");
+    print_msg(0, "Doors do not have to be opened before you go through.");
+    print_msg(0, "Turn on NUM LOCK to use the numeric keypad for movement.");
+    print_msg(0, "Capitals HJKLYUBN move in the corresponding direction"
+              "until something interesting happens or is found.");
     pressanykey();
-    print_msg(0, "\nACTIONS\n");
-    print_msg(0, "a   make an attack (used to fire bows)\n");
-    print_msg(0, "P   put on a ring\n");
-    print_msg(0, "R   remove a ring\n");
-    print_msg(0, "W   wear armour\n");
-    print_msg(0, "T   take off armour\n");
-    print_msg(0, "r   read a scroll\n");
-    print_msg(0, "w   wield a weapon\n");
-    print_msg(0, "q   quaff a potion\n");
-    print_msg(0, "z   zap a wand\n");
-    print_msg(0, "A   activate a miscellaneous item\n");
-    print_msg(0, "g   pick up an item (also 0 or comma)\n");
-    print_msg(0, "d   drop an item\n");
-    print_msg(0, "e   eat something edible\n");
-    print_msg(0, ">   go down stairs\n");
-    print_msg(0, "5   do nothing (wait until next action)\n");
-    print_msg(0, ".   do nothing (wait until next action)\n");
+    print_msg(0, "");
+    print_msg(0, "ACTIONS");
+    print_msg(0, "a   make an attack (used to fire bows)");
+    print_msg(0, "P   put on a ring");
+    print_msg(0, "R   remove a ring");
+    print_msg(0, "W   wear armour");
+    print_msg(0, "T   take off armour");
+    print_msg(0, "r   read a scroll");
+    print_msg(0, "w   wield a weapon");
+    print_msg(0, "q   quaff a potion");
+    print_msg(0, "z   zap a wand");
+    print_msg(0, "A   activate a miscellaneous item");
+    print_msg(0, "g   pick up an item (also 0 or comma)");
+    print_msg(0, "d   drop an item");
+    print_msg(0, "e   eat something edible");
+    print_msg(0, ">   go down stairs");
+    print_msg(0, "5   do nothing (wait until next action)");
+    print_msg(0, ".   do nothing (wait until next action)");
     pressanykey();
-    print_msg(0, "\nOTHER COMMANDS\n");
-    print_msg(0, "S   save and exit\n");
-    print_msg(0, "X   quit without saving\n");
-    print_msg(0, "i   print your inventory\n");
-    print_msg(0, "I   examine an item you are carrying\n");
-    print_msg(0, "E   show your equipped items\n");
-    print_msg(0, "#   show underlying terrain of occupied squares\n");
-    print_msg(0, "\\   list all recognised items\n");
-    print_msg(0, "D   dump your character's details to <name>.dump\n");
-    print_msg(0, "?   print this message\n");
-    print_msg(0, "Control-W    print information about this program's absence of warranty.\n");
-    print_msg(0, "Control-D    print information about redistributing this program.\n");
+    print_msg(0, "");
+    print_msg(0, "OTHER COMMANDS");
+    print_msg(0, "S   save and exit");
+    print_msg(0, "X   quit without saving");
+    print_msg(0, "i   print your inventory");
+    print_msg(0, "I   examine an item you are carrying");
+    print_msg(0, "E   show your equipped items");
+    print_msg(0, "#   show underlying terrain of occupied squares");
+    print_msg(0, "\\   list all recognised items");
+    print_msg(0, "D   dump your character's details to <name>.dump");
+    print_msg(0, "?   print this message");
+    print_msg(0, "Control-W    print information about this program's absence of warranty.");
+    print_msg(0, "Control-D    print information about redistributing this program.");
     pressanykey();
-    print_msg(0, "\nSYMBOLS - you and your surroundings\n");
-    print_msg(0, "@   you\n");
-    print_msg(0, ".   floor\n");
-    print_msg(0, "<   stairs up\n");
-    print_msg(0, ">   stairs down\n");
-    print_msg(0, "\"   a pool of liquid, possibly baleful\n");
-    print_msg(0, "_   an altar\n");
-    print_msg(0, "-   an anvil or other unobstructive fitting\n");
-    print_msg(0, "|   a furnace or other obstructive fitting\n");
-    print_msg(0, "#   wall\n");
-    print_msg(0, "+   a door or tombstone\n");
+    print_msg(0, "");
+    print_msg(0, "SYMBOLS - you and your surroundings");
+    print_msg(0, "@   you");
+    print_msg(0, ".   floor");
+    print_msg(0, "<   stairs up");
+    print_msg(0, ">   stairs down");
+    print_msg(0, "\"   a pool of liquid, possibly baleful");
+    print_msg(0, "_   an altar");
+    print_msg(0, "-   an anvil or other unobstructive fitting");
+    print_msg(0, "|   a furnace or other obstructive fitting");
+    print_msg(0, "#   wall");
+    print_msg(0, "+   a door or tombstone");
     pressanykey();
-    print_msg(0, "\nSYMBOLS - treasure\n");
-    print_msg(0, ")   a weapon\n");
-    print_msg(0, "(   a missile weapon\n");
-    print_msg(0, "[   a suit of armour\n");
-    print_msg(0, "=   a ring\n");
-    print_msg(0, "?   a scroll\n");
-    print_msg(0, "!   a potion\n");
-    print_msg(0, "%%   some food\n");
-    print_msg(0, "&   corpses, severed body parts, etc.\n");
-    print_msg(0, "/   a magic wand\n");
-    print_msg(0, "*   a miscellaneous item\n");
+    print_msg(0, "");
+    print_msg(0, "SYMBOLS - treasure");
+    print_msg(0, ")   a weapon");
+    print_msg(0, "(   a missile weapon");
+    print_msg(0, "[   a suit of armour");
+    print_msg(0, "=   a ring");
+    print_msg(0, "?   a scroll");
+    print_msg(0, "!   a potion");
+    print_msg(0, "%%   some food");
+    print_msg(0, "&   corpses, severed body parts, etc.");
+    print_msg(0, "/   a magic wand");
+    print_msg(0, "*   a miscellaneous item");
     pressanykey();
-    print_msg(0, "\nDemons are represented as numbers.\nMost other monsters are shown as letters.\n");
-    print_msg(0, "\nThis is all the help you get. Good luck!\n");
+    print_msg(0, "");
+    print_msg(0, "Demons are represented as numbers.");
+    print_msg(0, "Most other monsters are shown as letters.");
+    print_msg(0, "");
+    print_msg(0, "This is all the help you get. Good luck!");
 }
 
 void animate_projectile(libmrl::Coord pos, Dbash_colour col)
@@ -877,8 +887,8 @@ void farlook(void)
     bool done = false;
     int i;
 
-    print_msg(MSGCHAN_PROMPT, "Use the movement keys to move the cursor.\n");
-    print_msg(MSGCHAN_PROMPT, "Press '.' to examine a square, ESC/SPACE to finish.\n");
+    print_msg(MSGCHAN_PROMPT, "Use the movement keys to move the cursor.");
+    print_msg(MSGCHAN_PROMPT, "Press '.' to examine a square, ESC/SPACE to finish.");
     wmove(world_window, screenpos.y, screenpos.x);
     wrefresh(world_window);
     while (!done)
@@ -892,11 +902,11 @@ void farlook(void)
         {
             if (currlev->outofbounds(mappos))
             {
-                print_msg(MSGCHAN_PROMPT, "The Outer Darkness.\n");
+                print_msg(MSGCHAN_PROMPT, "The Outer Darkness.");
             }
             else if (!(currlev->flags_at(mappos) & MAPFLAG_EXPLORED))
             {
-                print_msg(MSGCHAN_PROMPT, "Unexplored territory\n");
+                print_msg(MSGCHAN_PROMPT, "Unexplored territory");
             }
             else
             {
@@ -904,24 +914,24 @@ void farlook(void)
                 Obj_handle oh = currlev->object_at(mappos);
                 if (mappos == u.pos)
                 {
-                    print_msg(MSGCHAN_PROMPT, "An unfortunate adventurer\n");
+                    print_msg(MSGCHAN_PROMPT, "An unfortunate adventurer");
                 }
                 if (mh.valid() && mon_visible(mh))
                 {
                     //describe_monster(currlev->monster_at(mappos));
                     mh.snapc()->get_name(&name, 0);
-                    print_msg(MSGCHAN_PROMPT, "%s\n", name.c_str());
+                    print_msg(MSGCHAN_PROMPT, "%s", name.c_str());
                 }
                 if (oh.valid())
                 {
                     oh.snapc()->get_name(&name);
-                    print_msg(MSGCHAN_PROMPT, "%s\n", name.c_str());
+                    print_msg(MSGCHAN_PROMPT, "%s", name.c_str());
                 }
-                print_msg(MSGCHAN_PROMPT, "%s\n", terrain_data[currlev->terrain_at(mappos)].name);
+                print_msg(MSGCHAN_PROMPT, "%s", terrain_data[currlev->terrain_at(mappos)].name);
             }
             if (wizard_mode)
             {
-                print_msg(0, "%d %d: flags %8.8x\n", mappos.y, mappos.x, currlev->flags_at(mappos));
+                print_msg(0, "%d %d: flags %8.8x", mappos.y, mappos.x, currlev->flags_at(mappos));
             }
         }
         else
@@ -942,7 +952,7 @@ void farlook(void)
             wrefresh(world_window);
         }
     }
-    print_msg(MSGCHAN_PROMPT, "Done.\n");
+    print_msg(MSGCHAN_PROMPT, "Done.");
 }
 
 void get_smite_target(libmrl::Coord *ppos)
@@ -954,8 +964,8 @@ void get_smite_target(libmrl::Coord *ppos)
     bool done = false;
     int i;
 
-    print_msg(MSGCHAN_PROMPT, "Use the movement keys to move the cursor.\n");
-    print_msg(MSGCHAN_PROMPT, "Use '.'/ENTER to select a square, ESC/SPACE to cancel.\n");
+    print_msg(MSGCHAN_PROMPT, "Use the movement keys to move the cursor.");
+    print_msg(MSGCHAN_PROMPT, "Use '.'/ENTER to select a square, ESC/SPACE to cancel.");
     wmove(world_window, screenpos.y, screenpos.x);
     wrefresh(world_window);
     while (!done)
@@ -969,11 +979,11 @@ void get_smite_target(libmrl::Coord *ppos)
         {
             if (currlev->outofbounds(mappos))
             {
-                print_msg(MSGCHAN_PROMPT, "The Outer Darkness.\n");
+                print_msg(MSGCHAN_PROMPT, "The Outer Darkness.");
             }
             else if (!(currlev->flags_at(mappos) & MAPFLAG_EXPLORED))
             {
-                print_msg(MSGCHAN_PROMPT, "Unexplored territory\n");
+                print_msg(MSGCHAN_PROMPT, "Unexplored territory");
             }
             else
             {
@@ -981,20 +991,20 @@ void get_smite_target(libmrl::Coord *ppos)
                 Obj_handle oh = currlev->object_at(mappos);
                 if (mappos == u.pos)
                 {
-                    print_msg(MSGCHAN_PROMPT, "An unfortunate adventurer\n");
+                    print_msg(MSGCHAN_PROMPT, "An unfortunate adventurer");
                 }
                 else if (mh.valid() & mon_visible(mh))
                 {
                     //describe_monster(currlev->monster_at(mappos));
                     mh.snapc()->get_name(&name, 0);
-                    print_msg(MSGCHAN_PROMPT, "%s\n", name.c_str());
+                    print_msg(MSGCHAN_PROMPT, "%s", name.c_str());
                 }
                 if (oh.valid())
                 {
                     oh.snapc()->get_name(&name);
-                    print_msg(MSGCHAN_PROMPT, "%s\n", name.c_str());
+                    print_msg(MSGCHAN_PROMPT, "%s", name.c_str());
                 }
-                print_msg(MSGCHAN_PROMPT, "%s\n", terrain_data[currlev->terrain_at(mappos)].name);
+                print_msg(MSGCHAN_PROMPT, "%s", terrain_data[currlev->terrain_at(mappos)].name);
             }
         }
         else
@@ -1015,12 +1025,12 @@ void get_smite_target(libmrl::Coord *ppos)
             wrefresh(world_window);
         }
     }
-    print_msg(MSGCHAN_PROMPT, "Done.\n");
+    print_msg(MSGCHAN_PROMPT, "Done.");
 }
 
 void print_version(void)
 {
-    print_msg(0, "You are using Martin's Dungeon Bash version %s\n", LONG_VERSION);
+    print_msg(0, "You are using Martin's Dungeon Bash version %s", LONG_VERSION);
 }
 
 /* display.cc */
