@@ -1,4 +1,4 @@
-/* display.cc
+/* ui-classic.cc
  * 
  * Copyright 2005-2009 Martin Read
  * 
@@ -24,7 +24,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define DISPLAY_C
+#define UI_CLASSIC_CC
 #include "dunbash.hh"
 #include "monsters.hh"
 #include "objects.hh"
@@ -440,7 +440,6 @@ Game_cmd get_command(void)
             return ACTIVATE_MISC;
         case 'v':
             return VOCALIZE_WORD;
-        case '0':
         case ',':
         case 'g':
             return GET_ITEM;
@@ -615,11 +614,10 @@ static void print_help_en_GB(void)
     print_msg(0, "q   quaff a potion");
     print_msg(0, "z   zap a wand");
     print_msg(0, "A   activate a miscellaneous item");
-    print_msg(0, "g   pick up an item (also 0 or comma)");
+    print_msg(0, "g   pick up an item (comma also works)");
     print_msg(0, "d   drop an item");
     print_msg(0, "e   eat something edible");
     print_msg(0, ">   go down stairs");
-    print_msg(0, "5   do nothing (wait until next action)");
     print_msg(0, ".   do nothing (wait until next action)");
     pressanykey();
     print_msg(0, "");
