@@ -89,7 +89,6 @@ struct Mon
     uint32_t last_update;
     libmrl::Coord pos;
     libmrl::Coord ai_lastpos;
-    int used;
     int hpmax;	/* Improved by OOD rating at 1:1. */
     int hpcur;	/* <= 0 is dead. */
     int mtohit;	/* Improved by OOD rating at 1:3. */
