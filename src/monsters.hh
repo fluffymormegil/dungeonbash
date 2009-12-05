@@ -106,7 +106,7 @@ struct Mon
     std::list<Perseff_data> perseffs;
     Status_flags status;
 
-    Mon() : used(0), name(0), current_path(0) { }
+    Mon() : name(0), current_path(0) { }
     ~Mon() { if (name) delete[] name; if (current_path) delete current_path; }
 
     void find_astar_path(libmrl::Coord c);
