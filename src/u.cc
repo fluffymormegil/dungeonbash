@@ -754,18 +754,18 @@ void Player::apply_effect(Perseff_data& peff)
     perseffs.push_back(peff);
 }
 
-void Player::suffer(Perseff_data& peff)
+bool Player::suffer(Perseff_data& peff)
 {
     switch (peff.flavour)
     {
     case Perseff_bitter_chill:
         print_msg(0, "Bitter cold numbs your flesh.\n");
-        damage_u(one_die(peff.power), DEATH_KILLED, "bitter cold");
-        break;
+        return damage_u(one_die(peff.power), DEATH_KILLED, "bitter cold");
+
     case Perseff_searing_flames:
         print_msg(0, "Searing flames burn your flesh.\n");
-        damage_u(one_die(peff.power), DEATH_KILLED, "searing flames");
-        break;
+        return damage_u(one_die(peff.power), DEATH_KILLED, "searing flames");
+
     default:
         break;
     }
@@ -873,10 +873,7 @@ void update_player(void)
              peff_iter != u.perseffs.end();
              peff_iter = peff_next)
         {
-            if ((*peff_iter).duration)
-            {
-                u.suffer(*peff_iter);
-            }
+            wiped = u.suffer(*peff_iter);
             if (wiped)
             {
                 break;

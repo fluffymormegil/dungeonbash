@@ -610,14 +610,20 @@ bool update_mon(Mon_handle mon)
 #endif
         std::list<Perseff_data>::iterator peff_iter;
         std::list<Perseff_data>::iterator peff_next;
-        Status_flags saved_status = mptr->status;
-        mptr->status.clear_all();
+        Status_flags new_status;
+        new_status.clear_all();
         for (peff_iter = mptr->perseffs.begin();
              peff_iter != mptr->perseffs.end();
              peff_iter = peff_next)
         {
             peff_next = peff_iter;
             ++peff_next;
+            if (!perseff_meta[(*peff_iter).flavour].ontological_inertia &&
+                !(*peff_iter).by_you && !(*peff_iter).caster.valid())
+            {
+                mptr->perseffs.erase(peff_iter);
+                continue;
+            }
             if ((*peff_iter).duration > 0)
             {
                 (*peff_iter).duration--;
@@ -625,13 +631,19 @@ bool update_mon(Mon_handle mon)
             if ((*peff_iter).duration)
             {
                 /* Act on the debuff */
-                mptr->status.set_flag((*peff_iter).flavour);
-                wiped = mptr->suffer(*peff_iter);
+                new_status.set_flag((*peff_iter).flavour);
             }
             else
             {
                 mptr->perseffs.erase(peff_iter);
             }
+        }
+        mptr->status = new_status;
+        for (peff_iter = mptr->perseffs.begin();
+             peff_iter != mptr->perseffs.end();
+             peff_iter = peff_next)
+        {
+            wiped = mptr->suffer(*peff_iter);
             if (wiped)
             {
                 break;
