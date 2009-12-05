@@ -1096,4 +1096,20 @@ int Player::on_remove(bool force)
     return 1;
 }
 
+int get_inventory_slot(Obj_handle oh)
+{
+    int i;
+    if (oh.valid())
+    {
+        for (i = 0; i < 19; ++i)
+        {
+            if (oh == u.inventory[i])
+            {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
 /* u.cc */
