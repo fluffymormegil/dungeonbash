@@ -768,7 +768,7 @@ bool Player::suffer(Perseff_data& peff)
         return damage_u(one_die(peff.power), DEATH_KILLED, "searing flames");
 
     default:
-        break;
+        return 0;
     }
 }
 

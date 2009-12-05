@@ -65,7 +65,7 @@ struct Player {
     Status_flags status;
     // Persistent effect application
     void apply_effect(Perseff_data& peff);
-    void suffer(Perseff_data& peff);
+    bool suffer(Perseff_data& peff);
     void resolve_dispel(std::list<Perseff_data>::iterator peff_iter);
 
     // computed-value functions
