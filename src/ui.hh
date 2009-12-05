@@ -1,7 +1,7 @@
-/* cloud.cc - clouds for Martin's Dungeon Bash
+/* display.hh
  * 
  * Copyright 2009 Martin Read
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -24,48 +24,46 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define CLOUD_CC
-#include "dunbash.hh"
-#include "cloud.hh"
+#ifndef UI_HH
+#define UI_HH
 
-// intended mechanics:
-//
-//   A cloud affects its victims on the tick they enter it. It then affects
-//   them on any *future* normal-speed tick they finish in it.
-//
-//   All clouds block LOS.
-//
-//   fog cloud: harmless
-//   fire cloud: does 1d4 fire damage.
-//   ice cloud: does 1d4 cold damage.
-//   abyssal cloud: does 1d10 death damage.
-//
-// Spawning a fire cloud into an ice cloud (or v.v.) produces a fog cloud.
-// Fire and ice clouds overwrite fog. Abyssal clouds overwrite all others and
-// cannot be overwritten.
+#include "coord.hh"
+#include <string>
 
-const Cloud no_cloud = { Total_clouds, 0 };
+#define MSGCHAN_DEFAULT 0
+#define MSGCHAN_TAUNT 1
+#define MSGCHAN_NUMERIC 2
+#define MSGCHAN_BORINGFAIL 3
+#define MSGCHAN_MINORFAIL 4
+#define MSGCHAN_PROMPT 5
+#define MSGCHAN_FLUFF 6
+#define MSGCHAN_MON_ALERT 7
+#define MSGCHAN_INTERROR 8
+#define MSGCHAN_DEBUG 9
 
-void encounter_cloud(Cloud cld, bool announce_cloud)
-{
-    switch (cld.flavour)
-    {
-    case Cloud_fog:
-        print_msg(0, "You are in a bank of fog.");
-        break;
-    case Cloud_ice:
-        print_msg(0, "You are in a cloud of bitterly cold fog.");
-        break;
-    case Cloud_fire:
-        print_msg(0, "You are in a cloud of searing flames.");
-        break;
-    case Cloud_poison:
-        print_msg(0, "You are in a cloud of noxious gas.");
-        break;
-    case Cloud_abyssal:
-        print_msg(0, "You are in a cloud of miasmic foulness.");
-        break;
-    }
-}
+/* XXX ui.c data and funcs */
+extern void ui_init(void);
+extern void print_msg(int channel, const char *fmt, ...);
+extern void print_help(void);
+extern void print_version(void);
+extern void newsym(libmrl::Coord c);
+extern void touch_back_buffer(void);
+extern void print_inv(Poclass_num filter);
+extern void print_equipped();
+extern int inv_select(Poclass_num filter, const char *action, int accept_blank);
+extern Game_cmd get_command(void);
+extern int select_dir(libmrl::Coord *psign, bool silent = false);
+extern int getYN(const char *msg);
+extern int getyn(const char *msg);
+extern void press_enter(void);
+extern void pressanykey(void);
+extern void show_discoveries(void);
+extern void animate_projectile(libmrl::Coord pos, Dbash_colour col = DBCLR_L_GREY);
+extern void projectile_done(void);
+extern void farlook(void);
 
-/* cloud.cc */
+/* "Show the player the terrain only" flag. */
+extern int show_terrain;
+
+#endif
+/* ui.hh */

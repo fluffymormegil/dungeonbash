@@ -212,8 +212,8 @@ void new_game(void)
     status_updated = 1;
     map_updated = 1;
     hard_redraw = 1;
-    print_msg(0, "Welcome to Martin's Infinite Dungeon.\n");
-    print_msg(0, "Press '?' for help.\n");
+    print_msg(0, "Welcome to Martin's Infinite Dungeon.");
+    print_msg(0, "Press '?' for help.");
 }
 
 int resolve_dance(Game_cmd cmd)
@@ -257,6 +257,7 @@ int resolve_dance(Game_cmd cmd)
         break;
     case DUMP_CHARA:
     case SHOW_INVENTORY:
+    case SHOW_EQUIPPED:
         // Status inspection commands 
         rv = 0;
         break;
@@ -269,7 +270,7 @@ int resolve_dance(Game_cmd cmd)
     }
     else
     {
-        print_msg(0, "You stumble.\n");
+        print_msg(0, "You stumble.");
     }
     return rv;
 }
@@ -334,7 +335,7 @@ int do_command(Game_cmd cmd)
 	}
 	else
 	{
-	    print_msg(MSGCHAN_MINORFAIL, "Nothing to get.\n");
+	    print_msg(MSGCHAN_MINORFAIL, "Nothing to get.");
 	    return 0;
 	}
 
@@ -344,21 +345,21 @@ int do_command(Game_cmd cmd)
 	if (i == -2)
 	{
 	    u.weapon = NO_OBJECT;
-	    print_msg(0, "Weapon unwielded.\n");
+	    print_msg(0, "Weapon unwielded.");
 	}
 	else if (i >= 0)
 	{
 	    u.weapon = u.inventory[i];
 	    j = 1;
             u.weapon.snapc()->get_name(&namestr);
-	    print_msg(0, "Wielding %s.\n", namestr.c_str());
+	    print_msg(0, "Wielding %s.", namestr.c_str());
 	}
 	return j;
 
     case WEAR_ARMOUR:
 	if (u.armour.valid())
 	{
-	    print_msg(MSGCHAN_MINORFAIL, "You are already wearing armour.\n");
+	    print_msg(MSGCHAN_MINORFAIL, "You are already wearing armour.");
 	    return 0;
 	}
 	i = inv_select(POCLASS_ARMOUR, "wear", 0);
@@ -368,7 +369,7 @@ int do_command(Game_cmd cmd)
 	    permobjs[u.armour.otyp()].known = 1;
 	    recalc_defence();
             u.armour.snapc()->get_name(&namestr);
-	    print_msg(0, "Wearing %s.\n", namestr.c_str());
+	    print_msg(0, "Wearing %s.", namestr.c_str());
 	    return 1;
 	}
 	return 0;
@@ -377,12 +378,12 @@ int do_command(Game_cmd cmd)
 	{
 	    u.armour = NO_OBJECT;
 	    recalc_defence();
-	    print_msg(0, "You take off your armour.\n");
+	    print_msg(0, "You take off your armour.");
 	    return 1;
 	}
 	else
 	{
-	    print_msg(0, "You aren't wearing any armour.\n");
+	    print_msg(0, "You aren't wearing any armour.");
 	    return 0;
 	}
 
@@ -396,11 +397,11 @@ int do_command(Game_cmd cmd)
     case GO_UP_STAIRS:
 	if (currlev->terrain_at(u.pos) == STAIRS_UP)
         {
-            print_msg(MSGCHAN_MINORFAIL, "The curse of the dungeon prevents you from ascending.\n");
+            print_msg(MSGCHAN_MINORFAIL, "The curse of the dungeon prevents you from ascending.");
         }
         else
         {
-            print_msg(MSGCHAN_MINORFAIL, "There are no up stairs here.\n");
+            print_msg(MSGCHAN_MINORFAIL, "There are no up stairs here.");
         }
         return 0;
     case GO_DOWN_STAIRS:
@@ -413,7 +414,7 @@ int do_command(Game_cmd cmd)
 	}
 	else
 	{
-	    print_msg(MSGCHAN_MINORFAIL, "There are no down stairs here.\n");
+	    print_msg(MSGCHAN_MINORFAIL, "There are no down stairs here.");
 	}
 	return 0;
 
@@ -438,7 +439,7 @@ int do_command(Game_cmd cmd)
     case PUT_ON_RING:
 	if (u.ring.valid())
 	{
-	    print_msg(MSGCHAN_MINORFAIL, "You are already wearing a ring.\n");
+	    print_msg(MSGCHAN_MINORFAIL, "You are already wearing a ring.");
 	    return 0;
 	}
 	i = inv_select(POCLASS_RING, "put on", 0);
@@ -446,7 +447,7 @@ int do_command(Game_cmd cmd)
 	{
 	    u.ring = u.inventory[i];
             u.ring.snapc()->get_name(&namestr);
-            print_msg(0, "You put on %s.\n", namestr.c_str());
+            print_msg(0, "You put on %s.", namestr.c_str());
 	    return 1;
 	}
 	return 0;
@@ -473,7 +474,7 @@ int do_command(Game_cmd cmd)
 	map_updated = 1;
         touch_back_buffer();
 	display_update();
-	print_msg(0, "Display of monsters and objects suppressed.\n");
+	print_msg(0, "Display of monsters and objects suppressed.");
 	press_enter();
 	show_terrain = 0;
 	map_updated = 1;
@@ -495,11 +496,11 @@ int do_command(Game_cmd cmd)
 		    evens++;
 		}
 	    }
-	    print_msg(0, "100k rolls: 0 %d, 1 %d\n", odds, evens);
+	    print_msg(0, "100k rolls: 0 %d, 1 %d", odds, evens);
 	}
-	print_msg(0, "1d2-1: %d %d %d %d %d %d %d %d\n", zero_die(2), zero_die(2), zero_die(2), zero_die(2), zero_die(2), zero_die(2), zero_die(2), zero_die(2));
-	print_msg(0, "1d8-1: %d %d %d %d %d %d %d %d\n", zero_die(8), zero_die(8), zero_die(8), zero_die(8), zero_die(8), zero_die(8), zero_die(8), zero_die(8));
-	print_msg(0, "1d32-1: %d %d %d %d %d %d %d %d\n", zero_die(32), zero_die(32), zero_die(32), zero_die(32), zero_die(32), zero_die(32), zero_die(32), zero_die(32));
+	print_msg(0, "1d2-1: %d %d %d %d %d %d %d %d", zero_die(2), zero_die(2), zero_die(2), zero_die(2), zero_die(2), zero_die(2), zero_die(2), zero_die(2));
+	print_msg(0, "1d8-1: %d %d %d %d %d %d %d %d", zero_die(8), zero_die(8), zero_die(8), zero_die(8), zero_die(8), zero_die(8), zero_die(8), zero_die(8));
+	print_msg(0, "1d32-1: %d %d %d %d %d %d %d %d", zero_die(32), zero_die(32), zero_die(32), zero_die(32), zero_die(32), zero_die(32), zero_die(32), zero_die(32));
 	return 0;
     case DROP_ITEM:
 	i = inv_select(POCLASS_NONE, "drop", 0);
@@ -509,7 +510,7 @@ int do_command(Game_cmd cmd)
 		((u.inventory[i] == u.ring) ||
 		 (u.inventory[i] == u.armour)))
 	    {
-		print_msg(MSGCHAN_MINORFAIL, "You cannot drop something you are wearing.\n");
+		print_msg(MSGCHAN_MINORFAIL, "You cannot drop something you are wearing.");
 		return 0;
 	    }
 	    j = drop_obj(i);
@@ -527,7 +528,7 @@ int do_command(Game_cmd cmd)
 	i = save_game();
 	if (i == 0)
 	{
-	    print_msg(0, "Game saved; exiting.\n");
+	    print_msg(0, "Game saved; exiting.");
 	    game_finished = true;
 	}
 	if (save_wait)
@@ -536,7 +537,7 @@ int do_command(Game_cmd cmd)
 	}
 	return 0;
     case QUIT:
-	j = getYN("Really quit?\n");
+	j = getYN("Really quit?");
 	if (j > 0)
 	{
 	    game_finished = true;
@@ -544,11 +545,14 @@ int do_command(Game_cmd cmd)
 	}
 	else
 	{
-	    print_msg(0, "Never mind.\n");
+	    print_msg(0, "Never mind.");
 	}
 	return 0;
+    case SHOW_EQUIPPED:
+        print_equipped();
+        return 0;
     case SHOW_INVENTORY:
-	print_msg(0, "You are carrying:\n");
+	print_msg(0, "You are carrying:");
 	print_inv(POCLASS_NONE);
 	return 0;
 
@@ -559,7 +563,7 @@ int do_command(Game_cmd cmd)
              peff_iter != u.perseffs.end();
              ++peff_iter)
         {
-            print_msg(0, "perseff flavour %d power %d duration %d by_you %d on_you %d\n",
+            print_msg(0, "perseff flavour %d power %d duration %d by_you %d on_you %d",
                       peff_iter->flavour, peff_iter->power,
                       peff_iter->duration, peff_iter->by_you,
                       peff_iter->on_you);
@@ -567,7 +571,7 @@ int do_command(Game_cmd cmd)
         }
         else
         {
-            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.\n");
+            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.");
         }
         return 0;
 
@@ -586,7 +590,7 @@ int do_command(Game_cmd cmd)
         }
         else
         {
-            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.\n");
+            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.");
         }
         return 0;
     case WIZARD_DESCEND:
@@ -599,7 +603,7 @@ int do_command(Game_cmd cmd)
         }
         else
         {
-            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.\n");
+            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.");
         }
         return 0;
 
@@ -610,7 +614,7 @@ int do_command(Game_cmd cmd)
             // return uwhirl();
             break;
         default:
-            print_msg(0, "Your current profession has no ability on that key.\n");
+            print_msg(0, "Your current profession has no ability on that key.");
             break;
         }
         return 0;
@@ -636,7 +640,7 @@ int do_command(Game_cmd cmd)
         }
         else
         {
-            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.\n");
+            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.");
         }
         return 0;
 
@@ -647,11 +651,11 @@ int do_command(Game_cmd cmd)
         }
         else
         {
-            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.\n");
+            print_msg(MSGCHAN_MINORFAIL, "You aren't a wizard.");
         }
         return 0;
     case NO_CMD:
-        print_msg(MSGCHAN_MINORFAIL, "Received null command.\n");
+        print_msg(MSGCHAN_MINORFAIL, "Received null command.");
         break;
     }
     return 0;
@@ -739,7 +743,7 @@ void main_loop(void)
             /* If you're wearing a ring of doom, zap you. */
             if (u.ring.otyp() == PO_DOOM_RING)
             {
-                print_msg(0, "Your ring pulses uncleanly.\n");
+                print_msg(0, "Your ring pulses uncleanly.");
                 damage_u(1, DEATH_KILLED, "a ring of doom");
                 display_update();
                 permobjs[PO_DOOM_RING].known = 1;
@@ -748,7 +752,7 @@ void main_loop(void)
             {
                 if (!zero_die(75))
                 {
-                    print_msg(0, "Your ring flares white!\n");
+                    print_msg(0, "Your ring flares white!");
                     permobjs[PO_TELEPORT_RING].known = 1;
                     teleport_u();
                 }
@@ -766,7 +770,7 @@ void main_loop(void)
             monwiped = false;
             if (!mptr)
             {
-                print_msg(MSGCHAN_INTERROR, "current map's denizen list contains bad handles\n");
+                print_msg(MSGCHAN_INTERROR, "current map's denizen list contains bad handles");
                 abort();
             }
             /* Update the monster's status. */
@@ -828,6 +832,7 @@ int main(void)
 #endif
     get_config();
     display_init();
+    ui_init();
     ptac_init();
     monsters_init();
     i = load_game();

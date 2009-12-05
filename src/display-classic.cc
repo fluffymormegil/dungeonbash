@@ -26,15 +26,13 @@
 
 #define DISPLAY_C
 #include "dunbash.hh"
-#include "monsters.hh"
-#include "objects.hh"
 #include "player.hh"
 #include <curses.h>
 #include <stdio.h>
 #include <panel.h>
-#include <stdarg.h>
-#include <unistd.h>
 #include <string.h>
+
+#include <vector>
 
 WINDOW *status_window;
 WINDOW *world_window;
@@ -45,26 +43,10 @@ PANEL *message_panel;
 
 FILE *msglog_fp;
 
-// Message channel suppression
-bool suppressions[] =
-{
-    false, false, false, false,
-    false, false, false, false,
-    false, true
-};
+int dgamelaunch_karma;
 
-bool fruit_salad_inventory;
-
-libmrl::Coord last_projectile_pos = libmrl::NOWHERE;
-libmrl::Coord curr_projectile_pos = libmrl::NOWHERE;
-Dbash_colour projectile_colour = DBCLR_L_GREY;
-int projectile_delay = 40;
-
-int wall_colour;
-int you_colour;
 int status_updated;
 int map_updated;
-int show_terrain;
 int hard_redraw;
 
 /* If your terminal defaults to black text on a white background instead of
@@ -88,19 +70,29 @@ chtype colour_attrs[15] =
     COLOR_PAIR(DBCLR_CYAN) | A_BOLD
 };
 
+const char *colour_names[15] =
+{
+    "lgrey", "dgrey", "red", "blue", "green", "purple", "brown", "cyan",
+    "white", "lred", "lblue", "lgreen", "lpurple", "yellow", "lcyan"
+};
+
 #define DISP_HEIGHT 21
 #define DISP_WIDTH 21
 
-chtype back_buffer[MAX_DUN_HEIGHT][MAX_DUN_WIDTH];
-chtype front_buffer[DISP_HEIGHT][DISP_WIDTH];
+#define MSGLINES 21
+
+// The screen will be redrawn from scratch once every this-many updates, to
+// prevent view corruption with simple clients like dgamelaunch and termcast.
+#define DGL_MAX_KARMA 200
+
+int back_buffer[MAX_DUN_HEIGHT][MAX_DUN_WIDTH];
+int front_buffer[DISP_HEIGHT][DISP_WIDTH];
+
+std::vector<std::string> messages;
 
 /* Prototypes for static funcs */
-static chtype object_char(int object_id);
-static chtype monster_char(int monster_id);
-static chtype terrain_char(Terrain_num terrain_type);
 static void draw_status_line(void);
 static void draw_world(void);
-static void print_help_en_GB(void);
 
 /* Static funcs */
 static void draw_status_line(void)
@@ -114,86 +106,6 @@ static void draw_status_line(void)
     mvwprintw(status_window, 1, 19, "Food: %6d", u.food);
     mvwprintw(status_window, 1, 62, "Exp: %2d/%7d", u.level, u.experience);
     mvwprintw(status_window, 1, 47, "Agi: %2d/%2d", u.agility - u.adam, u.agility);
-}
-
-static chtype terrain_char(Terrain_num terrain_type)
-{
-    return colour_attrs[terrain_data[terrain_type].colour] | terrain_data[terrain_type].symbol;
-}
-
-static chtype monster_char(int monster_id)
-{
-    return (permons[monster_id].sym) | colour_attrs[permons[monster_id].colour];
-}
-
-static chtype object_char(int object_id)
-{
-    return permobjs[object_id].sym | colour_attrs[permobjs[object_id].colour];
-}
-
-void touch_back_buffer(void)
-{
-    libmrl::Coord c;
-    for (c.y = 0; c.y < MAX_DUN_HEIGHT; c.y++)
-    {
-        for (c.x = 0; c.x < MAX_DUN_WIDTH; c.x++)
-        {
-            newsym(c);
-        }
-    }
-    map_updated = 1;
-    hard_redraw = 1;
-}
-
-void newsym(libmrl::Coord c)
-{
-    chtype ch;
-
-    if ((c.y < 0) || (c.x < 0) || (c.y >= MAX_DUN_HEIGHT) || (c.x >= MAX_DUN_WIDTH))
-    {
-        return;
-    }
-    ch = back_buffer[c.y][c.x];
-    if ((c.y >= currlev->height) || (c.x >= currlev->width))
-    {
-        back_buffer[c.y][c.x] = ' ';
-    }
-    else
-    {
-        Mon_handle mon = currlev->monster_at(c);
-        Mon *mptr = mon.snapv();
-        if (c == curr_projectile_pos)
-        {
-            back_buffer[c.y][c.x] = '*' | colour_attrs[projectile_colour];
-        }
-        else if (c == u.pos)
-        {
-            back_buffer[c.y][c.x] = '@' | colour_attrs[you_colour];
-        }
-        else if (!show_terrain && mptr && mon_visible(mon))
-        {
-            back_buffer[c.y][c.x] = monster_char(mptr->mon_id);
-        }
-        else if (currlev->flags_at(c) & MAPFLAG_EXPLORED)
-        {
-            if (!show_terrain && currlev->object_at(c).valid())
-            {
-                back_buffer[c.y][c.x] = object_char(currlev->object_at(c).otyp());
-            }
-            else
-            {
-                back_buffer[c.y][c.x] = terrain_char(currlev->terrain_at(c));
-            }
-        }
-        else
-        {
-            back_buffer[c.y][c.x] = ' ';
-        }
-    }
-    if (ch != back_buffer[c.y][c.x])
-    {
-        map_updated = 1;
-    }
 }
 
 static void draw_world(void)
@@ -220,8 +132,10 @@ static void draw_world(void)
             }
             else if (hard_redraw || (front_buffer[i][j] != back_buffer[y][x]))
             {
-                mvwaddch(world_window, i, j, back_buffer[y][x]);
-                front_buffer[i][j] = back_buffer[y][x];
+                int rend = back_buffer[y][x];
+                wattrset(world_window, colour_attrs[rend >> BB_COLOR_SHIFT]);
+                mvwaddch(world_window, i, j, rend & BB_CHAR_MASK);
+                front_buffer[i][j] = rend;
             }
         }
     }
@@ -229,22 +143,20 @@ static void draw_world(void)
 
 /* extern funcs */
 
-void press_enter(void)
+void full_redraw(void)
 {
-    int ch;
-    print_msg(0, "Press RETURN or SPACE to continue\n");
-    while (1)
-    {
-        ch = wgetch(message_window);
-        if ((ch == ' ') || (ch == '\n') || (ch == '\r'))
-        {
-            break;
-        }
-    }
+    // This will probably cause lossage on non-ANSI terminals, but dgamelaunch
+    // and termcast look for this exact string so there aren't much options.
+    fputs("\e[2J", stdout);
+    clearok(curscr, 1);
+    dgamelaunch_karma = DGL_MAX_KARMA;
 }
 
 void display_update(void)
 {
+    if ((--dgamelaunch_karma) == 0)
+        full_redraw();
+
     if (status_updated)
     {
         status_updated = 0;
@@ -284,7 +196,7 @@ int display_init(void)
     {
         for (j = 0; j < DUN_WIDTH; ++j)
         {
-            back_buffer[i][j] = ' ';
+            back_buffer[i][j] = ' ' | (DBCLR_L_GREY << 8);
         }
     }
     initscr();
@@ -298,8 +210,6 @@ int display_init(void)
     init_pair(DBCLR_D_GREY, COLOR_BLACK, COLOR_BLACK);
     init_pair(DBCLR_PURPLE, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(DBCLR_CYAN, COLOR_CYAN, COLOR_BLACK);
-    wall_colour = DBCLR_BROWN;
-    you_colour = DBCLR_WHITE;
     /* OK. We want a 21x21 viewport (player at centre), a 21x58 message
      * window, and a 2x80 status line. */
     status_window = newwin(2, 80, 22, 0);
@@ -313,7 +223,7 @@ int display_init(void)
     wclear(message_window);
     scrollok(status_window, FALSE);
     scrollok(world_window, FALSE);
-    scrollok(message_window, TRUE);
+    scrollok(message_window, FALSE);
     idcok(status_window, FALSE);
     idcok(world_window, FALSE);
     idcok(message_window, FALSE);
@@ -328,255 +238,152 @@ int display_init(void)
     status_updated = FALSE;
     update_panels();
     doupdate();
+    dgamelaunch_karma = DGL_MAX_KARMA;
     return 0;
 }
 
-int read_input(char *buffer, int length)
+static void update_message(unsigned int line)
 {
-    echo();
-    display_update();
-    buffer[0] = '\0';
-    wgetnstr(message_window, buffer, length);
-    noecho();
-    return strlen(buffer);
+    std::string msg;
+
+    if (line < messages.size())
+        msg = messages[line];
+
+    wmove(message_window, line, 0);
+
+    size_t i = 0;
+    size_t max = msg.size();
+
+    while (i < max)
+    {
+        size_t close;
+
+        if (msg[i] != '<')
+            goto literal;
+
+        close = msg.find('>', i + 1);
+
+        if (close == std::string::npos)
+            goto literal;
+
+        for (int cand = 0; cand < 15; ++cand)
+        {
+            if (msg.compare(i + 1, close - i - 1, colour_names[cand]) == 0)
+            {
+                wattrset(message_window, colour_attrs[cand]);
+                i = close;
+                goto next;
+            }
+        }
+literal:
+        waddch(message_window, msg[i]);
+next:
+        ++i;
+    }
+    wattrset(message_window, 0);
+
+    wclrtoeol(message_window);
 }
 
-void print_msg(int channel, const char *fmt, ...)
+std::string get_reply(int mid, unsigned nmax)
 {
-    va_list ap;
-    va_list ap2;
-    /* For now, assume (1) that the player will never be so inundated
-     * with messages that it's dangerous to let them just fly past (2)
-     * that messages will be of sane length and nicely formatted. THIS
-     * IS VERY BAD CODING PRACTICE! */
-    /* Note that every message forces a call to display_update().
-     * Events that cause changes to the map or the player should flag
-     * the change before calling printmsg. */
-    if (!suppressions[channel])
+    std::string& out( messages[mid] );
+    std::string buf;
+    int keep = out.size();
+
+    while(1)
     {
-        va_start(ap, fmt);
-        vw_printw(message_window, fmt, ap);
-        va_end(ap);
+        out.erase(keep);
+
+        for (unsigned i = 0; i < buf.size(); ++i)
+        {
+            if (buf[i] == '<')
+                out += "<<lgrey>";
+            else
+                out += buf[i];
+        }
+
+        update_message(mid);
+        int key = wgetch(message_window);
+
+        if (isprint(key) && buf.size() < nmax)
+        {
+            buf.push_back(key);
+        }
+        else if (key == 8 || key == 127)
+        {
+            buf.resize(buf.size() ? buf.size() - 1 : 0);
+        }
+        else if (key == '\r' || key == '\n')
+        {
+            return buf;
+        }
     }
+}
+
+/* For now, assume (1) that the player will never be so inundated
+ * with messages that it's dangerous to let them just fly past (2)
+ * that messages will be of sane length and nicely formatted. THIS
+ * IS VERY BAD CODING PRACTICE! */
+/* Note that every message forces a call to display_update().
+ * Events that cause changes to the map or the player should flag
+ * the change before calling printmsg. */
+std::string message_line(bool visible, const std::string& msg, int reply)
+{
+    std::string ret;
+
+    if (visible)
+    {
+        if (messages.size() == MSGLINES)
+        {
+            // Scroll off the oldest message
+            messages.erase(messages.begin());
+
+            for (int i = 0; i < MSGLINES - 1; ++i)
+                update_message(i);
+        }
+
+        int msg_num = messages.size();
+        messages.push_back(msg);
+        update_message(msg_num);
+
+        if (reply == 1)
+        {
+            int key = wgetch(message_window);
+
+            ret = static_cast<char>(key);
+
+            if (key < 32)
+            {
+                messages[msg_num] += '^';
+                messages[msg_num] += static_cast<char>(key + '@');
+            }
+            else if (key == 127)
+                messages[msg_num] += "^?";
+            else if (key >= 128 && key < 160)
+            {
+                messages[msg_num] += '~';
+                messages[msg_num] += static_cast<char>(key - 128 + '@');
+            }
+            else
+                messages[msg_num] += key;
+
+            update_message(msg_num);
+        }
+        else if (reply)
+            ret = get_reply(msg_num, reply);
+
+        display_update();
+    }
+
     if (msglog_fp)
     {
-        va_start(ap2, fmt);
-        vfprintf(msglog_fp, fmt, ap);
-        va_end(ap2);
+        fputs(msg.c_str(), msglog_fp);
+        fputs(ret.c_str(), msglog_fp);
+        fputs("\n", msglog_fp);
     }
-    display_update();
-}
 
-void show_discoveries(void)
-{
-    int i, j;
-    print_msg(0, "You recognise the following items:\n");
-    for (i = 0, j = 1; i < PO_COUNT; i++)
-    {
-        if (permobjs[i].known)
-        {
-            print_msg(0, "%s\n", permobjs[i].name);
-            j++;
-        }
-        if (j == 19)
-        {
-            press_enter();
-            j = 0;
-        }
-    }
-}
-
-void print_inv(Poclass_num filter)
-{
-    int i;
-    std::string namestr;
-    Obj const *optr;
-    for (i = 0; i < 19; i++)
-    {
-        wattrset(message_window, 0);
-        optr = u.inventory[i].snapc();
-        if (optr && ((filter == POCLASS_NONE) || (permobjs[optr->obj_id].poclass == filter)))
-        {
-            print_msg(0, "%c) ", 'a' + i);
-            if (fruit_salad_inventory)
-            {
-                switch (optr->quality())
-                {
-                case Itemqual_bad:
-                    wattrset(message_window, colour_attrs[DBCLR_RED]);
-                    break;
-                case Itemqual_normal:
-                    wattrset(message_window, 0);
-                    break;
-                case Itemqual_good:
-                    wattrset(message_window, colour_attrs[DBCLR_GREEN]);
-                    break;
-                case Itemqual_great:
-                    wattrset(message_window, colour_attrs[DBCLR_L_BLUE]);
-                    break;
-                case Itemqual_excellent:
-                    wattrset(message_window, colour_attrs[DBCLR_PURPLE]);
-                    break;
-                }
-            }
-            u.inventory[i].snapc()->get_name(&namestr);
-            if (u.ring == u.inventory[i])
-            {
-                namestr += " (on finger)";
-            }
-            else if (u.weapon == u.inventory[i])
-            {
-                namestr += " (in hand)";
-            }
-            else if (u.armour == u.inventory[i])
-            {
-                namestr += " (being worn)";
-            }
-            print_msg(0, "%s\n", namestr.c_str());
-        }
-        wattrset(message_window, 0);
-    }
-}
-
-int inv_select(Poclass_num filter, const char *action, int accept_blank)
-{
-    int selection;
-    int ch;
-    int i;
-    int items = 0;
-    for (i = 0; i < 19; i++)
-    {
-        if ((u.inventory[i].valid()) && ((filter == POCLASS_NONE) || (permobjs[u.inventory[i].otyp()].poclass == filter)))
-        {
-            items++;
-        }
-    }
-    if (items == 0)
-    {
-        print_msg(MSGCHAN_PROMPT, "You have nothing to %s.\n", action);
-        return -1;
-    }
-    print_msg(MSGCHAN_PROMPT, "Items available to %s\n", action);
-    print_inv(filter);
-    if (accept_blank)
-    {
-        print_msg(MSGCHAN_PROMPT, "-) no item\n");
-    }
-    print_msg(MSGCHAN_PROMPT, "[ESC/SPACE to cancel]\n");
-tryagain:
-    print_msg(MSGCHAN_PROMPT, "What do you want to %s? ", action);
-    ch = wgetch(message_window);
-    switch (ch)
-    {
-    case '-':
-        if (accept_blank)
-        {
-            print_msg(MSGCHAN_PROMPT, "\n");
-            return -2;
-        }
-    case 'x':
-    case '\x1b':
-    case ' ':
-        print_msg(MSGCHAN_PROMPT, "\nNever mind.\n");
-        return -1;
-    case 'a':
-    case 'b':
-    case 'c':
-    case 'd':
-    case 'e':
-    case 'f':
-    case 'g':
-    case 'h':
-    case 'i':
-    case 'j':
-    case 'k':
-    case 'l':
-    case 'm':
-    case 'n':
-    case 'o':
-    case 'p':
-    case 'q':
-    case 'r':
-    case 's':
-        /* I am assuming that we're in a place where the character
-         * set is a strict superset of ASCII. If we're not, the
-         * following code may break. */
-        print_msg(MSGCHAN_PROMPT, "\n");
-        selection = ch - 'a';
-        if ((u.inventory[selection].valid()) && ((filter == POCLASS_NONE) || (permobjs[u.inventory[selection].otyp()].poclass == filter)))
-        {
-            return selection;
-        }
-        /* Fall through */
-    default:
-        print_msg(MSGCHAN_PROMPT, "\nBad selection\n");
-        goto tryagain;
-    }
-}
-
-int select_dir(libmrl::Coord *psign, bool silent)
-{
-    int ch;
-    int done = 0;
-    if (!silent)
-    {
-        print_msg(MSGCHAN_PROMPT, "Select a direction with movement keys.\n[ESC or space to cancel].\n");
-    }
-    while (!done)
-    {
-        ch = wgetch(message_window);
-        switch (ch)
-        {
-        case 'h':
-            *psign = libmrl::WEST;
-            done = 1;
-            break;
-        case 'j':
-            *psign = libmrl::SOUTH;
-            done = 1;
-            break;
-        case 'k':
-            *psign = libmrl::NORTH;
-            done = 1;
-            break;
-        case 'l':
-            *psign = libmrl::EAST;
-            done = 1;
-            break;
-        case 'y':
-            *psign = libmrl::NORTHWEST;
-            done = 1;
-            break;
-        case 'u':
-            *psign = libmrl::NORTHEAST;
-            done = 1;
-            break;
-        case 'b':
-            *psign = libmrl::SOUTHWEST;
-            done = 1;
-            break;
-        case 'n':
-            *psign = libmrl::SOUTHEAST;
-            done = 1;
-            break;
-        case '\n':
-        case '.':
-            psign->y = 0;
-            psign->x = 0;
-            done = 1;
-            break;
-        case '\x1b':
-        case ' ':
-            return -1;	/* cancelled. */
-        default:
-            if (!silent)
-            {
-                print_msg(MSGCHAN_PROMPT, "Bad direction (use movement keys; ESC or space to cancel.)\n");
-            }
-            break;
-        }
-    }
-    return 0;
+    return ret;
 }
 
 bool get_interrupt(void)
@@ -591,122 +398,9 @@ bool get_interrupt(void)
     return ret;
 }
 
-Game_cmd get_command(void)
+char get_silent(void)
 {
-    int ch;
-    int done = 0;
-    while (!done)
-    {
-        ch = wgetch(message_window);
-        switch (ch)
-        {
-        case 'a':
-            return ATTACK;
-        case 'z':
-            return ZAP_WAND;
-        case 'A':
-            return ACTIVATE_MISC;
-        case 'v':
-            return VOCALIZE_WORD;
-        case '0':
-        case ',':
-        case 'g':
-            return GET_ITEM;
-        case 'd':
-            return DROP_ITEM;
-        case 'D':
-            return DUMP_CHARA;
-        case 'S':
-            return SAVE_GAME;
-        case 'X':
-            return QUIT;
-        case 'i':
-            return SHOW_INVENTORY;
-        case 'I':
-            return INSPECT_ITEM;
-        case 'E':
-            return SHOW_EQUIPPED;
-        case ';':
-            return FARLOOK;
-        case ':':
-            return FLOORLOOK;
-        case '#':
-            return SHOW_TERRAIN;
-        case '\\':
-            return SHOW_DISCOVERIES;
-        case '\x12':
-            return RNG_TEST;
-        case 'h':
-            return MOVE_WEST;
-        case 'j':
-            return MOVE_SOUTH;
-        case 'k':
-            return MOVE_NORTH;
-        case 'l':
-            return MOVE_EAST;
-        case 'y':
-            return MOVE_NW;
-        case 'u':
-            return MOVE_NE;
-        case 'b':
-            return MOVE_SW;
-        case 'n':
-            return MOVE_SE;
-        case 'H':
-            return FARMOVE_WEST;
-        case 'J':
-            return FARMOVE_SOUTH;
-        case 'K':
-            return FARMOVE_NORTH;
-        case 'L':
-            return FARMOVE_EAST;
-        case 'Y':
-            return FARMOVE_NW;
-        case 'U':
-            return FARMOVE_NE;
-        case 'B':
-            return FARMOVE_SW;
-        case 'N':
-            return FARMOVE_SE;
-        case 'q':
-            return QUAFF_POTION;
-        case 'r':
-            return READ_SCROLL;
-        case 'w':
-            return WIELD_WEAPON;
-        case 'W':
-            return WEAR_ARMOUR;
-        case 'T':
-            return TAKE_OFF_ARMOUR;
-        case 'P':
-            return PUT_ON_RING;
-        case 'R':
-            return REMOVE_RING;
-        case '?':
-            return GIVE_HELP;
-        case 'V':
-            return PRINT_VERSION;
-        case '<':
-            return GO_UP_STAIRS;
-        case '>':
-            return GO_DOWN_STAIRS;
-        case 'e':
-            return EAT_FOOD;
-        case '.':
-            return STAND_STILL;
-        case '\x04':
-            return WIZARD_DESCEND;
-        case '\x05':
-            return WIZARD_LEVELUP;
-        case '\x10':
-            return WIZARD_DUMP_PERSEFFS;
-        case '\x0f':
-            return WIZARD_CURSE_ME;
-        case '\x14':
-            return WIZARD_TELEPORT;
-        }
-    }
-    return NO_CMD;
+    return wgetch(message_window);
 }
 
 int display_shutdown(void)
@@ -718,309 +412,19 @@ int display_shutdown(void)
     return 0;
 }
 
-void pressanykey(void)
+bool cursor_highlight(libmrl::Coord onto)
 {
-    print_msg(MSGCHAN_PROMPT, "Press any key to continue.\n");
-    wgetch(message_window);
-}
-
-int getYN(const char *msg)
-{
-    int ch;
-    print_msg(MSGCHAN_PROMPT, "%s", msg);
-    print_msg(MSGCHAN_PROMPT, "Press capital Y to confirm, any other key to cancel\n");
-    ch = wgetch(message_window);
-    if (ch == 'Y')
+    if ((onto.y - u.pos.y) < -10 || (onto.y - u.pos.y) > 10 ||
+        (onto.x - u.pos.x) < -10 || (onto.x - u.pos.x) > 10)
     {
-        return 1;
+        return false;
     }
-    return 0;
-}
 
-int getyn(const char *msg)
-{
-    int ch;
-    print_msg(MSGCHAN_PROMPT, "%s", msg);
-    while (1)
-    {
-        ch = wgetch(message_window);
-        switch (ch)
-        {
-        case 'y':
-        case 'Y':
-            return 1;
-        case 'n':
-        case 'N':
-            return 0;
-        case '\x1b':
-        case ' ':
-            return -1;
-        default:
-            print_msg(MSGCHAN_PROMPT, "Invalid response. Press y or n (ESC or space to cancel)\n");
-        }
-    }
-}
-
-void print_help(void)
-{
-    print_help_en_GB();
-}
-
-static void print_help_en_GB(void)
-{
-    print_msg(0, "MOVEMENT\n");
-    print_msg(0, "y  k  u\n");
-    print_msg(0, " \\ | /\n");
-    print_msg(0, "  \\|/\n");
-    print_msg(0, "h--*--l\n");
-    print_msg(0, "  /|\\\n");
-    print_msg(0, " / | \\\n");
-    print_msg(0, "b  j  n\n");
-    print_msg(0, "Attack monsters in melee by bumping into them.\n");
-    print_msg(0, "Doors do not have to be opened before you go through.\n");
-    print_msg(0, "Turn on NUM LOCK to use the numeric keypad for movement.\n");
-    print_msg(0, "Capitals HJKLYUBN move in the corresponding direction\n"
-              "until something interesting happens or is found.\n");
-    pressanykey();
-    print_msg(0, "\nACTIONS\n");
-    print_msg(0, "a   make an attack (used to fire bows)\n");
-    print_msg(0, "P   put on a ring\n");
-    print_msg(0, "R   remove a ring\n");
-    print_msg(0, "W   wear armour\n");
-    print_msg(0, "T   take off armour\n");
-    print_msg(0, "r   read a scroll\n");
-    print_msg(0, "w   wield a weapon\n");
-    print_msg(0, "q   quaff a potion\n");
-    print_msg(0, "z   zap a wand\n");
-    print_msg(0, "A   activate a miscellaneous item\n");
-    print_msg(0, "g   pick up an item (also 0 or comma)\n");
-    print_msg(0, "d   drop an item\n");
-    print_msg(0, "e   eat something edible\n");
-    print_msg(0, ">   go down stairs\n");
-    print_msg(0, "5   do nothing (wait until next action)\n");
-    print_msg(0, ".   do nothing (wait until next action)\n");
-    pressanykey();
-    print_msg(0, "\nOTHER COMMANDS\n");
-    print_msg(0, "S   save and exit\n");
-    print_msg(0, "X   quit without saving\n");
-    print_msg(0, "i   print your inventory\n");
-    print_msg(0, "I   examine an item you are carrying\n");
-    print_msg(0, "E   show your equipped items\n");
-    print_msg(0, "#   show underlying terrain of occupied squares\n");
-    print_msg(0, "\\   list all recognised items\n");
-    print_msg(0, "D   dump your character's details to <name>.dump\n");
-    print_msg(0, "?   print this message\n");
-    print_msg(0, "Control-W    print information about this program's absence of warranty.\n");
-    print_msg(0, "Control-D    print information about redistributing this program.\n");
-    pressanykey();
-    print_msg(0, "\nSYMBOLS - you and your surroundings\n");
-    print_msg(0, "@   you\n");
-    print_msg(0, ".   floor\n");
-    print_msg(0, "<   stairs up\n");
-    print_msg(0, ">   stairs down\n");
-    print_msg(0, "\"   a pool of liquid, possibly baleful\n");
-    print_msg(0, "_   an altar\n");
-    print_msg(0, "-   an anvil or other unobstructive fitting\n");
-    print_msg(0, "|   a furnace or other obstructive fitting\n");
-    print_msg(0, "#   wall\n");
-    print_msg(0, "+   a door or tombstone\n");
-    pressanykey();
-    print_msg(0, "\nSYMBOLS - treasure\n");
-    print_msg(0, ")   a weapon\n");
-    print_msg(0, "(   a missile weapon\n");
-    print_msg(0, "[   a suit of armour\n");
-    print_msg(0, "=   a ring\n");
-    print_msg(0, "?   a scroll\n");
-    print_msg(0, "!   a potion\n");
-    print_msg(0, "%%   some food\n");
-    print_msg(0, "&   corpses, severed body parts, etc.\n");
-    print_msg(0, "/   a magic wand\n");
-    print_msg(0, "*   a miscellaneous item\n");
-    pressanykey();
-    print_msg(0, "\nDemons are represented as numbers.\nMost other monsters are shown as letters.\n");
-    print_msg(0, "\nThis is all the help you get. Good luck!\n");
-}
-
-void animate_projectile(libmrl::Coord pos, Dbash_colour col)
-{
-    if (!pos_visible(pos))
-    {
-        return;
-    }
-    projectile_colour = col;
-    last_projectile_pos = curr_projectile_pos;
-    curr_projectile_pos = pos;
-    if (last_projectile_pos != libmrl::NOWHERE)
-    {
-        newsym(last_projectile_pos);
-    }
-    newsym(curr_projectile_pos);
-    display_update();
-    usleep(projectile_delay * 1000);
-}
-
-void projectile_done(void)
-{
-    last_projectile_pos = curr_projectile_pos;
-    curr_projectile_pos = libmrl::NOWHERE;
-    newsym(last_projectile_pos);
-    last_projectile_pos = libmrl::NOWHERE;
-    display_update();
-}
-
-void farlook(void)
-{
-    libmrl::Coord screenpos = { 10, 10 };
-    libmrl::Coord mappos = u.pos;
-    libmrl::Coord step;
-    std::string name;
-    bool done = false;
-    int i;
-
-    print_msg(MSGCHAN_PROMPT, "Use the movement keys to move the cursor.\n");
-    print_msg(MSGCHAN_PROMPT, "Press '.' to examine a square, ESC/SPACE to finish.\n");
-    wmove(world_window, screenpos.y, screenpos.x);
+    wmove(world_window, onto.y - u.pos.y + 10,
+                        onto.x - u.pos.x + 10);
     wrefresh(world_window);
-    while (!done)
-    {
-        i = select_dir(&step, true);
-        if (i == -1)
-        {
-            done = true;
-        }
-        else if ((step.y == 0) && (step.x == 0))
-        {
-            if (currlev->outofbounds(mappos))
-            {
-                print_msg(MSGCHAN_PROMPT, "The Outer Darkness.\n");
-            }
-            else if (!(currlev->flags_at(mappos) & MAPFLAG_EXPLORED))
-            {
-                print_msg(MSGCHAN_PROMPT, "Unexplored territory\n");
-            }
-            else
-            {
-                Mon_handle mh = currlev->monster_at(mappos);
-                Obj_handle oh = currlev->object_at(mappos);
-                if (mappos == u.pos)
-                {
-                    print_msg(MSGCHAN_PROMPT, "An unfortunate adventurer\n");
-                }
-                if (mh.valid() && mon_visible(mh))
-                {
-                    //describe_monster(currlev->monster_at(mappos));
-                    mh.snapc()->get_name(&name, 0);
-                    print_msg(MSGCHAN_PROMPT, "%s\n", name.c_str());
-                }
-                if (oh.valid())
-                {
-                    oh.snapc()->get_name(&name);
-                    print_msg(MSGCHAN_PROMPT, "%s\n", name.c_str());
-                }
-                print_msg(MSGCHAN_PROMPT, "%s\n", terrain_data[currlev->terrain_at(mappos)].name);
-            }
-            if (wizard_mode)
-            {
-                print_msg(0, "%d %d: flags %8.8x\n", mappos.y, mappos.x, currlev->flags_at(mappos));
-            }
-        }
-        else
-        {
-            if (currlev->outofbounds(mappos + step))
-            {
-                continue;
-            }
-            libmrl::Coord tmp_spos = screenpos + step;
-            if ((tmp_spos.y < 0) || (tmp_spos.x < 0) ||
-                (tmp_spos.y >= DISP_HEIGHT) || (tmp_spos.x >= DISP_WIDTH))
-            {
-                continue;
-            }
-            screenpos = tmp_spos;
-            mappos = mappos + step;
-            wmove(world_window, screenpos.y, screenpos.x);
-            wrefresh(world_window);
-        }
-    }
-    print_msg(MSGCHAN_PROMPT, "Done.\n");
-}
 
-void get_smite_target(libmrl::Coord *ppos)
-{
-    libmrl::Coord screenpos = { 10, 10 };
-    libmrl::Coord mappos = u.pos;
-    libmrl::Coord step;
-    std::string name;
-    bool done = false;
-    int i;
-
-    print_msg(MSGCHAN_PROMPT, "Use the movement keys to move the cursor.\n");
-    print_msg(MSGCHAN_PROMPT, "Use '.'/ENTER to select a square, ESC/SPACE to cancel.\n");
-    wmove(world_window, screenpos.y, screenpos.x);
-    wrefresh(world_window);
-    while (!done)
-    {
-        i = select_dir(&step, true);
-        if (i == -1)
-        {
-            done = true;
-        }
-        else if ((step.y == 0) && (step.x == 0))
-        {
-            if (currlev->outofbounds(mappos))
-            {
-                print_msg(MSGCHAN_PROMPT, "The Outer Darkness.\n");
-            }
-            else if (!(currlev->flags_at(mappos) & MAPFLAG_EXPLORED))
-            {
-                print_msg(MSGCHAN_PROMPT, "Unexplored territory\n");
-            }
-            else
-            {
-                Mon_handle mh = currlev->monster_at(mappos);
-                Obj_handle oh = currlev->object_at(mappos);
-                if (mappos == u.pos)
-                {
-                    print_msg(MSGCHAN_PROMPT, "An unfortunate adventurer\n");
-                }
-                else if (mh.valid() & mon_visible(mh))
-                {
-                    //describe_monster(currlev->monster_at(mappos));
-                    mh.snapc()->get_name(&name, 0);
-                    print_msg(MSGCHAN_PROMPT, "%s\n", name.c_str());
-                }
-                if (oh.valid())
-                {
-                    oh.snapc()->get_name(&name);
-                    print_msg(MSGCHAN_PROMPT, "%s\n", name.c_str());
-                }
-                print_msg(MSGCHAN_PROMPT, "%s\n", terrain_data[currlev->terrain_at(mappos)].name);
-            }
-        }
-        else
-        {
-            if (currlev->outofbounds(mappos + step))
-            {
-                continue;
-            }
-            libmrl::Coord tmp_spos = screenpos + step;
-            if ((tmp_spos.y < 0) || (tmp_spos.x < 0) ||
-                (tmp_spos.y >= DISP_HEIGHT) || (tmp_spos.x >= DISP_WIDTH))
-            {
-                continue;
-            }
-            screenpos = tmp_spos;
-            mappos = mappos + step;
-            wmove(world_window, screenpos.y, screenpos.x);
-            wrefresh(world_window);
-        }
-    }
-    print_msg(MSGCHAN_PROMPT, "Done.\n");
-}
-
-void print_version(void)
-{
-    print_msg(0, "You are using Martin's Dungeon Bash version %s\n", LONG_VERSION);
+    return true;
 }
 
 /* display.cc */
