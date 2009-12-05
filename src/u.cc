@@ -840,33 +840,47 @@ void update_player(void)
         bool wiped = false;
         std::list<Perseff_data>::iterator peff_iter;
         std::list<Perseff_data>::iterator peff_next;
-        Status_flags saved_status = u.status;
-        u.status.clear_all();
+        Status_flags new_status;
+        new_status.clear_all();
         for (peff_iter = u.perseffs.begin();
              peff_iter != u.perseffs.end();
              peff_iter = peff_next)
         {
             peff_next = peff_iter;
             ++peff_next;
+            if (!perseff_meta[(*peff_iter).flavour].ontological_inertia &&
+                !(*peff_iter).by_you && !(*peff_iter).caster.valid())
+            {
+                u.resolve_dispel(peff_iter);
+                continue;
+            }
             if ((*peff_iter).duration > 0)
             {
                 (*peff_iter).duration--;
             }
             if ((*peff_iter).duration)
             {
-                /* Act on the debuff */
-                u.status.set_flag((*peff_iter).flavour);
-                u.suffer(*peff_iter);
+                new_status.set_flag((*peff_iter).flavour);
             }
             else
             {
                 u.resolve_dispel(peff_iter);
             }
+        }
+        u.status = new_status;
+        recalc_defence();
+        for (peff_iter = u.perseffs.begin();
+             peff_iter != u.perseffs.end();
+             peff_iter = peff_next)
+        {
+            if ((*peff_iter).duration)
+            {
+                u.suffer(*peff_iter);
+            }
             if (wiped)
             {
                 break;
             }
-            recalc_defence();
         }
     }
     do_vision();

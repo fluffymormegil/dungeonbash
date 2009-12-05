@@ -795,4 +795,14 @@ int Levext_rooms::leave_region(libmrl::Coord c)
     return 1;
 }
 
+int Levext_rooms_boss::leave_region(libmrl::Coord c)
+{
+    return 1;
+}
+
+int Levext_rooms_boss::enter_region(libmrl::Coord c)
+{
+    return 1;
+}
+
 /* rooms.cc */
