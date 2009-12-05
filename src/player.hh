@@ -97,6 +97,7 @@ extern void update_player(void);
 extern int player_resists_dtype(Damtyp dtype);
 extern void look_at_floor(void);
 extern bool player_next_to_mon(void);
+extern int get_inventory_slot(Obj_handle oh);
 
 extern Player u;
 

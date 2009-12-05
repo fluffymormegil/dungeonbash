@@ -49,6 +49,7 @@ extern void print_version(void);
 extern void newsym(libmrl::Coord c);
 extern void touch_back_buffer(void);
 extern void print_inv(Poclass_num filter);
+extern void print_equipped();
 extern int inv_select(Poclass_num filter, const char *action, int accept_blank);
 extern Game_cmd get_command(void);
 extern int select_dir(libmrl::Coord *psign, bool silent = false);

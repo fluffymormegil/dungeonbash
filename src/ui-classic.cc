@@ -59,6 +59,8 @@ static int object_char(int object_id);
 static int monster_char(int monster_id);
 static int terrain_char(Terrain_num terrain_type);
 static void print_help_en_GB(void);
+static void prepend_item_colour(Obj const *optr, std::string& str);
+static void append_slot_maybe(Obj_handle oh, std::string& str);
 
 static int terrain_char(Terrain_num terrain_type)
 {
@@ -231,6 +233,79 @@ void show_discoveries(void)
     }
 }
 
+void print_equipped(void)
+{
+    std::string namestr;
+    int i;
+    print_msg(0, "You have the following items equipped:");
+    if (u.weapon.valid())
+    {
+        u.weapon.snapc()->get_name(&namestr);
+        i = get_inventory_slot(u.weapon);
+        prepend_item_colour(u.weapon.snapc(), namestr);
+        append_slot_maybe(u.weapon, namestr);
+        print_msg(0, "%c) %s", 'a' + i, namestr.c_str());
+    }
+    if (u.armour.valid())
+    {
+        u.armour.snapc()->get_name(&namestr);
+        i = get_inventory_slot(u.armour);
+        prepend_item_colour(u.armour.snapc(), namestr);
+        append_slot_maybe(u.armour, namestr);
+        print_msg(0, "%c) %s", 'a' + i, namestr.c_str());
+    }
+    if (u.ring.valid())
+    {
+        u.ring.snapc()->get_name(&namestr);
+        i = get_inventory_slot(u.ring);
+        prepend_item_colour(u.ring.snapc(), namestr);
+        append_slot_maybe(u.ring, namestr);
+        print_msg(0, "%c) %s", 'a' + i, namestr.c_str());
+    }
+}
+
+void prepend_item_colour(Obj const *optr, std::string& str)
+{
+    if (fruit_salad_inventory)
+    {
+        std::string colour = "";
+        switch (optr->quality())
+        {
+        case Itemqual_bad:
+            colour = "<red>";
+            break;
+        case Itemqual_normal:
+            break;
+        case Itemqual_good:
+            colour = "<lgreen>";
+            break;
+        case Itemqual_great:
+            colour = "<lblue>";
+            break;
+        case Itemqual_excellent:
+            colour = "<purple>";
+            break;
+        }
+        str = colour + str;
+    }
+}
+
+void append_slot_maybe(Obj_handle oh, std::string& str)
+{
+    if (u.ring == oh)
+    {
+        str += "<lgrey> (on finger)";
+    }
+    else if (u.weapon == oh)
+    {
+        str += "<lgrey> (in hand)";
+    }
+    else if (u.armour == oh)
+    {
+        str += "<lgrey> (being worn)";
+    }
+}
+
 void print_inv(Poclass_num filter)
 {
     int i;
@@ -242,41 +317,8 @@ void print_inv(Poclass_num filter)
         if (optr && ((filter == POCLASS_NONE) || (permobjs[optr->obj_id].poclass == filter)))
         {
             u.inventory[i].snapc()->get_name(&namestr);
-            std::string colour = "";
-
-            if (fruit_salad_inventory)
-            {
-                switch (optr->quality())
-                {
-                case Itemqual_bad:
-                    colour = "<red>";
-                    break;
-                case Itemqual_normal:
-                    break;
-                case Itemqual_good:
-                    colour = "<lgreen>";
-                    break;
-                case Itemqual_great:
-                    colour = "<lblue>";
-                    break;
-                case Itemqual_excellent:
-                    colour = "<purple>";
-                    break;
-                }
-            }
-            namestr = colour + namestr;
-            if (u.ring == u.inventory[i])
-            {
-                namestr += " (on finger)";
-            }
-            else if (u.weapon == u.inventory[i])
-            {
-                namestr += " (in hand)";
-            }
-            else if (u.armour == u.inventory[i])
-            {
-                namestr += " (being worn)";
-            }
+            prepend_item_colour(u.inventory[i].snapc(), namestr);
+            append_slot_maybe(u.inventory[i], namestr);
             print_msg(0, "%c) %s", 'a' + i, namestr.c_str());
             // XXX avoid coloring the letter
         }

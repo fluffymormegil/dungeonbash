@@ -257,6 +257,7 @@ int resolve_dance(Game_cmd cmd)
         break;
     case DUMP_CHARA:
     case SHOW_INVENTORY:
+    case SHOW_EQUIPPED:
         // Status inspection commands 
         rv = 0;
         break;
@@ -547,6 +548,9 @@ int do_command(Game_cmd cmd)
 	    print_msg(0, "Never mind.");
 	}
 	return 0;
+    case SHOW_EQUIPPED:
+        print_equipped();
+        return 0;
     case SHOW_INVENTORY:
 	print_msg(0, "You are carrying:");
 	print_inv(POCLASS_NONE);
