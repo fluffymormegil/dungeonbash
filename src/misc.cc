@@ -348,7 +348,7 @@ D_ptac_state demon_extend_word(std::string *word, D_ptac_state current)
         arr = demon_low_nucleus;
         break;
     case D_ptac_end:
-        print_msg(MSGCHAN_INTERROR, "Attempt to extend name in an end state?!\n");
+        print_msg(MSGCHAN_INTERROR, "Attempt to extend name in an end state?!");
         return D_ptac_end;
     }
     for (idx = 0; ; ++idx)

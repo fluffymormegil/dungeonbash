@@ -89,7 +89,6 @@ struct Mon
     uint32_t last_update;
     libmrl::Coord pos;
     libmrl::Coord ai_lastpos;
-    int used;
     int hpmax;	/* Improved by OOD rating at 1:1. */
     int hpcur;	/* <= 0 is dead. */
     int mtohit;	/* Improved by OOD rating at 1:3. */
@@ -107,7 +106,7 @@ struct Mon
     std::list<Perseff_data> perseffs;
     Status_flags status;
 
-    Mon() : used(0), name(0), current_path(0) { }
+    Mon() : name(0), current_path(0) { }
     ~Mon() { if (name) delete[] name; if (current_path) delete current_path; }
 
     void find_astar_path(libmrl::Coord c);

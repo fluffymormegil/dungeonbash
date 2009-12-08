@@ -142,7 +142,7 @@ int use_black_magic(Mon_handle mon)
         break;
 
     default:
-        print_msg(MSGCHAN_INTERROR, "WARNING: attempt to have non-caster cast spells.\n");
+        print_msg(MSGCHAN_INTERROR, "WARNING: attempt to have non-caster cast spells.");
         to_cast = selector_mundane(mptr, cansee, dir_data);
         break;
     }
@@ -151,7 +151,7 @@ int use_black_magic(Mon_handle mon)
     default:
         /* If this happens, we're trying to cast an unimplemented
          * spell. */
-        print_msg(MSGCHAN_INTERROR, "Can't happen: Bogus spell %d!\n", to_cast);
+        print_msg(MSGCHAN_INTERROR, "Can't happen: Bogus spell %d!", to_cast);
         rval = -1;
         break;
 
@@ -183,21 +183,21 @@ int use_black_magic(Mon_handle mon)
     case MS_TELEPORT_AND_SUMMON:
         /* Do the summoning... */
         mptr->get_name(&castername, 3, true);
-        print_msg(0, "%s calls for help...\n", castername.c_str());
+        print_msg(0, "%s calls for help...", castername.c_str());
         /* (Try to) summon 2-6 monsters. */
         i = summoning(mptr->pos, dice(2, 3));
         if (i == 0)
         {
-            print_msg(0, "... luckily for you, help wasn't listening.\n");
+            print_msg(0, "... luckily for you, help wasn't listening.");
         }
         else
         {
-            print_msg(0, "... and gets it.\n");
+            print_msg(0, "... and gets it.");
         }
         /* ... and fall through. */
     case MS_TELEPORT_ESCAPE:
         mptr->get_name(&castername, 3, true);
-        print_msg(0, "%s vanishes in a puff of smoke.\n", castername.c_str());
+        print_msg(0, "%s vanishes in a puff of smoke.", castername.c_str());
         teleport_mon(mon);
         break;
 
@@ -219,7 +219,7 @@ int use_black_magic(Mon_handle mon)
             peff.duration = 10 + one_die(10);
             peff.caster = mptr->self;
             peff.by_you = false;
-            print_msg(0, "Your armour seems uncannily fragile!\n");
+            print_msg(0, "Your armour seems uncannily fragile!");
             u.apply_effect(peff);
         }
         break;
@@ -236,7 +236,7 @@ int use_black_magic(Mon_handle mon)
             peff.duration = 10 + one_die(10);
             peff.caster = mptr->self;
             peff.by_you = false;
-            print_msg(0, "Your feet feel like lead!\n");
+            print_msg(0, "Your feet feel like lead!");
             u.apply_effect(peff);
         }
         break;
@@ -253,7 +253,7 @@ int use_black_magic(Mon_handle mon)
             peff.duration = 10 + one_die(10);
             peff.caster = mptr->self;
             peff.by_you = false;
-            print_msg(0, "Crippling decrepitude afflicts you!\n");
+            print_msg(0, "Crippling decrepitude afflicts you!");
             u.apply_effect(peff);
         }
         break;
@@ -262,11 +262,11 @@ int use_black_magic(Mon_handle mon)
         mptr->curses();
         if (player_resists_dtype(DT_NECRO))
         {
-            print_msg(0, "Darkness reaches towards you, but dissolves.\n");
+            print_msg(0, "Darkness reaches towards you, but dissolves.");
         }
         else
         {
-            print_msg(0, "Soul-chilling darkness engulfs you!\n");
+            print_msg(0, "Soul-chilling darkness engulfs you!");
             damage_u(dice(1, 20), DEATH_KILLED_MON, permons[mon.snapc()->mon_id].name);
         }
         break;
@@ -275,12 +275,12 @@ int use_black_magic(Mon_handle mon)
         mptr->curses();
         if (player_resists_dtype(DT_FIRE))
         {
-            print_msg(0, "The fires of Hell lightly singe you.\n");
+            print_msg(0, "The fires of Hell lightly singe you.");
             damage_u(dice(1, 5), DEATH_KILLED_MON, permons[mon.snapc()->mon_id].name);
         }
         else
         {
-            print_msg(0, "The fires of Hell burn you!\n");
+            print_msg(0, "The fires of Hell burn you!");
             damage_u(dice(1, 20), DEATH_KILLED_MON, permons[mon.snapc()->mon_id].name);
         }
         break;
@@ -306,21 +306,21 @@ int use_black_magic(Mon_handle mon)
 
 void malignant_aura()
 {
-    print_msg(MSGCHAN_BORINGFAIL, "A malignant aura surrounds you briefly.\n");
+    print_msg(MSGCHAN_BORINGFAIL, "A malignant aura surrounds you briefly.");
 }
 
 void Mon::curses() const
 {
     std::string castername;
     get_name(&castername, 3, true);
-    print_msg(0, "%s points at you and curses horribly.\n", castername.c_str());
+    print_msg(0, "%s points at you and curses horribly.", castername.c_str());
 }
 
 void Mon::incants() const
 {
     std::string castername;
     get_name(&castername, 3, true);
-    print_msg(0, "%s utters a fell incantation.\n", castername.c_str());
+    print_msg(0, "%s utters a fell incantation.", castername.c_str());
 }
 
 Monspell selector_archmage(Mon const *mptr, bool cansee, const Direction_data& dir_data)
@@ -754,7 +754,7 @@ int animate_dead(Mon const *mptr)
     }
     if (saw_zombie)
     {
-        print_msg(0, "The dead rise up!\n");
+        print_msg(0, "The dead rise up!");
     }
     return zombies;
 }
@@ -773,30 +773,30 @@ int corruption_spell(Mon const *mptr)
     switch (dieroll)
     {
     case 0:
-        print_msg(0, "The air smells of bitter almonds for a moment.\n");
+        print_msg(0, "The air smells of bitter almonds for a moment.");
         break;
     case 1:
-        print_msg(0, "Your weapon seems more fragile.\n");
+        print_msg(0, "Your weapon seems more fragile.");
         damage_obj(u.weapon);
         rv = 1;
         break;
     case 2:
-        print_msg(0, "Your armour seems more fragile.\n");
+        print_msg(0, "Your armour seems more fragile.");
         damage_obj(u.armour);
         rv = 1;
         break;
     case 3:
-        print_msg(0, "Vile fumes make you reel.\n");
+        print_msg(0, "Vile fumes make you reel.");
         drain_agility(1, "mystical corruption", false);
         rv = 1;
         break;
     case 4:
-        print_msg(0, "You feel feverish.\n");
+        print_msg(0, "You feel feverish.");
         drain_body(1, "mystical corruption", false);
         rv = 1;
         break;
     default:
-        print_msg(0, "Corruption wracks your body.\n");
+        print_msg(0, "Corruption wracks your body.");
         damage_u(dice(1, 10), DEATH_KILLED_MON, permons[mptr->mon_id].name);
         rv = 1;
         break;
@@ -814,7 +814,7 @@ void chainstrike_spell(Mon const *mptr)
     int dmg = 0;
     std::string name;
     mptr->curses();
-    print_msg(0, "Barbed chains lash at you!\n");
+    print_msg(0, "Barbed chains lash at you!");
     for (int i = 0; i < chains; ++i)
     {
         int dieroll = zero_die(50);
@@ -834,7 +834,7 @@ void chainstrike_spell(Mon const *mptr)
         {
             name = permons[mptr->mon_id].name;
         }
-        print_msg(0, "You are struck by %s of them.\n", numberwords[hits]);
+        print_msg(0, "You are struck by %s of them.", numberwords[hits]);
         damage_u(dmg, DEATH_KILLED_MON, name.c_str());
     }
 }
@@ -855,7 +855,7 @@ void shackle_spell(Mon const *mptr)
         }
         else
         {
-            print_msg(0, "Chains reach up from the floor to seize you, but you elude their grasp.\n");
+            print_msg(0, "Chains reach up from the floor to seize you, but you elude their grasp.");
         }
     }
 }

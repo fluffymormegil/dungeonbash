@@ -123,7 +123,9 @@ struct Levext_rooms : public Levextra
     virtual void excavate(void);
     virtual void populate(void);
     virtual libmrl::Coord get_injection_point(Leventry_mode mode) const;
-    void add_random_room(int yseg, int xseg);
+    virtual void add_random_room(int yseg, int xseg);
+    virtual void excavate_zoo_room(void);
+    void excavate_room(int roomidx);
     void link_rooms(int r1, int r2);
     void put_stairs(void);
     void populate_zoo(void);
@@ -137,6 +139,22 @@ struct Levext_rooms : public Levextra
     void excavate_shrine(int rnum);
     void excavate_morgue(int rnum);
     void excavate_smithy(int rnum);
+    virtual int leave_region(libmrl::Coord c);
+    virtual int enter_region(libmrl::Coord c);
+};
+
+struct Levext_rooms_boss : public Levext_rooms
+{
+    enum Boss_flavour
+    {
+        Boss_lord, // Physical combatant with bodyguards
+        Boss_sculptor, // Caster who animates golems during fight
+        Total_bosses
+    };
+    Mon_handle boss;
+    std::set<Mon_handle> guards;
+    virtual void add_random_room(int yseg, int xseg);
+    virtual void excavate_zoo_room(void);
     virtual int leave_region(libmrl::Coord c);
     virtual int enter_region(libmrl::Coord c);
 };

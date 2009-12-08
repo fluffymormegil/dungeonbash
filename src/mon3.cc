@@ -68,11 +68,11 @@ bool Mon::suffer(Perseff_data& peff)
     switch (peff.flavour)
     {
     case Perseff_bitter_chill:
-        print_msg(0, "Bitter cold freezes %s.\n", victim_name.c_str());
+        print_msg(0, "Bitter cold freezes %s.", victim_name.c_str());
         return damage_mon(self, one_die(peff.power), peff.by_you);
 
     case Perseff_searing_flames:
-        print_msg(0, "Searing flames burn %s.\n", victim_name.c_str());
+        print_msg(0, "Searing flames burn %s.", victim_name.c_str());
         return damage_mon(self, one_die(peff.power), peff.by_you);
 
     case Perseff_tentacle_embrace:
@@ -81,7 +81,7 @@ bool Mon::suffer(Perseff_data& peff)
         break;
 
     default:
-        print_msg(MSGCHAN_INTERROR, "Monster has debuff of invalid/unimplemented type %d\n", peff.flavour);
+        print_msg(MSGCHAN_INTERROR, "Monster has debuff of invalid/unimplemented type %d", peff.flavour);
         break;
     }
     return false;

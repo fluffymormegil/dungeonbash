@@ -74,7 +74,7 @@ int player_attack(libmrl::Coord dir)
         }
         else
         {
-            print_msg(MSGCHAN_MINORFAIL, "You attack empty air.\n");
+            print_msg(MSGCHAN_MINORFAIL, "You attack empty air.");
         }
     }
     return 2;
@@ -96,12 +96,12 @@ int uhitm(Mon_handle mon)
     tohit = zero_die(u.agility + u.level);
     if (tohit < mp->defence)
     {
-        print_msg(0, "You miss.\n");
+        print_msg(0, "You miss.");
         return 0;	/* Missed. */
     }
     std::string victim_name;
     mp->get_name(&victim_name, 1, false);
-    print_msg(0, "You hit %s.\n", victim_name.c_str());
+    print_msg(0, "You hit %s.", victim_name.c_str());
     wep = u.weapon.snapv();
     ring = u.ring.snapv();
     if (wep)
@@ -125,7 +125,7 @@ int uhitm(Mon_handle mon)
                 {
                     pring->known = 1;
                 }
-                print_msg(0, "Your ring burns %s!\n", victim_name.c_str());
+                print_msg(0, "Your ring burns %s!", victim_name.c_str());
                 damage += (damage + 1) / 2 + dice(2, 4);
             }
             break;
@@ -136,7 +136,7 @@ int uhitm(Mon_handle mon)
                 {
                     pring->known = 1;
                 }
-                print_msg(0, "Your ring drains %s!\n", victim_name.c_str());
+                print_msg(0, "Your ring drains %s!", victim_name.c_str());
                 damage += (damage + 3) / 4 + dice(2, 4);
                 healing = (damage + 5) / 6;
                 heal_u(healing, 0, 1);
@@ -149,12 +149,12 @@ int uhitm(Mon_handle mon)
                 {
                     pring->known = 1;
                 }
-                print_msg(0, "Your ring freezes %s!\n", victim_name.c_str());
+                print_msg(0, "Your ring freezes %s!", victim_name.c_str());
                 damage += (damage + 2) / 3 + dice(1, 6);
             }
         }
     }
-    print_msg(MSGCHAN_NUMERIC, "You do %d damage.\n", damage);
+    print_msg(MSGCHAN_NUMERIC, "You do %d damage.", damage);
     damage_mon(mon, damage, 1);
     if (u.weapon.valid())
     {
@@ -203,8 +203,8 @@ int ushootm(libmrl::Coord dir)
             {
                 if (mon_visible(currlev->monster_at(pos)))
                 {
-                    print_msg(0, "You hit %s.\n", victim_name.c_str());
-                    print_msg(MSGCHAN_NUMERIC, "You do %d damage.\n", damage);
+                    print_msg(0, "You hit %s.", victim_name.c_str());
+                    print_msg(MSGCHAN_NUMERIC, "You do %d damage.", damage);
                 }
                 damage_mon(currlev->monster_at(pos), damage, 1);
                 rv = 1;
@@ -212,13 +212,13 @@ int ushootm(libmrl::Coord dir)
             }
             else
             {
-                print_msg(MSGCHAN_MINORFAIL, "You miss %s.\n", victim_name.c_str());
+                print_msg(MSGCHAN_MINORFAIL, "You miss %s.", victim_name.c_str());
                 done = true;
             }
         }
         else if ((currlev->terrain_at(pos) == WALL) || (currlev->terrain_at(pos) == DOOR))
         {
-            print_msg(MSGCHAN_BORINGFAIL, "Your %s hits the %s.\n", (wep->obj_id == PO_BOW) ? "arrow" : "bolt", (currlev->terrain_at(pos) == WALL) ? "wall" : "door");
+            print_msg(MSGCHAN_BORINGFAIL, "Your %s hits the %s.", (wep->obj_id == PO_BOW) ? "arrow" : "bolt", (currlev->terrain_at(pos) == WALL) ? "wall" : "door");
             done = true;
         }
     }
@@ -245,18 +245,18 @@ int mhitu(Mon_handle mon, Damtyp dtype)
         if ((u.armour.valid()) && (tohit > agility_modifier()))
         {
             /* Monster hit your armour. */
-            print_msg(0, "Your armour %s %s's blow.\n", zero_die(2) ? "absorbs" : "deflects", attackername.c_str());
+            print_msg(0, "Your armour %s %s's blow.", zero_die(2) ? "absorbs" : "deflects", attackername.c_str());
             damage_obj(u.armour);
         }
         else
         {
-            print_msg(0, "%s misses you.\n", Attackername.c_str());
+            print_msg(0, "%s misses you.", Attackername.c_str());
         }
         return 0;
     }
     damage = one_die(mptr->mdam);
     unaffected = player_resists_dtype(dtype);
-    print_msg(0, "%s hits you.\n", Attackername.c_str());
+    print_msg(0, "%s hits you.", Attackername.c_str());
     if ((u.armour.valid()) && u.status.test_flag(Perseff_armourmelt_curse) && (!zero_die(3)))
     {
         /* If you're subject to armourmelt, it is decreed that one
@@ -269,44 +269,44 @@ test_unaffected:
         switch (dtype)
         {
         case DT_PHYS:
-            print_msg(MSGCHAN_INTERROR, "Can't happen: player resisting physical damage\n");
+            print_msg(MSGCHAN_INTERROR, "Can't happen: player resisting physical damage");
             unaffected = false;
             /* Turn off the player's resistance, because they're
              * not supposed to have it! */
             u.resistances[DT_PHYS] = 0;
             goto test_unaffected;
         case DT_FIRE:
-            print_msg(0, "The flames seem pleasantly warm.\n");
+            print_msg(0, "The flames seem pleasantly warm.");
             if (unaffected & RESIST_RING)
             {
-                print_msg((permobjs[PO_FIRE_RING].known ? MSGCHAN_TAUNT : 0), "Your ring flashes red.\n");
+                print_msg((permobjs[PO_FIRE_RING].known ? MSGCHAN_TAUNT : 0), "Your ring flashes red.");
                 permobjs[PO_FIRE_RING].known = 1;
             }
             break;
         case DT_COLD:
-            print_msg(0, "Its touch seems pleasantly cool.\n");
+            print_msg(0, "Its touch seems pleasantly cool.");
             if (unaffected & RESIST_RING)
             {
-                print_msg((permobjs[PO_FIRE_RING].known ? MSGCHAN_TAUNT : 0), "Your ring flashes blue.\n");
+                print_msg((permobjs[PO_FIRE_RING].known ? MSGCHAN_TAUNT : 0), "Your ring flashes blue.");
                 permobjs[PO_FROST_RING].known = 1;
             }
             break;
         case DT_NECRO:
-            print_msg(0, "Its touch makes you feel no deader.\n");
+            print_msg(0, "Its touch makes you feel no deader.");
             if (unaffected & RESIST_RING)
             {
-                print_msg((permobjs[PO_FIRE_RING].known ? MSGCHAN_TAUNT : 0), "Your ring shrieks.\n");
+                print_msg((permobjs[PO_FIRE_RING].known ? MSGCHAN_TAUNT : 0), "Your ring shrieks.");
                 permobjs[PO_VAMPIRE_RING].known = 1;
             }
             break;
         case DT_ELEC:
-            print_msg(0, "Tingly blue lightning plays across your skin.\n");
+            print_msg(0, "Tingly blue lightning plays across your skin.");
             break;
         case DT_POISON:
-            print_msg(0, "You feel faintly nauseous.\n");
+            print_msg(0, "You feel faintly nauseous.");
             break;
         default:
-            print_msg(MSGCHAN_INTERROR, "Can't happen: bogus damage type.\n");
+            print_msg(MSGCHAN_INTERROR, "Can't happen: bogus damage type.");
             break;
         }
     }
@@ -318,22 +318,22 @@ test_unaffected:
         case DT_PHYS:
             break;
         case DT_FIRE:
-            print_msg(0, "You are engulfed in flames.\n");
+            print_msg(0, "You are engulfed in flames.");
             break;
         case DT_COLD:
-            print_msg(0, "You are covered in frost.\n");
+            print_msg(0, "You are covered in frost.");
             break;
         case DT_NECRO:
-            print_msg(0, "You feel your life force slipping away.\n");
+            print_msg(0, "You feel your life force slipping away.");
             break;
         case DT_ELEC:
-            print_msg(0, "Electricity shoots through you.\n");
+            print_msg(0, "Electricity shoots through you.");
             break;
         case DT_POISON:
-            print_msg(0, "You feel sick.\n");
+            print_msg(0, "You feel sick.");
             break;
         }
-        print_msg(MSGCHAN_NUMERIC, "You take %d damage.\n", damage);
+        print_msg(MSGCHAN_NUMERIC, "You take %d damage.", damage);
         if ((mptr->mon_id == PM_VAMPIRE) && !player_resists_dtype(DT_NECRO))
         {
             heal_mon(mon, damage * 2 / 5, 1);
@@ -349,7 +349,7 @@ test_unaffected:
             !zero_die(8 - permons[mptr->mon_id].speed))
         {
             teleport_mon(mon);
-            print_msg(0, "%s teleports away!\n", Attackername.c_str());
+            print_msg(0, "%s teleports away!", Attackername.c_str());
         }
     }
     return 1;
@@ -380,11 +380,11 @@ int mshootu(Mon_handle mon, Damtyp dtyp)
     tohit = zero_die(mptr->rtohit);
     if (dtyp == DT_PHYS)
     {
-        print_msg(0, "%s %s at you!\n", Attackername.c_str(), permons[mptr->mon_id].ranged.verb);
+        print_msg(0, "%s %s at you!", Attackername.c_str(), permons[mptr->mon_id].ranged.verb);
     }
     else
     {
-        print_msg(0, "%s %s %s at you!\n", Attackername.c_str(), permons[mptr->mon_id].ranged.verb, damtype_names[dtyp]);
+        print_msg(0, "%s %s %s at you!", Attackername.c_str(), permons[mptr->mon_id].ranged.verb, damtype_names[dtyp]);
     }
     if ((dtyp == DT_NECRO) || (dtyp == DT_ELEC))
     {
@@ -433,7 +433,7 @@ int mshootu(Mon_handle mon, Damtyp dtyp)
             if (tohit >= defence)
             {
                 done = true;
-                print_msg(0, "It hits you!\n");
+                print_msg(0, "It hits you!");
                 unaffected = player_resists_dtype(dtyp);
                 if (unaffected)
                 {
@@ -444,15 +444,15 @@ int mshootu(Mon_handle mon, Damtyp dtyp)
                         switch (dtyp)
                         {
                         case DT_COLD:
-                            print_msg((permobjs[PO_FROST_RING].known ? MSGCHAN_TAUNT : 0), "Your ring flashes blue.\n");
+                            print_msg((permobjs[PO_FROST_RING].known ? MSGCHAN_TAUNT : 0), "Your ring flashes blue.");
                             permobjs[PO_FROST_RING].known = 1;
                             break;
                         case DT_FIRE:
-                            print_msg((permobjs[PO_FIRE_RING].known ? MSGCHAN_TAUNT : 0), "Your ring flashes red.\n");
+                            print_msg((permobjs[PO_FIRE_RING].known ? MSGCHAN_TAUNT : 0), "Your ring flashes red.");
                             permobjs[PO_FIRE_RING].known = 1;
                             break;
                         case DT_NECRO:
-                            print_msg((permobjs[PO_VAMPIRE_RING].known ? MSGCHAN_TAUNT : 0), "Your ring shrieks.\n");
+                            print_msg((permobjs[PO_VAMPIRE_RING].known ? MSGCHAN_TAUNT : 0), "Your ring shrieks.");
                             permobjs[PO_VAMPIRE_RING].known = 1;
                             break;
                         default:
@@ -463,7 +463,7 @@ int mshootu(Mon_handle mon, Damtyp dtyp)
                 else
                 {
                     damage = one_die(mptr->rdam);
-                    print_msg(MSGCHAN_NUMERIC, "You take %d damage.\n", damage);
+                    print_msg(MSGCHAN_NUMERIC, "You take %d damage.", damage);
                     damage_u(damage, DEATH_KILLED_MON, permons[mptr->mon_id].name);
                 }
                 display_update();
@@ -471,7 +471,7 @@ int mshootu(Mon_handle mon, Damtyp dtyp)
             }
             else
             {
-                print_msg(0, "It misses you.\n");
+                print_msg(0, "It misses you.");
             }
         }
         else if (currlev->monster_at(pos).valid())

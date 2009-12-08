@@ -131,7 +131,7 @@ void Levext_rooms::excavate_shrine(int rnum)
         parent->set_terrain(c + libmrl::SOUTH, SKIN_FLOOR);
         break;
     default:
-        print_msg(MSGCHAN_INTERROR, "excavate_shrine() called on level with non-shrine zoo_style\n");
+        print_msg(MSGCHAN_INTERROR, "excavate_shrine() called on level with non-shrine zoo_style");
         return;
     }
     parent->set_terrain(c, ALTAR);
@@ -168,6 +168,29 @@ void Levext_rooms::excavate_smithy(int rnum)
     parent->set_terrain(c2, FURNACE);
 }
 
+void Levext_rooms_boss::add_random_room(int yseg, int xseg)
+{
+    int roomidx = (yseg * 3) + xseg;
+    libmrl::Coord topleft;
+    libmrl::Coord botright;
+    if (roomidx != zoo_room)
+    {
+        Levext_rooms::add_random_room(yseg, xseg);
+        return;
+    }
+    segsused[yseg * 3 + xseg] = 1;
+    topleft.y = 1 + yseg * (parent->height / 3);
+    botright.y = (yseg + 1) * (parent->height / 3) - 1;
+    topleft.x = 1 + xseg * (parent->width / 3);
+    botright.x = (xseg + 1) * (parent->width / 3) - 1;
+    bounds[roomidx][0] = topleft;
+    bounds[roomidx][1] = botright;
+}
+
+void Levext_rooms_boss::excavate_zoo_room(void)
+{
+}
+
 void Levext_rooms::add_random_room(int yseg, int xseg)
 {
     int roomidx = (yseg * 3) + xseg;
@@ -187,35 +210,13 @@ void Levext_rooms::add_random_room(int yseg, int xseg)
     bounds[roomidx][0] = topleft;
     bounds[roomidx][1] = botright;
     segsused[yseg * 3 + xseg] = 1;
+}
+
+void Levext_rooms::excavate_room(int roomidx)
+{
     if (roomidx == zoo_room)
     {
-        switch (zoo_style)
-        {
-        case ZOO_MORGUE:
-            roomflav[roomidx] = Rflav_treasure_zoo;
-            excavate_morgue(roomidx);
-            break;
-        case ZOO_SHRINE_FIRE:
-        case ZOO_SHRINE_IRON:
-        case ZOO_SHRINE_BONE:
-        case ZOO_SHRINE_DECAY:
-        case ZOO_SHRINE_FLESH:
-            roomflav[roomidx] = Rflav_shrine;
-            excavate_shrine(roomidx);
-            break;
-        case ZOO_TREASURE:
-            roomflav[roomidx] = Rflav_treasure_zoo;
-            excavate_normal_room(roomidx);
-            break;
-        case ZOO_SMITHY:
-            roomflav[roomidx] = Rflav_smithy;
-            excavate_smithy(roomidx);
-            break;
-        default:
-            roomflav[roomidx] = Rflav_dull;
-            excavate_normal_room(roomidx);
-            break;
-        }
+        excavate_zoo_room();
     }
     else
     {
@@ -224,6 +225,36 @@ void Levext_rooms::add_random_room(int yseg, int xseg)
     }
 }
 
+void Levext_rooms::excavate_zoo_room()
+{
+    switch (zoo_style)
+    {
+    case ZOO_MORGUE:
+        roomflav[zoo_room] = Rflav_treasure_zoo;
+        excavate_morgue(zoo_room);
+        break;
+    case ZOO_SHRINE_FIRE:
+    case ZOO_SHRINE_IRON:
+    case ZOO_SHRINE_BONE:
+    case ZOO_SHRINE_DECAY:
+    case ZOO_SHRINE_FLESH:
+        roomflav[zoo_room] = Rflav_shrine;
+        excavate_shrine(zoo_room);
+        break;
+    case ZOO_TREASURE:
+        roomflav[zoo_room] = Rflav_treasure_zoo;
+        excavate_normal_room(zoo_room);
+        break;
+    case ZOO_SMITHY:
+        roomflav[zoo_room] = Rflav_smithy;
+        excavate_smithy(zoo_room);
+        break;
+    default:
+        roomflav[zoo_room] = Rflav_dull;
+        excavate_normal_room(zoo_room);
+        break;
+    }
+}
 void Levext_rooms::link_rooms(int r1, int r2)
 {
     libmrl::Coord pos[4];
@@ -413,6 +444,7 @@ void Levext_rooms::excavate(void)
     for (i = 0; i < actual_rooms; i++)
     {
 	add_random_room(i / 3, i % 3);
+        excavate_room(i);
     }
     /* Add corridors */
     /* Link the centre room to an edge room. */
@@ -554,7 +586,7 @@ void Levext_rooms::populate_shrine()
         create_mon(PM_DEATH_PRIEST, c, parent);
         break;
     default:
-        print_msg(MSGCHAN_INTERROR, "error: attempt to populate_shrine() on non-shrine level.\n");
+        print_msg(MSGCHAN_INTERROR, "error: attempt to populate_shrine() on non-shrine level.");
         break;
     }
 }
@@ -745,7 +777,7 @@ int Levext_rooms::enter_region(libmrl::Coord c)
     {
         if (roomflav[parent->region_at(c)] != Rflav_dull)
         {
-            print_msg(MSGCHAN_FLUFF, "You enter %s.\n", room_flavour_strings[roomflav[parent->region_at(c)]]);
+            print_msg(MSGCHAN_FLUFF, "You enter %s.", room_flavour_strings[roomflav[parent->region_at(c)]]);
         }
     }
     return 1;
@@ -757,9 +789,19 @@ int Levext_rooms::leave_region(libmrl::Coord c)
     {
         if (roomflav[parent->region_at(c)] != Rflav_dull)
         {
-            print_msg(MSGCHAN_FLUFF, "You leave %s.\n", room_flavour_strings[roomflav[parent->region_at(c)]]);
+            print_msg(MSGCHAN_FLUFF, "You leave %s.", room_flavour_strings[roomflav[parent->region_at(c)]]);
         }
     }
+    return 1;
+}
+
+int Levext_rooms_boss::leave_region(libmrl::Coord c)
+{
+    return 1;
+}
+
+int Levext_rooms_boss::enter_region(libmrl::Coord c)
+{
     return 1;
 }
 

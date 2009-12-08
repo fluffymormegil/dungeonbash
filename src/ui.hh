@@ -24,46 +24,46 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// This file is intended to be natural language agnostic.  It contains the
-// code for displaying the screen, but no game logic; it could be replaced
-// with a tiles version, or something.
-
-// There is some text in here, but no grammar logic; gettext or equivalent
-// would work fine.
-
-// In addition to calling of the functions, this file uses global state;
-// the status line takes values from &u, the map view takes information
-// from back_buffer.
-
-#ifndef DISPLAY_HH
-#define DISPLAY_HH
+#ifndef UI_HH
+#define UI_HH
 
 #include "coord.hh"
 #include <string>
 
-/* XXX display.c data and funcs */
-extern std::string message_line(bool vs, const std::string& msg, int expected = 0);
-extern int display_init(void);
-extern void display_update(void);
-extern void full_redraw(void);
-extern int display_shutdown(void);
-extern bool get_interrupt(void);
-extern char get_silent(void);
-extern bool cursor_highlight(libmrl::Coord mappos);
+#define MSGCHAN_DEFAULT 0
+#define MSGCHAN_TAUNT 1
+#define MSGCHAN_NUMERIC 2
+#define MSGCHAN_BORINGFAIL 3
+#define MSGCHAN_MINORFAIL 4
+#define MSGCHAN_PROMPT 5
+#define MSGCHAN_FLUFF 6
+#define MSGCHAN_MON_ALERT 7
+#define MSGCHAN_INTERROR 8
+#define MSGCHAN_DEBUG 9
 
-/* The back buffer represents the character's entire map knowledge.  It
-   is currently represented using colored characters; this is Less Than Ideal.
+/* XXX ui.c data and funcs */
+extern void ui_init(void);
+extern void print_msg(int channel, const char *fmt, ...);
+extern void print_help(void);
+extern void print_version(void);
+extern void newsym(libmrl::Coord c);
+extern void touch_back_buffer(void);
+extern void print_inv(Poclass_num filter);
+extern void print_equipped();
+extern int inv_select(Poclass_num filter, const char *action, int accept_blank);
+extern Game_cmd get_command(void);
+extern int select_dir(libmrl::Coord *psign, bool silent = false);
+extern int getYN(const char *msg);
+extern int getyn(const char *msg);
+extern void press_enter(void);
+extern void pressanykey(void);
+extern void show_discoveries(void);
+extern void animate_projectile(libmrl::Coord pos, Dbash_colour col = DBCLR_L_GREY);
+extern void projectile_done(void);
+extern void farlook(void);
 
-   You should fill this in before setting map_updated.
- */
-#define BB_CHAR_MASK   0xFF
-#define BB_COLOR_SHIFT 8
-extern int back_buffer[MAX_DUN_HEIGHT][MAX_DUN_WIDTH];
-
-/* "I've changed things that need to be redisplayed" flags. */
-extern int hard_redraw;
-extern int status_updated;
-extern int map_updated;
+/* "Show the player the terrain only" flag. */
+extern int show_terrain;
 
 #endif
-/* display.hh */
+/* ui.hh */

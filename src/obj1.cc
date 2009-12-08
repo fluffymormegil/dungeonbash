@@ -69,7 +69,7 @@ int read_scroll(Obj_handle obj)
     switch (optr->obj_id)
     {
     case PO_IDENTIFY_SCROLL:
-        print_msg(0, "This is an identify scroll!\n");
+        print_msg(0, "This is an identify scroll!");
         for (i = 0; i < 19; i++)
         {
             if (u.inventory[i].valid())
@@ -82,36 +82,36 @@ int read_scroll(Obj_handle obj)
         teleport_u();
         break;
     case PO_FIRE_SCROLL:
-        print_msg(0, "The scroll explodes in flames!\n");
+        print_msg(0, "The scroll explodes in flames!");
         if (u.ring.otyp() == PO_FIRE_RING)
         {
-            print_msg(0, "Your ring glows, and the flames seem cool.\n");
+            print_msg(0, "Your ring glows, and the flames seem cool.");
             identify_pobj(PO_FIRE_RING);
             break;
         }
         i = damage_u(dice(4, 10), DEATH_KILLED, "searing flames");
 	if (!i)
 	{
-	    print_msg(0, "That hurt!\n");
+	    print_msg(0, "That hurt!");
 	}
 	break;
     case PO_SUMMONING_SCROLL:
 	i = summoning(u.pos, one_die(3) + 1);
 	if (i > 0)
 	{
-	    print_msg(0, "Monsters appear!\n");
+	    print_msg(0, "Monsters appear!");
 	}
 	else
 	{
-	    print_msg(0, "You hear a snarl of frustration.\n");
+	    print_msg(0, "You hear a snarl of frustration.");
 	}
 	break;
     case PO_AGGRAVATING_SCROLL:
-	print_msg(0, "You hear a high-pitched humming noise.\n");
+	print_msg(0, "You hear a high-pitched humming noise.");
         aggravate_monsters(currlev);
 	break;
     case PO_PROTECTION_SCROLL:
-	print_msg(0, "You feel like something is helping you.\n");
+	print_msg(0, "You feel like something is helping you.");
         peff.flavour = Perseff_protection;
         peff.power = 100;
         peff.duration = 100;
@@ -120,7 +120,7 @@ int read_scroll(Obj_handle obj)
         u.apply_effect(peff);
 	break;
     default:
-	print_msg(MSGCHAN_INTERROR, "Impossible: reading non-scroll\n");
+	print_msg(MSGCHAN_INTERROR, "Impossible: reading non-scroll");
 	return 0;
     }
     identify_pobj(optr->obj_id);
@@ -193,16 +193,16 @@ int eat_food(Obj_handle obj)
     Obj *optr = obj.snapv();
     if (permobjs[optr->obj_id].poclass != POCLASS_FOOD)
     {
-	print_msg(MSGCHAN_INTERROR, "Error: attempt to eat non-food (%d)!\n", optr->obj_id);
+	print_msg(MSGCHAN_INTERROR, "Error: attempt to eat non-food (%d)!", optr->obj_id);
 	return -1;
     }
     if (u.food < 0)
     {
-	print_msg(0, "You ravenously devour your food!\n");
+	print_msg(0, "You ravenously devour your food!");
     }
     else
     {
-	print_msg(0, "You eat some food.\n");
+	print_msg(0, "You eat some food.");
     }
     u.food += 1500;
     status_updated = 1;
@@ -222,12 +222,12 @@ int quaff_potion(Obj_handle obj)
 	gain_agility(1, 1);
 	break;
     case PO_WEAKNESS_POTION:
-	print_msg(0, "You feel that was a bad idea!\n");
+	print_msg(0, "You feel that was a bad idea!");
 	drain_body(one_die(4), "a potion of weakness", 1);
 	drain_agility(one_die(4), "a potion of weakness", 1);
 	break;
     case PO_POISON_POTION:
-	print_msg(0, "This is poison!\n");
+	print_msg(0, "This is poison!");
 	damage_u(dice(3, 12), DEATH_KILLED, "drinking poison");
 	display_update();
 	break;
@@ -237,19 +237,19 @@ int quaff_potion(Obj_handle obj)
 	heal_u(dice(3, 12), 1, 1);
 	break;
     case PO_RESTORATION_POTION:
-	print_msg(0, "This potion makes you feel warm all over.\n");
+	print_msg(0, "This potion makes you feel warm all over.");
 	status_updated = 1;
 	if (!zero_die(2))
 	{
 	    if (u.adam)
 	    {
 		u.adam = 0;
-		print_msg(0, "You feel less clumsy.\n");
+		print_msg(0, "You feel less clumsy.");
 	    }
 	    else if (u.bdam)
 	    {
 		u.bdam = 0;
-		print_msg(0, "You feel less feeble.\n");
+		print_msg(0, "You feel less feeble.");
 	    }
 	}
 	else
@@ -257,17 +257,17 @@ int quaff_potion(Obj_handle obj)
 	    if (u.bdam)
 	    {
 		u.bdam = 0;
-		print_msg(0, "You feel less feeble.\n");
+		print_msg(0, "You feel less feeble.");
 	    }
 	    else if (u.adam)
 	    {
 		u.adam = 0;
-		print_msg(0, "You feel less clumsy.\n");
+		print_msg(0, "You feel less clumsy.");
 	    }
 	}
 	break;
     default:
-	print_msg(MSGCHAN_INTERROR, "Impossible: quaffing non-potion\n");
+	print_msg(MSGCHAN_INTERROR, "Impossible: quaffing non-potion");
 	return 0;
     }
     identify_pobj(optr->obj_id);
@@ -607,12 +607,12 @@ int drop_obj(int inv_idx)
         newsym(pos);
         display_update();
         optr->get_name(&namestr);
-	print_msg(0, "You drop %s.\n", namestr.c_str());
+	print_msg(0, "You drop %s.", namestr.c_str());
 	return 0;
     }
     else
     {
-	print_msg(MSGCHAN_MINORFAIL, "There is no room to drop anything.\n");
+	print_msg(MSGCHAN_MINORFAIL, "There is no room to drop anything.");
     }
     return -1;
 }
@@ -642,7 +642,7 @@ void attempt_pickup(void)
     std::set<Obj_handle>::iterator iter = currlev->booty.find(floor_oh);
     if (floorobj->obj_id == PO_GOLD_PIECE)
     {
-	print_msg(0, "You get %d gold.\n", floorobj->quan);
+	print_msg(0, "You get %d gold.", floorobj->quan);
 	u.gold += floorobj->quan;
         release_obj(floor_oh);
 	return;
@@ -656,7 +656,7 @@ void attempt_pickup(void)
             invobj = u.inventory[i].snapv();
 	    if (invobj && (invobj->obj_id == floorobj->obj_id))
 	    {
-		print_msg(0, "You get %s.\n", namebuf.c_str());
+		print_msg(0, "You get %s.", namebuf.c_str());
 		invobj->quan += floorobj->quan;
                 release_obj(floor_oh);
                 goto common;
@@ -672,7 +672,7 @@ void attempt_pickup(void)
     }
     if (i == 19)
     {
-	print_msg(0, "Your pack is full.\n");
+	print_msg(0, "Your pack is full.");
 	return;
     }
     u.inventory[i] = currlev->object_at(u.pos);
@@ -683,7 +683,8 @@ common:
     invobj->with_you = 1;
     invobj->pos = libmrl::NOWHERE;
     invobj->get_name(&namebuf);
-    print_msg(0, "You now have\n%c) %s\n", 'a' + i, namebuf.c_str());
+    print_msg(0, "You now have");
+    print_msg(0, "%c) %s", 'a' + i, namebuf.c_str());
 }
 
 void damage_obj(Obj_handle obj)
@@ -691,7 +692,7 @@ void damage_obj(Obj_handle obj)
     Obj *optr = obj.snapv();
     if (!optr)
     {
-        print_msg(0, "internal error: bad handle passed to damage_obj()\n");
+        print_msg(0, "internal error: bad handle passed to damage_obj()");
         return;
     }
     optr->durability--;
@@ -700,15 +701,15 @@ void damage_obj(Obj_handle obj)
 	/* Break the object. Weapons and armour don't stack. */
 	if (obj == u.weapon)
 	{
-	    print_msg(0, "Your weapon breaks!\n");
+	    print_msg(0, "Your weapon breaks!");
 	}
 	else if (obj == u.armour)
 	{
-	    print_msg(0, "Your armour is ruined!\n");
+	    print_msg(0, "Your armour is ruined!");
 	}
         else if (permobjs[optr->obj_id].poclass == POCLASS_WAND)
         {
-            print_msg(0, "Your wand is consumed in a puff of wild magic.\n");
+            print_msg(0, "Your wand is consumed in a puff of wild magic.");
         }
 	consume_obj(obj);
 	recalc_defence();
@@ -723,10 +724,11 @@ void describe_object(Obj_handle obj)
     optr = obj.snapv();
     poptr = permobjs + optr->obj_id;
     optr->get_name(&desc);
-    print_msg(0, "%s\n", desc.c_str());
+    print_msg(0, "%s", desc.c_str());
+    print_msg(0, "");
     if (poptr->known)
     {
-	print_msg(0, "\n%s\n", poptr->description);
+	print_msg(0, "%s", poptr->description);
     }
     else
     {
@@ -734,31 +736,34 @@ void describe_object(Obj_handle obj)
 	{
 	case POCLASS_NONE:
 	default:
-	    print_msg(0, "This unidentified permobj (%d) is indescribable.\n", optr->obj_id);
+	    print_msg(0, "This unidentified permobj (%d) is indescribable.", optr->obj_id);
 	    break;
 	case POCLASS_ARMOUR:
 	    if ((optr->obj_id == PO_MUNDANE_ROBE) ||
 		(optr->obj_id == PO_ROBE_OF_SHADOWS) ||
 		(optr->obj_id == PO_ROBE_OF_SWIFTNESS))
 	    {
-		print_msg(0, "\nA simple woolen robe.\n");
+		print_msg(0, "A simple woolen robe.");
 	    }
 	    else
 	    {
-		print_msg(0, "\nAn unidentified and indescribable piece of armour (%d)\n", optr->obj_id);
+		print_msg(0, "An unidentified and indescribable piece of armour (%d)", optr->obj_id);
 	    }
 	    break;
 	case POCLASS_SCROLL:
-	    print_msg(0, "\nA mysterious scroll.\nReading it will unleash its enchantment.\n");
+	    print_msg(0, "A mysterious scroll.");
+            print_msg(0, "Reading it will unleash its enchantment.");
 	    break;
 	case POCLASS_POTION:
-	    print_msg(0, "\nA rather dubious-looking liquid.\nQuaffing it may be baleful or beneficial.\n");
+	    print_msg(0, "A rather dubious-looking liquid.");
+            print_msg(0, "Quaffing it may be baleful or beneficial.");
 	    break;
 	case POCLASS_RING:
-	    print_msg(0, "\nSome rings are baneful, some are beneficial, and\nsome are junk.\n");
+	    print_msg(0, "Some rings are baneful, some are beneficial, and");
+	    print_msg(0, "some are junk.");
 	    break;
         case POCLASS_WAND:
-            print_msg(0, "\nWands can unleash powerful magic, but have strictly limited charges and vanish when depleted.\n");
+            print_msg(0, "Wands can unleash powerful magic, but have strictly limited charges and vanish when depleted.");
 	}
     }
 }
@@ -792,7 +797,7 @@ int evasion_penalty(Obj_handle obj)
     default:
 	/* If you've somehow managed to wear a non-armour, you're abusing
 	 * a bug; get a 100% penalty to evasion. */
-	print_msg(0, "Trying to find evasion penalty of non-armour!\n");
+	print_msg(0, "Trying to find evasion penalty of non-armour!");
 	return 100;
     }
 }

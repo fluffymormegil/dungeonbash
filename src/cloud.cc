@@ -51,19 +51,19 @@ void encounter_cloud(Cloud cld, bool announce_cloud)
     switch (cld.flavour)
     {
     case Cloud_fog:
-        print_msg(0, "You are in a bank of fog.\n");
+        print_msg(0, "You are in a bank of fog.");
         break;
     case Cloud_ice:
-        print_msg(0, "You are in a cloud of bitterly cold fog.\n");
+        print_msg(0, "You are in a cloud of bitterly cold fog.");
         break;
     case Cloud_fire:
-        print_msg(0, "You are in a cloud of searing flames.\n");
+        print_msg(0, "You are in a cloud of searing flames.");
         break;
     case Cloud_poison:
-        print_msg(0, "You are in a cloud of noxious gas.\n");
+        print_msg(0, "You are in a cloud of noxious gas.");
         break;
     case Cloud_abyssal:
-        print_msg(0, "You are in a cloud of miasmic foulness.\n");
+        print_msg(0, "You are in a cloud of miasmic foulness.");
         break;
     }
 }

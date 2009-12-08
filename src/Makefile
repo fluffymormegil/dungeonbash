@@ -1,6 +1,6 @@
 # Makefile for Dungeon Bash
 
-OBJS=astar.o bmagic.o cfgfile.o cloud.o combat.o display-classic.o hexpi.o loadsave.o main.o map.o misc.o mon1.o mon2.o mon3.o obj1.o obj2.o permobj.o permons.o perseff.o pmon2.o radiance.o rng.o rooms.o spiralpath.o u.o vector.o vision.o
+OBJS=astar.o bmagic.o cfgfile.o cloud.o combat.o display-classic.o hexpi.o loadsave.o main.o map.o misc.o mon1.o mon2.o mon3.o obj1.o obj2.o permobj.o permons.o perseff.o pmon2.o radiance.o rng.o rooms.o spiralpath.o u.o vector.o vision.o ui-classic.o
 
 GAME=dungeonbash
 SRCGEN=srcgen
@@ -47,7 +47,9 @@ cfgfile.o: cfgfile.cc cfgfile.hh
 
 combat.o: combat.cc combat.hh dunbash.hh pmonid.hh pobjid.hh dbashcfg.hh
 
-display-classic.o: display-classic.cc dunbash.hh dbashcfg.hh pobjid.hh pmonid.hh
+display-classic.o: display-classic.cc dunbash.hh dbashcfg.hh
+
+ui-classic.o: ui-classic.cc dunbash.hh dbashcfg.hh pobjid.hh pmonid.hh
 
 loadsave.o: loadsave.cc dunbash.hh monsters.hh objects.hh rooms.hh player.hh loadsave.hh
 
