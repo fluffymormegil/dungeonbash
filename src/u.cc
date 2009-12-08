@@ -742,7 +742,7 @@ void Player::apply_effect(Perseff_data& peff)
                 resolve_dispel(peff_iter);
                 return;
             case 1:
-                // non-matching effect we overcome.
+                // Non-matching effect we overcome. Dispel it, and continue.
                 resolve_dispel(peff_iter);
                 break;
             case 0:
@@ -1093,5 +1093,8 @@ int Player::on_remove(bool force)
     recalc_defence();
     return 1;
 }
+
+// TODO implement player profession abilities
+// TODO implement player profession influence over stat gain
 
 /* u.cc */

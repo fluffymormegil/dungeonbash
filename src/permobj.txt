@@ -202,6 +202,16 @@ quality great
 known false
 depth 8
 
+obj SCROLL "banishment scroll" "banishment scrolls"
+desc Reading this scroll will allow you to (attempt to) banish a nearby demon.
+rarity 80
+symbol SCROLL
+colour WHITE
+power 0
+quality great
+known false
+depth 8
+
 obj ARMOUR "leather armour" "suits of leather armour"
 desc A heavy leather jerkin and breeches, providing some protection.
 rarity 25

@@ -51,6 +51,7 @@ extern int display_shutdown(void);
 extern void newsym(libmrl::Coord c);
 extern void touch_back_buffer(void);
 extern void print_inv(Poclass_num filter);
+extern void print_equipped(void);
 extern int inv_select(Poclass_num filter, const char *action, int accept_blank);
 extern Game_cmd get_command(void);
 extern bool get_interrupt(void);

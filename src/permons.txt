@@ -646,6 +646,18 @@ experience 2000
 speed NORMAL
 flags SMART DEMONIC RESIST_FIRE RESIST_COLD RESIST_NECR RESIST_POIS RESIST_ELEC MAGICIAN NOCORPSE GDEMON SKELETAL
 
+mon "dark angel" "dark angels"
+description One of those who passed down into Hell seeking peace, and now craves total war.
+symbol GREATER_DEMON
+colour L_BLUE
+rarity 75
+threat 27
+health 150
+melee 30 20 0 none 0
+defence 25
+experience 2000
+flags SMART DEMONIC RESIST_ELEC RESIST_NECR RESIST_POIS MAGICIAN NOCORPSE GDEMON MEATY
+
 mon "archdevil" "archdevils"
 description The mightiest among demons, to whose faces all others bow.
 symbol ARCHDEVIL

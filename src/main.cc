@@ -551,6 +551,9 @@ int do_command(Game_cmd cmd)
 	print_msg(0, "You are carrying:\n");
 	print_inv(POCLASS_NONE);
 	return 0;
+    case SHOW_EQUIPPED:
+        print_equipped();
+        return 0;
 
     case WIZARD_DUMP_PERSEFFS:
         if (wizard_mode)
@@ -659,6 +662,77 @@ int do_command(Game_cmd cmd)
 
 int action_speed;
 
+uint32_t get_next_tick(Creature_speed cspd)
+{
+    uint32_t parity = game_tick % 5;
+    switch (cspd)
+    {
+    case SPEED_VERY_SLOW:
+        return game_tick - parity + 5;
+    case SPEED_SLOW:
+        switch (parity)
+        {
+        case 0:
+        case 1:
+        case 2:
+            return game_tick - parity + 3;
+        case 3:
+        case 4:
+            return game_tick - parity + 5;
+            // all possible cases covered
+        }
+    case SPEED_NORMAL:
+        switch (parity)
+        {
+        case 0:
+        case 3:
+            return game_tick + 2;
+        case 1:
+        case 2:
+        case 4:
+            return game_tick + 1;
+        }
+    case SPEED_FAST:
+        switch (parity)
+        {
+        case 0:
+        case 1:
+        case 2:
+        case 4:
+            return game_tick + 1;
+        case 3:
+            return game_tick + 2;
+        }
+    case SPEED_VERY_FAST:
+        return game_tick + 1;
+    case SPEED_ULTRAFAST:
+        /* XXX ULTRAFAST is equivalent to VERY_FAST for now; see the action
+         * speed function for details. */
+        return game_tick + 1;
+    }
+    return 0;
+}
+
+Creature_speed get_tick_speed(uint32_t tick)
+{
+    switch (game_tick % 5)
+    {
+    case 0:
+        return SPEED_VERY_SLOW;
+    case 3:
+        return SPEED_SLOW;
+    case 2:
+        return SPEED_NORMAL;
+    case 1:
+        return SPEED_FAST;
+    case 4:
+        return SPEED_VERY_FAST;
+        // XXX ULTRAFAST not supported for now, since getting it right
+        // without inflciting inappropriate quad-moves vs. SLOW or
+        // triple-moves vs. NORMAL is fiddly.
+    }
+}
+
 void main_loop(void)
 {
     Game_cmd cmd;
@@ -667,25 +741,7 @@ void main_loop(void)
     while (!game_finished)
     {
         display_update();
-        switch (game_tick % 5)
-        {
-        case 0:
-            action_speed = SPEED_VERY_SLOW;
-            break;
-        case 3:
-            action_speed = SPEED_SLOW;
-            break;
-        case 2:
-            action_speed = SPEED_NORMAL;
-            break;
-        case 1:
-            action_speed = SPEED_FAST;
-            break;
-        case 5:
-            action_speed = SPEED_VERY_FAST;
-            break;
-            // ULTRAFAST not supported for now. It takes extra work.
-        }
+        action_speed = get_tick_speed(game_tick);
         if (action_speed <= u.speed)
         {
             i = 0;

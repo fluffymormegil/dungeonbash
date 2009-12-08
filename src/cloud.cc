@@ -68,4 +68,18 @@ void encounter_cloud(Cloud cld, bool announce_cloud)
     }
 }
 
+bool mon_endure_cloud(Mon_handle mon, Cloud cld)
+{
+    // TODO implement monsters enduring clouds
+}
+
+bool put_cloud(Level *lptr, libmrl::Coord pos, Cloud cld)
+{
+    // TODO implement placement of clouds
+}
+
+bool move_cloud(Level *lptr, libmrl::Coord old_cloudpos, libmrl::Coord new_cloudpos)
+{
+}
+
 /* cloud.cc */

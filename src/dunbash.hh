@@ -291,6 +291,8 @@ extern char *demon_get_name(void);
 extern const char *numberwords[40];
 
 /* XXX main.cc data and funcs */
+Creature_speed get_tick_speed(uint32_t tick);
+uint32_t get_next_tick(Creature_speed cspd);
 #ifdef MULTIUSER
 extern int user_permissions(void);
 extern int game_permissions(void);

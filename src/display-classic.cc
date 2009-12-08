@@ -1023,4 +1023,9 @@ void print_version(void)
     print_msg(0, "You are using Martin's Dungeon Bash version %s\n", LONG_VERSION);
 }
 
+void print_equipped(void)
+{
+    // TODO implement this
+}
+
 /* display.cc */

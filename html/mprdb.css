@@ -27,6 +27,10 @@ TABLE
         border: thin black solid;
 }
 
+TR.phonemes {
+    text-align: center
+}
+
 TR.featurewip
 {
         background-color: yellow;
@@ -42,6 +46,13 @@ TR.featuredone
         background-color: #00ff00;
 }
 
+TD.allophone {
+    background-color: silver
+}
+
+TD.nophone {
+    background-color: gray
+}
 .navbar
 {
         width: 20%;

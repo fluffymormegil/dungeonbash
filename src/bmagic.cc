@@ -75,13 +75,16 @@ Monspell selector_defiler(Mon const *mptr, bool cansee, const Direction_data& di
 Monspell selector_immolator(Mon const *mptr, bool cansee, const Direction_data& dir_data);
 Monspell selector_dominator(Mon const *mptr, bool cansee, const Direction_data& dir_data);
 Monspell selector_deathlord(Mon const *mptr, bool cansee, const Direction_data& dir_data);
+Monspell selector_darkangel(Mon const *mptr, bool cansee, const Direction_data& dir_data);
 Monspell selector_lich(Mon const *mptr, bool cansee, const Direction_data& dir_data);
 Monspell selector_master_lich(Mon const *mptr, bool cansee, const Direction_data& dir_data);
 
-/* TODO
+/*
+ * TODO Cooldowns on powerful spells.
  *
- * 1) Cooldowns on powerful spells.
- * 2) Delayed-triggering spells.
+ * TODO Delayed-triggering spells. (For ones directly cast on the player, these
+ * can be implemented as persistent effects whose per-turn action is to do
+ * nothing.)
  */
 int corruption_spell(Mon const *mptr);
 int animate_dead(Mon const *mptr);
@@ -123,6 +126,19 @@ int use_black_magic(Mon_handle mon)
 
     case PM_DEFILER:
         to_cast = selector_defiler(mptr, cansee, dir_data);
+        break;
+
+    case PM_DOMINATOR:
+        to_cast = selector_dominator(mptr, cansee, dir_data);
+        break;
+    case PM_IMMOLATOR:
+        to_cast = selector_immolator(mptr, cansee, dir_data);
+        break;
+    case PM_DEATHLORD:
+        to_cast = selector_deathlord(mptr, cansee, dir_data);
+        break;
+    case PM_DARK_ANGEL:
+        to_cast = selector_darkangel(mptr, cansee, dir_data);
         break;
 
     default:
@@ -658,6 +674,18 @@ Monspell selector_master_lich(Mon const *mptr, bool cansee, const Direction_data
         /* we lack LOS, but passed the 1-in-40 chance to
          * close with the player by means of black magic. */
         return MS_TELEPORT_ASSAULT;
+    }
+    return MS_REJECT;
+}
+
+Monspell selector_darkangel(Mon const *mptr, bool cansee, const Direction_data& dir_data)
+{
+    if (cansee)
+    {
+    }
+    else
+    {
+        // dark angels don't do assault teleports.
     }
     return MS_REJECT;
 }

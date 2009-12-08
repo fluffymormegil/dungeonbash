@@ -38,6 +38,23 @@ const char *damtype_names[DT_COUNT] = {
 	"poison",
 };
 
+/*
+ * Phonotactic dark angel name generator
+ * =====================================
+ * Dark angels are named using different phonotactics to demons.
+ *
+ * Name structure consists of 3-5 consonants; if more than three, the terminal
+ * is restricted to /l/ /h/ /(theta)/
+ * 
+ * Phonemes are:
+ *    Glottal: voiceless fricative, stop.
+ *    Velar: voiceless fricative, ejective, voiceless plosive
+ *    Alveolar: plosive (modal, ten.), ejective, fricative (modal, ten.)
+ *    Labial: voiced plosive
+ *    Vowels: /a/ /e/ /i/ /o/ /u/
+ */
+
+
 /******************************************************************************
  *
  * Phonotactic demon name generator
