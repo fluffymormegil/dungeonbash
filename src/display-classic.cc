@@ -427,9 +427,4 @@ bool cursor_highlight(libmrl::Coord onto)
     return true;
 }
 
-void print_equipped(void)
-{
-    // TODO implement this
-}
-
 /* display.cc */
