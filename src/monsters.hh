@@ -98,6 +98,7 @@ struct Mon
     int rdam;	/* Improved by OOD rating at 1:5. */
     int awake;
     int meta;
+    bool no_exp; /* Monster is worth zero XP */
     Critter_sex sex;
 
     char *name;

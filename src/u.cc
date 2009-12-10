@@ -924,7 +924,7 @@ void describe_profession(Player_profession prof)
     case Prof_fighter:
         print_msg(0, "As a fighter, you have an instinct for weaponry and an");
         print_msg(0, "unparallelled talent for physical violence. The Violence");
-        print_msg(0, "score on your status bar is kind of like 'mana' for your");
+        print_msg(0, "score on your status bar is effectively 'mana' for your");
         print_msg(0, "special abilities; it accumulates whenever a monster");
         print_msg(0, "attempts to do you harm, and is spent when you use your");
         print_msg(0, "active abilities.");
@@ -946,7 +946,8 @@ void describe_profession(Player_profession prof)
         print_msg(0, "");
         print_msg(0, "4: Berserker Rage - Increases your physical damage done");
         print_msg(0, "   by 50%% for 20 turns. Empties your Violence pool and");
-        print_msg(0, "   has a 200-turn cooldown timer.");
+        print_msg(0, "   has a 200-turn cooldown timer. Requires at least 25");
+        print_msg(0, "   Violence in order to be cast.");
         print_msg(0, "");
         break;
 
@@ -954,7 +955,7 @@ void describe_profession(Player_profession prof)
         break;
 
     case Prof_thanatophile:
-        print_msg(0, "The thanatophile is obsessed with death. Not the daed,");
+        print_msg(0, "The thanatophile is obsessed with death. Not the dead,");
         print_msg(0, "*death*. (S)he kills to make death.");
         print_msg(0, "");
         print_msg(0, "   Fell Spirit - This passive ability means you gain one");

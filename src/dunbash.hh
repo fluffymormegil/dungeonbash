@@ -65,6 +65,7 @@ enum Astar_states
 enum Level_type
 {
     LEVEL_ROOMS,
+    LEVEL_ROOMS_BOSS,
     LEVEL_CAVE,
     LEVEL_NECROPOLIS,
     LEVEL_INFERNO,

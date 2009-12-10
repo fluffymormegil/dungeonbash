@@ -726,6 +726,7 @@ Creature_speed get_tick_speed(uint32_t tick)
         return SPEED_NORMAL;
     case 1:
         return SPEED_FAST;
+    default:
     case 4:
         return SPEED_VERY_FAST;
         // XXX ULTRAFAST not supported for now, since getting it right

@@ -403,15 +403,15 @@ void Levext_rooms::excavate(void)
         zoo_room = zero_die(actual_rooms);
     } while ((zoo_room == ustairs_room) ||
              (zoo_room == dstairs_room));
-    if (!zero_die(10) && (parent->self.level > 2))
+    if ((parent->self.level > 2) && !zero_die(10))
     {
         zoo_style = ZOO_TREASURE;
     }
-    else if (!zero_die(9) && (parent->self.level > 4))
+    else if ((parent->self.level > 4) && !zero_die(9))
     {
         zoo_style = ZOO_MORGUE;
     }
-    else if (!zero_die(4) && (parent->self.level > 6))
+    else if ((parent->self.level > 6) && !zero_die(4))
     {
         switch (zero_die(std::min(parent->self.level - 6, 5)))
         {
@@ -653,6 +653,13 @@ int Levext_rooms::get_levgen_mon_spot(libmrl::Coord *ppos) const
     return 0;
 }
 
+void Levext_rooms_boss::populate(void)
+{
+    // Populate the rest of the level first.
+    Levext_rooms::populate();
+    // Now do the boss room.
+}
+
 void Levext_rooms::populate(void)
 {
     int i;
@@ -797,12 +804,28 @@ int Levext_rooms::leave_region(libmrl::Coord c)
 
 int Levext_rooms_boss::leave_region(libmrl::Coord c)
 {
-    return 1;
+    if (parent->region_at(c) == zoo_room)
+    {
+        // react to bossroom departure
+        return 1;
+    }
+    else
+    {
+        return Levext_rooms::leave_region(c);
+    }
 }
 
 int Levext_rooms_boss::enter_region(libmrl::Coord c)
 {
-    return 1;
+    if (parent->region_at(c) == zoo_room)
+    {
+        // react to bossroom departure
+        return 1;
+    }
+    else
+    {
+        return Levext_rooms::enter_region(c);
+    }
 }
 
 /* rooms.cc */

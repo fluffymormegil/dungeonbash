@@ -112,7 +112,14 @@ void Level::build(void)
     int i;
     int j;
 
-    levtype = LEVEL_ROOMS;
+    if (!(self.level % 5))
+    {
+        levtype = LEVEL_ROOMS_BOSS;
+    }
+    else
+    {
+        levtype = LEVEL_ROOMS;
+    }
     mobjs = (Obj_handle **) calloc(height, sizeof (Obj_handle *));
     mmons = (Mon_handle **) calloc(height, sizeof (Mon_handle *));
     rnums = (int **) calloc(height, sizeof (int *));
@@ -141,7 +148,17 @@ void Level::build(void)
             terrain[i][j] = WALL;
         }
     }
-    levextra = new Levext_rooms();
+    switch (levtype)
+    {
+    case LEVEL_ROOMS_BOSS:
+        levextra = new Levext_rooms_boss();
+        break;
+    case LEVEL_ROOMS:
+        levextra = new Levext_rooms();
+        break;
+    default:
+        break;
+    }
     levextra->parent = this;
 }
 

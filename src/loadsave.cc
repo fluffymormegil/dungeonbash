@@ -56,7 +56,9 @@ bool always_fsync;
 
 void serialise(FILE *fp, const Level_tag *ptag);
 void serialise(FILE *fp, Levext_rooms const *lerp);
+void serialise(FILE *fp, Levext_rooms_boss const *lerp);
 Levext_rooms *deserialise_levext_rooms(FILE *fp);
+Levext_rooms_boss *deserialise_levext_rooms_boss(FILE *fp);
 static void rebuild_mapmons(void);
 static void rebuild_mapobjs(void);
 
@@ -251,6 +253,7 @@ void deserialise(FILE *fp, Mon *mptr)
     mptr->rdam = deserialise_uint32(fp);
     mptr->awake = deserialise_uint32(fp);
     mptr->meta = deserialise_uint32(fp);
+    mptr->no_exp = deserialise_uint32(fp);
     mptr->sex = Critter_sex(deserialise_uint32(fp));
     k = deserialise_uint32(fp);
     // check for reasonable length of name
@@ -374,8 +377,45 @@ Level * deserialise_level(FILE *fp, Level_tag lt)
         lp->levextra = deserialise_levext_rooms(fp);
         lp->levextra->parent = lp;
         break;
+    case LEVEL_ROOMS_BOSS:
+        lp->levextra = deserialise_levext_rooms_boss(fp);
+        lp->levextra->parent = lp;
+        break;
     }
     return lp;
+}
+
+Levext_rooms_boss *deserialise_levext_rooms_boss(FILE *fp)
+{
+#ifdef DEBUG_LOADSAVE
+    print_msg(0, "deserialising Levext_rooms");
+#endif
+    Levext_rooms_boss *lerp = new Levext_rooms_boss;
+    lerp->overridden_monsel = deserialise_uint32(fp);
+    lerp->actual_rooms = deserialise_uint32(fp);
+    lerp->zoo_room = deserialise_uint32(fp);
+    lerp->zoo_style = Levext_rooms::Zoo_style(deserialise_uint32(fp));
+    lerp->dstairs_room = deserialise_uint32(fp);
+    lerp->ustairs_room = deserialise_uint32(fp);
+    deserialise(fp, &(lerp->dstairs_pos));
+    deserialise(fp, &(lerp->ustairs_pos));
+    int i;
+    for (i = 0; i < Levext_rooms::MAX_ROOMS; ++i)
+    {
+        deserialise(fp, &(lerp->bounds[i][0]));
+        deserialise(fp, &(lerp->bounds[i][1]));
+        lerp->segsused[i] = deserialise_uint32(fp);
+        lerp->roomflav[i] = Room_flavour(deserialise_uint32(fp));
+    }
+    int j;
+    for (i = 0; i < Levext_rooms::MAX_ROOMS; ++i)
+    {
+        for (j = 0; j < Levext_rooms::MAX_ROOMS; ++j)
+        {
+            lerp->linkage[i][j] = deserialise_uint32(fp);
+        }
+    }
+    return lerp;
 }
 
 Levext_rooms *deserialise_levext_rooms(FILE *fp)
@@ -581,12 +621,31 @@ void serialise(FILE *fp, Level const *lp)
     switch (lp->levtype)
     {
     case LEVEL_ROOMS:
-        Levext_rooms const *lerp = dynamic_cast<Levext_rooms const *>(lp->levextra);
-        /* I could check for errors, or I could have the program segfault its
-         * guts out. The latter is probably saner. */
-        serialise(fp, lerp);
+        {
+            Levext_rooms const *lerp = dynamic_cast<Levext_rooms const *>(lp->levextra);
+            /* I could check for errors, or I could have the program segfault its
+             * guts out. The latter is probably saner. */
+            serialise(fp, lerp);
+        }
+        break;
+    case LEVEL_ROOMS_BOSS:
+        {
+            Levext_rooms_boss const *lerp = dynamic_cast<Levext_rooms_boss const *>(lp->levextra);
+            /* I could check for errors, or I could have the program segfault its
+             * guts out. The latter is probably saner. */
+            serialise(fp, lerp);
+        }
         break;
     }
+}
+
+void serialise(FILE *fp, Levext_rooms_boss const *lerp)
+{
+#ifdef DEBUG_LOADSAVE
+    print_msg(0, "serialising Levext_rooms");
+#endif
+    serialise(fp, (Levext_rooms const *) lerp);
+    // then serialise the extra stuff
 }
 
 void serialise(FILE *fp, Levext_rooms const *lerp)
@@ -636,6 +695,7 @@ void serialise(FILE *fp, Mon const *mptr)
     serialise(fp, uint32_t(mptr->rdam));
     serialise(fp, uint32_t(mptr->awake));
     serialise(fp, uint32_t(mptr->meta));
+    serialise(fp, uint32_t(mptr->no_exp));
     serialise(fp, uint32_t(mptr->sex));
     if (mptr->name)
     {

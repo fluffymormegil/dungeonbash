@@ -157,6 +157,7 @@ struct Levext_rooms_boss : public Levext_rooms
     virtual void excavate_zoo_room(void);
     virtual int leave_region(libmrl::Coord c);
     virtual int enter_region(libmrl::Coord c);
+    virtual void populate(void);
 };
 
 #endif
