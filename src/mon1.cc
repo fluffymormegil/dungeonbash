@@ -402,6 +402,32 @@ void heal_mon(Mon_handle mon, int amount, int cansee)
     }
 }
 
+int knock_mon(Mon_handle mon, libmrl::Coord step, int force, bool by_you)
+{
+    if (!mon.valid())
+    {
+        print_msg(MSGCHAN_INTERROR, "attempt to knockback invalid monster handle.");
+        return -1;
+    }
+    Mon *mptr = mon.snapv();
+    libmrl::Coord pos = mptr->pos + step;
+    /*
+     * The force parameter will determine how "big" a monster an attack can
+     * knock back. For now, we aren't going to use it.
+     */
+    if (mptr->can_pass(pos))
+    {
+        // Push the monster back and return 1.
+        move_mon(mon, pos);
+        return 1;
+    }
+    else
+    {
+        // Obstruction
+        return 2;
+    }
+}
+
 bool damage_mon(Mon_handle mon, int amount, int by_you)
 {
     Mon *mptr = mon.snapv();
@@ -515,6 +541,9 @@ int teleport_mon(Mon_handle mon)
 
 void move_mon(Mon_handle mon, libmrl::Coord pos, Level *lptr)
 {
+    // TODO account for the monster being moved into hostile terrain by a
+    // player action and dying before they can get out of it. (I don't want
+    // to penalize fighters for Slamming monsters into lava.)
     Mon *mptr = mon.snapv();
     if (!lptr)
     {

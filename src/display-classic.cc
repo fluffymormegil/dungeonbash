@@ -103,9 +103,10 @@ static void draw_status_line(void)
     mvwprintw(status_window, 0, 47, "Bod: %2d/%2d", u.body - u.bdam, u.body);
     mvwprintw(status_window, 0, 62, "Gold: %d", u.gold);
     mvwprintw(status_window, 1, 0, "Def/Eva: %2d/%2d", u.defence, u.evasion);
-    mvwprintw(status_window, 1, 19, "Food: %6d", u.food);
-    mvwprintw(status_window, 1, 62, "Exp: %2d/%7d", u.level, u.experience);
-    mvwprintw(status_window, 1, 47, "Agi: %2d/%2d", u.agility - u.adam, u.agility);
+    mvwprintw(status_window, 1, 16, "Food: %6d", u.food);
+    mvwprintw(status_window, 1, 30, "%s: %4d/%4d", mana_nouns[u.job], u.mpcur, u.mpmax);
+    mvwprintw(status_window, 1, 52, "Agi: %2d/%2d", u.agility - u.adam, u.agility);
+    mvwprintw(status_window, 1, 64, "Exp: %2d/%7d", u.level, u.experience);
 }
 
 static void draw_world(void)

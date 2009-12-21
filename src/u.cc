@@ -38,10 +38,24 @@
 #include <stdio.h>
 #include "cfgfile.hh"
 #include "loadsave.hh"
+#include "prof-fighter.hh"
 
+char const * const mana_nouns_en[Total_professions] =
+{
+    "Violence", "Karma", "Power"
+};
+
+char const * const * mana_nouns = &(mana_nouns_en[0]);
 Player u;
 bool levelup_wait;
 bool name_prompt;
+
+const Stat_handling stat_handling[Total_professions] =
+{
+    { 10, 10, 100, 2, 1, 0, false }, // fighter
+    { 10, 10, 100, 1, 1, 0, true }, // preacher
+    { 10, 10, 30, 1, 1, 10, false }, // thanatophile
+};
 
 void recalc_defence(void)
 {
@@ -388,6 +402,38 @@ int drain_agility(int amount, const char *what, int permanent)
     return 0;
 }
 
+int gain_mp(int amount, bool loud)
+{
+    if (amount < 1)
+    {
+        print_msg(MSGCHAN_INTERROR, "Internal error: Absurd MP gain %d", amount);
+        return 0;
+    }
+    if (amount > (999 - u.mpmax))
+    {
+        amount = 999 - u.mpmax;
+        if (amount < 1)
+        {
+            if (loud)
+            {
+                print_msg(0, "You feel disappointed.");
+                return 0;
+            }
+        }
+    }
+    u.mpmax += amount;
+    status_updated = 1;
+    if (loud)
+    {
+        print_msg(0, "You feel more powerful!");
+    }
+    else
+    {
+        display_update();
+    }
+    return amount;
+}
+
 int damage_u(int amount, Death d, const char *what)
 {
     if (!amount)
@@ -592,12 +638,15 @@ void u_init(void)
     }
     u.lev.dungeon = Dungeon_main;
     u.lev.level = 1;
-    u.body = 10;
+    u.job = Prof_fighter;
+    u.body = stat_handling[u.job].start_body;
     u.bdam = 0;
-    u.agility = 10;
+    u.agility = stat_handling[u.job].start_agility;
     u.adam = 0;
     u.hpmax = 20;
     u.hpcur = 20;
+    u.mpmax = stat_handling[u.job].start_mp;
+    u.mpcur = stat_handling[u.job].start_mp;
     u.experience = 0;
     u.level = 1;
     u.food = 2000;
@@ -639,23 +688,35 @@ void gain_experience(int amount)
     int hpgain;
     int bodygain;
     int agilgain;
+    int powergain;
     u.experience += amount;
     status_updated = 1;
     if (u.experience > lev_threshold(u.level))
     {
 	u.level++;
 	print_msg(0, "You gained a level!");
-	if (!zero_die(2))
-	{
-	    bodygain = gain_body(2, 0);
-	    agilgain = gain_agility(1, 0);
+        switch (u.job)
+        {
+        case Prof_fighter:
+            bodygain = gain_body(2, 0);
+            agilgain = gain_agility(1, 0);
+            powergain = 0;
+            break;
+
+        case Prof_thanatophile:
+            bodygain = gain_body(1, 0);
+            agilgain = gain_agility(1, 0);
+            powergain = gain_mp(10, 0);
+            break;
 	}
-	else
-	{
-	    bodygain = gain_body(1, 0);
-	    agilgain = gain_agility(2, 0);
-	}
-	print_msg(MSGCHAN_NUMERIC, "You gained %d body and %d agility.", bodygain, agilgain);
+        if (bodygain || agilgain)
+        {
+            print_msg(MSGCHAN_NUMERIC, "You gained %d body and %d agility.", bodygain, agilgain);
+        }
+        if (powergain)
+        {
+            print_msg(MSGCHAN_NUMERIC, "You gained %d Power.", powergain);
+        }
 	hpgain = u.body / 10 + 10;
 	if (u.hpmax + hpgain > 999)
 	{
@@ -785,6 +846,19 @@ void update_player(void)
         /* Hungry player heals much, much slower, and cannot regain
          * all their hit points. */
         heal_u(1, 0, 0);
+    }
+    // Decrement cooldowns
+    int i;
+    for (i = 0; i < 10; ++i)
+    {
+        if (u.cooldowns[i])
+        {
+            --u.cooldowns[i];
+            if (!u.cooldowns[i])
+            {
+                u.notify_cooldown(i);
+            }
+        }
     }
     /* Once you hit the nutrition endstop, your ring of regeneration stops
      * working, and like normal regen, it won't raise you above 75% HP if
@@ -933,20 +1007,20 @@ void describe_profession(Player_profession prof)
         print_msg(0, "   and one Agility per level.");
         print_msg(0, "");
         print_msg(0, "1: Whirlwind - This active ability attacks all adjacent");
-        print_msg(0, "   monsters at once. Costs 30 Violence and has a 20-turn");
+        print_msg(0, "   monsters at once. Costs %d Violence and has a %d-turn", fighter_costs[Fighter_whirlwind], fighter_cooldowns[Fighter_whirlwind]);
         print_msg(0, "   cooldown timer.");
         print_msg(0, "");
         print_msg(0, "2: Slam - This active ability knocks a monster backwards");
         print_msg(0, "   one square, moves you into the square it was knocked");
-        print_msg(0, "   out of, and stuns it for one turn. Costs 30 Violence");
-        print_msg(0, "   and has a 5-turn cooldown timer.");
+        print_msg(0, "   out of, and stuns it for one turn. Costs %d Violence", fighter_costs[Fighter_slam]);
+        print_msg(0, "   and has a %d-turn cooldown timer.", fighter_cooldowns[Fighter_slam]);
         print_msg(0, "");
         print_msg(0, "3: Smash - Attack an adjacent monster for double damage.");
-        print_msg(0, "   Costs 20 Violence and has no cooldown timer.");
+        print_msg(0, "   Costs %d Violence and has no cooldown timer.", fighter_costs[Fighter_smash]);
         print_msg(0, "");
         print_msg(0, "4: Berserker Rage - Increases your physical damage done");
         print_msg(0, "   by 50%% for 20 turns. Empties your Violence pool and");
-        print_msg(0, "   has a 200-turn cooldown timer. Requires at least 25");
+        print_msg(0, "   has a %d-turn cooldown timer. Requires at least %d", fighter_cooldowns[Fighter_berserk], fighter_costs[Fighter_berserk]);
         print_msg(0, "   Violence in order to be cast.");
         print_msg(0, "");
         break;
@@ -955,8 +1029,8 @@ void describe_profession(Player_profession prof)
         break;
 
     case Prof_thanatophile:
-        print_msg(0, "The thanatophile is obsessed with death. Not the dead,");
-        print_msg(0, "*death*. (S)he kills to make death.");
+        print_msg(0, "The thanatophile is obsessed with death. Not the dead -");
+        print_msg(0, "this is no necrophile - but *death*.");
         print_msg(0, "");
         print_msg(0, "   Fell Spirit - This passive ability means you gain one");
         print_msg(0, "   Body, one Agility, and a ten-point increase to your");
@@ -1125,6 +1199,77 @@ int get_inventory_slot(Obj_handle oh)
         }
     }
     return -1;
+}
+
+void Player::spend_mana(int howmuch)
+{
+    if (howmuch > mpcur)
+    {
+        print_msg(MSGCHAN_INTERROR, "spellcast forgot to check mana pool before proceeding");
+    }
+    mpcur -= howmuch;
+    status_updated = true;
+}
+
+void Player::notify_cooldown(int which)
+{
+    switch (job)
+    {
+    case Prof_fighter:
+        switch (which)
+        {
+        case Fighter_berserk:
+            print_msg(0, "You feel less weary.");
+            break;
+        case Fighter_whirlwind:
+            print_msg(0, "You feel less dizzy.");
+            break;
+        case Fighter_slam:
+            print_msg(0, "Your shoulder hurts less.");
+            break;
+        }
+    }
+}
+
+void Player::spellcast(int mana, int cd_index, int cd_val)
+{
+    if (mana > 0)
+    {
+        spend_mana(mana);
+    }
+    if (cd_val > 0)
+    {
+        if ((cd_index >= 10) || (cd_index < 0))
+        {
+            print_msg(MSGCHAN_INTERROR, "Invalid cooldown index %d\n", cd_index);
+            return;
+        }
+        cooldowns[cd_index] = cd_val;
+    }
+}
+
+int Player::do_profession_command(int which)
+{
+    switch (job)
+    {
+    case Prof_fighter:
+        switch (which)
+        {
+        case Fighter_whirlwind:
+            return do_fighter_whirl(this);
+        case Fighter_berserk:
+            return do_fighter_berserk(this);
+        case Fighter_smash:
+            return do_fighter_smash(this);
+        case Fighter_slam:
+            return do_fighter_slam(this);
+        default:
+            break;
+        }
+        break;
+    }
+    print_msg(0, "No such ability %d", which);
+    return 0;
 }
 
 /* u.cc */

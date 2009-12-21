@@ -182,7 +182,7 @@ struct Level
     Levextra *levextra;
     // ctor/dtor
     Level() { }
-    Level(int ht, int wd);
+    Level(Level_tag lt, int ht, int wd);
     ~Level();
     // construction/destruction helpers
     void build(void);

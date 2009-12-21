@@ -156,6 +156,7 @@ extern int summoning(libmrl::Coord c, int how_many, Level *lptr = 0);
 extern int ood(int power, int ratio);
 extern int get_random_pmon(int depth);
 extern bool damage_mon(Mon_handle mon, int amount, int by_you);
+extern int knock_mon(Mon_handle mon, libmrl::Coord step, int force, bool by_you);
 extern bool mon_visible(Mon_handle mon);
 extern void move_mon(Mon_handle mon, libmrl::Coord pos, Level *lptr = 0);
 extern int teleport_mon(Mon_handle mon);	/* Randomly relocate monster. */

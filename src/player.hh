@@ -29,6 +29,40 @@
 
 #include "perseff.hh"
 
+enum Thanatophile_actives {
+    Thanato_assassin_soul = 1,
+    Thanato_death_song,
+    Thanato_life_leech,
+    Thanato_corpse_explosion
+};
+
+enum Fighter_actives {
+    Fighter_whirlwind = 1,
+    Fighter_slam,
+    Fighter_smash,
+    Fighter_berserk
+};
+
+extern const int fighter_cooldowns[];
+extern const int fighter_costs[];
+extern const int thanato_cooldowns[];
+extern const int thanato_costs[];
+
+struct Stat_handling
+{
+    int start_body;
+    int start_agility;
+    int start_mp;
+    int level_body;
+    int level_agility;
+    int level_mp;
+    // if physical_floater is set, the class gets a random point of body or
+    // agility at level-up.
+    bool physical_floater;
+};
+
+extern const Stat_handling stat_handling[Total_professions];
+
 #define INVENTORY_SIZE 19
 /* XXX struct Player */
 struct Player {
@@ -60,6 +94,7 @@ struct Player {
     Obj_handle ring;		/* For now, you can only wear one magic ring. */
     bool farmoving;
     libmrl::Coord farmove_direction;
+    uint32_t cooldowns[10];
     // Persistent effect state
     std::list<Perseff_data> perseffs;
     Status_flags status;
@@ -67,7 +102,12 @@ struct Player {
     void apply_effect(Perseff_data& peff);
     bool suffer(Perseff_data& peff);
     void resolve_dispel(std::list<Perseff_data>::iterator peff_iter);
-
+    void notify_cooldown(int which);
+    // invocations...
+    int do_profession_command(int which);
+    // resource usage
+    void spend_mana(int howmuch);
+    void spellcast(int mana, int cd_index = 0, int cd_val = 0);
     // computed-value functions
     int net_body() const { return body - bdam; }
     int net_agility() const { return agility - adam; }
@@ -84,6 +124,7 @@ extern void disturb_u(void);
 extern int damage_u(int amount, Death d, const char *what);
 extern int gain_body(int amount, int loud);
 extern int gain_agility(int amount, int loud);
+extern int gain_mp(int amount, bool loud);
 extern int drain_body(int amount, const char *what, int permanent);
 extern int drain_agility(int amount, const char *what, int permanent);
 extern void gain_experience(int amount);
@@ -99,6 +140,7 @@ extern void look_at_floor(void);
 extern bool player_next_to_mon(void);
 extern int get_inventory_slot(Obj_handle oh);
 
+extern char const * const *mana_nouns;
 extern Player u;
 
 #define inyourroom(mpos) ((currlev->region_at(u.pos) != -1) && (currlev->region_at(u.pos) == currlev->region_at(mpos)))

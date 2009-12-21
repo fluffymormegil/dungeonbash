@@ -608,26 +608,34 @@ int do_command(Game_cmd cmd)
         return 0;
 
     case PROFCMD_1:
-        switch (u.job)
-        {
-        case Prof_fighter:
-            // return uwhirl();
-            break;
-        default:
-            print_msg(0, "Your current profession has no ability on that key.");
-            break;
-        }
-        return 0;
+        return u.do_profession_command(1);
 
     case PROFCMD_2:
-        switch (u.job)
-        {
-        case Prof_fighter:
-            select_dir(&step);
-            if (step != libmrl::NOWHERE)
-            {
-            }
-        }
+        return u.do_profession_command(2);
+
+    case PROFCMD_3:
+        return u.do_profession_command(3);
+
+    case PROFCMD_4:
+        return u.do_profession_command(4);
+
+    case PROFCMD_5:
+        return u.do_profession_command(5);
+
+    case PROFCMD_6:
+        return u.do_profession_command(6);
+
+    case PROFCMD_7:
+        return u.do_profession_command(7);
+
+    case PROFCMD_8:
+        return u.do_profession_command(8);
+
+    case PROFCMD_9:
+        return u.do_profession_command(9);
+
+    case PROFCMD_0:
+        return u.do_profession_command(0);
 
     case PRINT_VERSION:
         print_version();

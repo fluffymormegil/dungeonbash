@@ -40,7 +40,7 @@ const Level_tag no_level = { Total_dungeons, UINT_MAX };
 
 bool save_on_stairs;
 
-Level::Level(int h, int w) : height(h), width(w)
+Level::Level(Level_tag lt, int h, int w) : self(lt), height(h), width(w)
 {
     build();
 }
@@ -95,8 +95,7 @@ void Level::leave(void)
 void make_new_level(Level_tag lt)
 {
     Level *lptr;
-    lptr = new Level(DUN_HEIGHT, DUN_WIDTH);
-    lptr->self = lt;
+    lptr = new Level(lt, DUN_HEIGHT, DUN_WIDTH);
     levels[lptr->self] = lptr;
     lptr->excavate();
     lptr->populate();
@@ -114,6 +113,7 @@ void Level::build(void)
 
     if (!(self.level % 5))
     {
+        print_msg(0, "debug: boss level\n");
         levtype = LEVEL_ROOMS_BOSS;
     }
     else

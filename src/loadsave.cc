@@ -122,12 +122,15 @@ static void deserialise(FILE *fp, Player *ptmp)
     deserialise(fp, &(ptmp->lev));
     deserialise(fp, &(ptmp->pos));
     ptmp->sex = Critter_sex(deserialise_uint32(fp));
+    ptmp->job = Player_profession(deserialise_uint32(fp));
     ptmp->body = deserialise_uint32(fp);
     ptmp->bdam = deserialise_uint32(fp);
     ptmp->agility = deserialise_uint32(fp);
     ptmp->adam = deserialise_uint32(fp);
     ptmp->hpmax = deserialise_uint32(fp);
     ptmp->hpcur = deserialise_uint32(fp);
+    ptmp->mpmax = deserialise_uint32(fp);
+    ptmp->mpcur = deserialise_uint32(fp);
     ptmp->food = deserialise_uint32(fp);
     ptmp->experience = deserialise_uint32(fp);
     ptmp->speed = deserialise_uint32(fp);
@@ -330,7 +333,7 @@ Level * deserialise_level(FILE *fp, Level_tag lt)
     {
         throw(EINVAL);
     }
-    lp = new Level(ht, wd);
+    lp = new Level(lt, ht, wd);
     levels[lt] = lp;
     lp->self = lt;
     lp->levtype = deserialise_uint32(fp);
@@ -462,12 +465,15 @@ static void serialise(FILE *fp, Player const *ptmp)
     serialise(fp, uint32_t(ptmp->pos.y));
     serialise(fp, uint32_t(ptmp->pos.x));
     serialise(fp, uint32_t(ptmp->sex));
+    serialise(fp, uint32_t(ptmp->job));
     serialise(fp, uint32_t(ptmp->body));
     serialise(fp, uint32_t(ptmp->bdam));
     serialise(fp, uint32_t(ptmp->agility));
     serialise(fp, uint32_t(ptmp->adam));
     serialise(fp, uint32_t(ptmp->hpmax));
     serialise(fp, uint32_t(ptmp->hpcur));
+    serialise(fp, uint32_t(ptmp->mpmax));
+    serialise(fp, uint32_t(ptmp->mpcur));
     serialise(fp, uint32_t(ptmp->food));
     serialise(fp, ptmp->experience);
     serialise(fp, uint32_t(ptmp->speed));
