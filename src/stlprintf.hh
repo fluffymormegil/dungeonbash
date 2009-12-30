@@ -1,4 +1,4 @@
-/* stlprintf.cc - (v)sprintf-for-STL-strings for Martin's Dungeon Bash
+/* stlprintf.hh - (v)sprintf-for-STL-strings for Martin's Dungeon Bash
  * 
  * Copyright 2009 Martin Read and Stefan O'Rear
  *
@@ -24,50 +24,16 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define STLPRINTF_CC
-
+#ifndef STLPRINTF_HH
+#define STLPRINTF_HH
 #include <stdarg.h>
 #include <string>
 
-std::string libmrl::vstlprintf(const char *fmt, va_list args)
+namespace libmrl
 {
-    va_list ap;
-    int bsize = 80;
-
-    do
-    {
-        char* buf = new char[bsize];
-
-        va_copy(ap, args);
-        int ret = vsnprintf(buf, bsize, fmt, ap);
-        va_end(ap);
-
-        // glibc2.0 compatibility;
-        if (ret == -1)
-        {
-            ret = bsize * 2;
-        }
-
-        if (ret <= bsize)
-        {
-            std::string retv(buf, ret);
-            delete buf;
-            return retv;
-        }
-
-        delete buf;
-        bsize = ret + 1;
-    }
-    while(1);
+    extern std::string vstlprintf(const char *fmt, va_list args);
+    extern std::string stlprintf(const char *fmt, ...);
 }
+#endif
 
-std::string libmrl::stlprintf(const char *fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    std::string ret = vstlprintf(fmt, ap);
-    va_end(ap);
-    return ret;
-}
-
-/* stlprintf.cc */
+/* stlprintf.hh */
