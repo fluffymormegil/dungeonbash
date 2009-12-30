@@ -164,45 +164,6 @@ void press_enter(void)
     }
 }
 
-static std::string vstlprintf(const char *fmt, va_list args)
-{
-    va_list ap;
-    int bsize = 80;
-
-    do
-    {
-        char* buf = new char[bsize];
-
-        va_copy(ap, args);
-        int ret = vsnprintf(buf, bsize, fmt, ap);
-        va_end(ap);
-
-        // glibc2.0 compatibility;
-        if (ret == -1)
-            ret = bsize * 2;
-
-        if (ret <= bsize)
-        {
-            std::string retv(buf, ret);
-            delete buf;
-            return retv;
-        }
-
-        delete buf;
-        bsize = ret + 1;
-    }
-    while(1);
-}
-
-static std::string stlprintf(const char *fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    std::string ret = vstlprintf(fmt, ap);
-    va_end(ap);
-    return ret;
-}
-
 void print_msg(int channel, const char *fmt, ...)
 {
     va_list ap;
@@ -567,6 +528,26 @@ Game_cmd get_command(void)
             return EAT_FOOD;
         case '.':
             return STAND_STILL;
+        case '1':
+            return PROFCMD_1;
+        case '2':
+            return PROFCMD_2;
+        case '3':
+            return PROFCMD_3;
+        case '4':
+            return PROFCMD_4;
+        case '5':
+            return PROFCMD_5;
+        case '6':
+            return PROFCMD_6;
+        case '7':
+            return PROFCMD_7;
+        case '8':
+            return PROFCMD_8;
+        case '9':
+            return PROFCMD_9;
+        case '0':
+            return PROFCMD_0;
         case '\x04':
             return WIZARD_DESCEND;
         case '\x05':
