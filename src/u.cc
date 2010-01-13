@@ -39,6 +39,7 @@
 #include "cfgfile.hh"
 #include "loadsave.hh"
 #include "prof-fighter.hh"
+#include "prof-thanato.hh"
 
 char const * const mana_nouns_en[Total_professions] =
 {
@@ -606,7 +607,7 @@ void u_init(void)
     if (name_prompt)
     {
         do {
-            std::string name = message_line(true, "What is your name, stranger?", 16);
+            std::string name = message_line(true, "What is your name, stranger? ", 16);
             strcpy(u.name, name.c_str());
             hasslash = strchr(u.name, '/');
             /* Now that we create a named dump file, we must not
@@ -860,10 +861,15 @@ void update_player(void)
             }
         }
     }
+    if (u.combat_timer > 0)
+    {
+        --u.combat_timer;
+    }
     /* Once you hit the nutrition endstop, your ring of regeneration stops
      * working, and like normal regen, it won't raise you above 75% HP if
      * your food counter is negative. */
-    if (((game_tick % 10) == 5) &&
+    if ((!u.status.test_flag(Perseff_suppress_health_regen)) &&
+        ((game_tick % 10) == 5) &&
         (u.ring.otyp() == PO_REGENERATION_RING) &&
         (u.hpcur < ((u.food >= 0) ? u.hpmax : ((u.hpmax * 3) / 4))) &&
         (u.food >= -1950))
@@ -873,6 +879,10 @@ void update_player(void)
         print_msg(MSGCHAN_FLUFF, "Your ring pulses soothingly.");
         heal_u(one_die(3), 0, 0);
         permobjs[PO_REGENERATION_RING].known = 1;
+    }
+    /* mana regen according to class */
+    if (!u.status.test_flag(Perseff_suppress_mana_regen))
+    {
     }
     if (u.food >= -1950)
     {
@@ -1118,10 +1128,18 @@ void Player::resolve_dispel(std::list<Perseff_data>::iterator peff_iter)
         print_msg(0, "Your tentacular ordeal is over.");
         break;
 
+    case Perseff_death_song:
+        print_msg(0, "Death's song passes your lips no longer.");
+        break;
+
+    case Perseff_assassin_soul:
+        print_msg(0, "The veil of darkness surrounds you no more.");
+        break;
+
     default:
         break;
     }
-    u.perseffs.erase(peff_iter);
+    perseffs.erase(peff_iter);
 }
 
 int Player::on_remove(bool force)
@@ -1182,9 +1200,6 @@ int Player::on_remove(bool force)
     return 1;
 }
 
-// TODO implement player profession abilities
-// TODO implement player profession influence over stat gain
-
 int get_inventory_slot(Obj_handle oh)
 {
     int i;
@@ -1201,6 +1216,17 @@ int get_inventory_slot(Obj_handle oh)
     return -1;
 }
 
+void Player::restore_mana(int howmuch)
+{
+    howmuch = libmrl::min(howmuch, mpmax - mpcur);
+    if (howmuch > 0)
+    {
+        mpcur += howmuch;
+        status_updated = 1;
+        display_update();
+    }
+}
+
 void Player::spend_mana(int howmuch)
 {
     if (howmuch > mpcur)
@@ -1211,7 +1237,31 @@ void Player::spend_mana(int howmuch)
     status_updated = true;
 }
 
-void Player::notify_cooldown(int which)
+char const * const thanato_cd_msgs_en[10] = 
+{
+};
+
+char const * const preacher_cd_msgs_en[10] = 
+{
+};
+
+char const * const fighter_cd_msgs_en[10] = 
+{
+    "",
+    "You feel less dizzy.",
+    "You feel less weary.",
+    "",
+    "",
+    "",
+    "",
+    ""
+};
+
+char const * const * fighter_cd_msgs = &(fighter_cd_msgs_en[0]);
+char const * const * thanato_cd_msgs = &(thanato_cd_msgs_en[0]);
+char const * const * preacher_cd_msgs = &(preacher_cd_msgs_en[0]);
+
+void Player::notify_cooldown(int which) const
 {
     switch (job)
     {
@@ -1227,6 +1277,11 @@ void Player::notify_cooldown(int which)
         case Fighter_slam:
             print_msg(0, "Your shoulder hurts less.");
             break;
+        }
+        break;
+    case Prof_thanatophile:
+        switch (which)
+        {
         }
     }
 }
@@ -1267,8 +1322,79 @@ int Player::do_profession_command(int which)
             break;
         }
         break;
+    case Prof_thanatophile:
+        switch (which)
+        {
+        case Thanato_assassin_soul:
+            return do_assassin_soul(this);
+        case Thanato_death_song:
+            return do_death_song(this);
+        case Thanato_life_leech:
+            return do_life_leech(this);
+        case Thanato_corpse_explosion:
+            return do_thanato_explosion(this);
+        default:
+            break;
+        }
+        break;
     }
     print_msg(0, "No such ability %d", which);
+    return 0;
+}
+
+void Player::dispel_effects(Persistent_effect flavour, int how_many)
+{
+    std::list<Perseff_data>::iterator iter_curr;
+    std::list<Perseff_data>::iterator iter_next;
+    for (iter_curr = perseffs.begin(); (how_many) && (iter_curr != perseffs.end()); iter_curr = iter_next)
+    {
+        iter_next = iter_curr;
+        ++iter_next;
+        if (iter_curr->flavour == flavour)
+        {
+            resolve_dispel(iter_curr);
+            --how_many;
+        }
+    }
+}
+
+void Player::dispel_noncom_only(void)
+{
+    // wipe all effects that cannot remain in force during combat
+    dispel_effects(Perseff_death_song, INT_MAX);
+}
+
+// As per policy, the English strings go in the executable.
+char const * const oom_strings_en[Total_professions] =
+{
+    "You are not inspired to such extremes of violence.",
+    "You are not sufficiently in touch with Death.",
+    "Your karma is at a low ebb."
+};
+
+char const * const *oom_strings = &(oom_strings_en[0]);
+
+bool Player::check_mana(int howmuch, bool noisy) const
+{
+    if (mpcur < howmuch)
+    {
+        if (noisy)
+        {
+            print_msg(0, "%s", oom_strings[job]);
+        }
+        return true;
+    }
+    return false;
+}
+
+int Player::get_adjacent_monster(Mon_handle *mon, libmrl::Coord *step) const
+{
+    int i = select_dir(step);
+    if (i == -1)
+    {
+        return i;
+    }
+    *mon = currlev->monster_at(pos + *step);
     return 0;
 }
 

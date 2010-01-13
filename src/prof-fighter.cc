@@ -44,41 +44,31 @@ const int fighter_costs[] =
     30,
     20,
     30,
-    25
+    25,
+    0 // surge *restores* violence
 };
-
-bool out_of_violence(Player *ptmp, int required)
-{
-    if (ptmp->mpcur < required)
-    {
-        print_msg(0, "You are not inspired to such extreme Violence.");
-        return true;
-    }
-    return false;
-}
 
 int do_fighter_slam(Player *ptmp)
 {
-    if (out_of_violence(ptmp, fighter_costs[Fighter_slam]))
+    if (ptmp->check_mana(fighter_costs[Fighter_slam]))
     {
         return 0;
     }
     int cooldown_multiplier = 1;
     if (ptmp->cooldowns[Fighter_slam])
     {
-        print_msg(0, "Your are not ready to slam another foe (%d ticks to go)", ptmp->cooldowns[Fighter_slam]);
+        print_msg(0, "You are not ready to slam another foe (%d ticks to go)", ptmp->cooldowns[Fighter_slam]);
         return 0;
     }
     // get an adjacent monster.
     libmrl::Coord step;
     int i;
     Mon_handle mon;
-    i = select_dir(&step);
+    i = ptmp->get_adjacent_monster(&mon, &step);
     if (i == -1)
     {
         return 0;
     }
-    mon = currlev->monster_at(ptmp->pos + step);
     if (mon.valid())
     {
         // slam is autohit, so is a good way to deal with a monster you've got
@@ -120,7 +110,7 @@ int do_fighter_slam(Player *ptmp)
 
 int do_fighter_berserk(Player *ptmp)
 {
-    if (out_of_violence(ptmp, fighter_costs[Fighter_berserk]))
+    if (ptmp->check_mana(fighter_costs[Fighter_berserk]))
     {
         return 0;
     }
@@ -140,13 +130,15 @@ int do_fighter_berserk(Player *ptmp)
         return 0;
     }
     print_msg(0, "You go berserk!");
+    // Going berserk voids your current supply of violence, but makes you
+    // regain violence every tick.
     ptmp->spellcast(ptmp->mpcur, Fighter_berserk, fighter_cooldowns[Fighter_berserk]);
     return 1;
 }
 
 int do_fighter_smash(Player *ptmp)
 {
-    if (out_of_violence(ptmp, fighter_costs[Fighter_smash]))
+    if (ptmp->check_mana(fighter_costs[Fighter_smash]))
     {
         return 0;
     }
@@ -165,8 +157,12 @@ int do_fighter_smash(Player *ptmp)
         return 0;
     }
     mon = currlev->monster_at(ptmp->pos + step);
+    // Hm. Several ways I could make this next bit work correctly. I think
+    // I'll go for making Smash be a one-turn buff.
     if (mon.valid())
     {
+        Perseff_data peff = { Perseff_smash, 1, 1, true, true };
+        ptmp->apply_effect(peff);
         uhitm(mon);
     }
     else
@@ -195,7 +191,7 @@ int do_fighter_whirl(Player *ptmp)
         print_msg(0, "You feel too dizzy to execute that manoeuvre.");
         return 0;
     }
-    if (out_of_violence(ptmp, fighter_costs[Fighter_whirlwind]))
+    if (ptmp->check_mana(fighter_costs[Fighter_whirlwind]))
     {
         return 0;
     }
@@ -218,6 +214,7 @@ int do_fighter_whirl(Player *ptmp)
         return 0;
     }
     ptmp->spellcast(fighter_costs[Fighter_whirlwind], Fighter_whirlwind, fighter_cooldowns[Fighter_whirlwind]);
+    print_msg(0, "You whip your weapon round in a deadly circle.");
     for (i = 0; (i < 8) && mons[i].valid(); ++i)
     {
         uhitm(mons[i]);
@@ -226,6 +223,19 @@ int do_fighter_whirl(Player *ptmp)
             break;
         }
     }
+    return 1;
+}
+
+int do_surge(Player *ptmp)
+{
+    if (ptmp->cooldowns[Fighter_surge])
+    {
+        print_msg(0, "You are too tired to surge with violence (%d ticks to go)", ptmp->cooldowns[Fighter_surge]);
+        return 0;
+    }
+    ptmp->restore_mana(50);
+    ptmp->cooldowns[Fighter_surge] = 500;
+    print_msg(0, "Violence surges within you!");
     return 1;
 }
 

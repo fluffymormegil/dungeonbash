@@ -40,7 +40,8 @@ enum Fighter_actives {
     Fighter_whirlwind = 1,
     Fighter_slam,
     Fighter_smash,
-    Fighter_berserk
+    Fighter_berserk,
+    Fighter_surge
 };
 
 extern const int fighter_cooldowns[];
@@ -94,21 +95,30 @@ struct Player {
     Obj_handle ring;		/* For now, you can only wear one magic ring. */
     bool farmoving;
     libmrl::Coord farmove_direction;
+    int combat_timer;
     uint32_t cooldowns[10];
+    // Examining surroundings
+    int get_adjacent_monster(Mon_handle *mon, libmrl::Coord *step) const;
     // Persistent effect state
     std::list<Perseff_data> perseffs;
     Status_flags status;
     // Persistent effect application
     void apply_effect(Perseff_data& peff);
+    void dispel_effects(Persistent_effect flavour, int how_many);
+    void dispel_noncom_only(void);
     bool suffer(Perseff_data& peff);
     void resolve_dispel(std::list<Perseff_data>::iterator peff_iter);
-    void notify_cooldown(int which);
+    void notify_cooldown(int which) const;
     // invocations...
     int do_profession_command(int which);
     // resource usage
+    bool check_mana(int howmuch, bool noisy = true) const;
     void spend_mana(int howmuch);
+    void restore_mana(int homuch);
     void spellcast(int mana, int cd_index = 0, int cd_val = 0);
     // computed-value functions
+    void renew_combat_timer(void) { combat_timer = 10; dispel_noncom_only(); }
+    bool in_combat() const { return combat_timer > 0; }
     int net_body() const { return body - bdam; }
     int net_agility() const { return agility - adam; }
     bool test_mobility(bool noisy = false) const;
