@@ -745,7 +745,7 @@ int animate_dead(Mon const *mptr)
                         {
                             saw_zombie = true;
                         }
-                        create_mon(optr->meta, pos);
+                        create_mon(optr->meta[0], pos);
                     }
                 }
                 consume_obj(oh);
