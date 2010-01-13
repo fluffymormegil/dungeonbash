@@ -34,6 +34,7 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <string.h>
+#include "stlprintf.hh"
 
 // Message channel suppression
 bool suppressions[] =
@@ -169,7 +170,7 @@ void print_msg(int channel, const char *fmt, ...)
     va_list ap;
 
     va_start(ap, fmt);
-    std::string msg = vstlprintf(fmt, ap);
+    std::string msg = libmrl::vstlprintf(fmt, ap);
     va_end(ap);
 
     message_line(!suppressions[channel], msg, 0);
@@ -312,7 +313,7 @@ int inv_select(Poclass_num filter, const char *action, int accept_blank)
     }
     print_msg(MSGCHAN_PROMPT, "[ESC/SPACE to cancel]");
 tryagain:
-    std::string prompt = stlprintf("What do you want to %s? ", action);
+    std::string prompt = libmrl::stlprintf("What do you want to %s? ", action);
     ch = (message_line(true, prompt, 1))[0];
     switch (ch)
     {
@@ -789,7 +790,7 @@ void farlook(void)
     print_msg(MSGCHAN_PROMPT, "Done.");
 }
 
-void get_smite_target(libmrl::Coord *ppos)
+int get_smite_target(libmrl::Coord *ppos, bool must_be_visible)
 {
     libmrl::Coord mappos = u.pos;
     libmrl::Coord step;
@@ -811,32 +812,18 @@ void get_smite_target(libmrl::Coord *ppos)
         {
             if (currlev->outofbounds(mappos))
             {
-                print_msg(MSGCHAN_PROMPT, "The Outer Darkness.");
+                print_msg(MSGCHAN_PROMPT, "Invalid target location");
+                i = -1;
+                done = true;
             }
-            else if (!(currlev->flags_at(mappos) & MAPFLAG_EXPLORED))
+            else if (must_be_visible && !pos_visible(mappos))
             {
-                print_msg(MSGCHAN_PROMPT, "Unexplored territory");
+                print_msg(MSGCHAN_PROMPT, "You can't see that square to target it.");
             }
             else
             {
-                Mon_handle mh = currlev->monster_at(mappos);
-                Obj_handle oh = currlev->object_at(mappos);
-                if (mappos == u.pos)
-                {
-                    print_msg(MSGCHAN_PROMPT, "An unfortunate adventurer");
-                }
-                else if (mh.valid() & mon_visible(mh))
-                {
-                    //describe_monster(currlev->monster_at(mappos));
-                    mh.snapc()->get_name(&name, 0);
-                    print_msg(MSGCHAN_PROMPT, "%s", name.c_str());
-                }
-                if (oh.valid())
-                {
-                    oh.snapc()->get_name(&name);
-                    print_msg(MSGCHAN_PROMPT, "%s", name.c_str());
-                }
-                print_msg(MSGCHAN_PROMPT, "%s", terrain_data[currlev->terrain_at(mappos)].name);
+                i = 0;
+                done = true;
             }
         }
         else
@@ -854,7 +841,7 @@ void get_smite_target(libmrl::Coord *ppos)
             mappos = mappos + step;
         }
     }
-    print_msg(MSGCHAN_PROMPT, "Done.");
+    return (i == -1) ? -1 : 0;
 }
 
 void print_version(void)
