@@ -61,6 +61,7 @@ extern void show_discoveries(void);
 extern void animate_projectile(libmrl::Coord pos, Dbash_colour col = DBCLR_L_GREY);
 extern void projectile_done(void);
 extern void farlook(void);
+extern int get_smite_target(libmrl::Coord *ppos, bool must_be_visible);
 
 /* "Show the player the terrain only" flag. */
 extern int show_terrain;
