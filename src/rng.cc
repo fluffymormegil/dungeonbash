@@ -32,6 +32,14 @@
 uint32_t rng_state[5];
 uint32_t saved_state[5];
 
+// The xorshift PRNG is not cryptography-grade; its merits are "it's fast",
+// "George Marsaglia has done the analysis to confirm its basic soundness" and
+// "the code is comprehensible". If you can point to a cryptography-grade PRNG
+// that is ubiquitous on Linux, BSD Unix, MinGW or Cygwin, and Solaris 10, let
+// me know and I'll ditch this thing.
+//
+// TODO reread George Marsaglia's paper on the subject to see if he comments
+// on _precisely_ how cryptoweak it is.
 uint32_t rng(void)
 {
     uint32_t tmp;
@@ -47,11 +55,20 @@ uint32_t rng(void)
 
 void rng_init(void)
 {
-    // We only select from up to 2^64 of the possible 2^160 RNG states (and
-    // probably not even that many).
+    // We don't use a full 160 bits of initial entropy, unfortunately.
     int i;
-    uint32_t t1 = uint32_t(time(NULL));
+    uint32_t t1;
     uint32_t t2;
+    uint32_t t3;
+#ifdef GETTIMEOFDAY_EXISTS
+    struct timeval tv;
+    gettimeofday(&tv);
+    t1 = tv.sec;
+    t3 = tv.usec;
+#else
+    t1 = uint32_t(time(NULL));
+    t3 = 0;
+#endif
 #ifdef GETPID_AND_GETUID_EXIST
     t2 = (getpid() & 0xffff) | (getuid() << 16);
 #else
@@ -59,7 +76,7 @@ void rng_init(void)
 #endif
     rng_state[0] = hex_pi[0];
     rng_state[1] = hex_pi[1];
-    rng_state[2] = hex_pi[2];
+    rng_state[2] = t3 ^ hex_pi[2];
     rng_state[3] = t1 ^ hex_pi[3];
     rng_state[4] = t2 ^ hex_pi[4];
     /* Flush through the first 100 numbers */
