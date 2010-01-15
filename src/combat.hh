@@ -44,6 +44,11 @@ extern int mshootu(Mon_handle mon, Damtyp dtyp);
 extern int ushootm(libmrl::Coord dir);
 extern void renew_combat_timer(void);
 extern bool player_in_combat(void);
+extern bool ring_melee_proc(Mon_handle mon, Obj_handle obj);
+extern bool weapon_melee_proc(Mon_handle mon, Obj_handle obj);
+extern bool ring_prekill_proc(int pm, Obj_handle obj, int blow_hp);
+extern bool weapon_prekill_proc(int pm, Obj_handle obj, int blow_hp);
+
 
 #endif
 

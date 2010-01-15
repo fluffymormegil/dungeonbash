@@ -70,7 +70,7 @@ struct Obj {
     libmrl::Coord pos;
     int used;   /* Entry is occupied. */
     int durability;     /* Weapons and armour degrade with use. */
-    int meta; /* a piece of metadata. */
+    uint32_t meta[2]; /* some metadata */
     void get_name(std::string *strptr) const;
     bool is_ranged() const;
     Item_quality quality() const;

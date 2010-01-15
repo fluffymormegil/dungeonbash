@@ -31,35 +31,11 @@
 #include "pobjid.hh"
 #include "pmonid.hh"
 #include "monsters.hh"
-
-int combat_timer = 0;
-
-void renew_combat_timer(void)
-{
-    combat_timer = 10;
-}
-
-void step_combat_timer(void)
-{
-    if (combat_timer > 0)
-    {
-        --combat_timer;
-    }
-}
-
-void flush_combat_timer(void)
-{
-    combat_timer = 0;
-}
-
-bool player_in_combat(void)
-{
-    return (combat_timer > 0);
-}
+#include <limits.h>
 
 int player_attack(libmrl::Coord dir)
 {
-    renew_combat_timer();
+    u.renew_combat_timer();
     if (u.weapon.valid() && ((u.weapon.snapc()->obj_id == PO_BOW) || (u.weapon.snapc()->obj_id == PO_CROSSBOW)))
     {
 	ushootm(dir);
@@ -83,17 +59,27 @@ int player_attack(libmrl::Coord dir)
 int uhitm(Mon_handle mon)
 {
     Mon *mp;
+    int pm;
     Obj *wep;
     Permobj *pwep;
     Obj *ring;
-    Permobj *pring;
     int tohit;
     int damage;
-    int healing;
+    int returned_damage;
+    int saved_mhp;
 
     mp = mon.snapv();
+    pm = mp->mon_id;
     mp->notice_you(true);
-    tohit = zero_die(u.agility + u.level);
+    saved_mhp = mp->hpcur;
+    if (u.status.test_flag(Perseff_smash))
+    {
+        tohit = INT_MAX;
+    }
+    else
+    {
+        tohit = zero_die(u.agility + u.level);
+    }
     if (tohit < mp->defence)
     {
         print_msg(0, "You miss.");
@@ -104,6 +90,13 @@ int uhitm(Mon_handle mon)
     print_msg(0, "You hit %s.", victim_name.c_str());
     wep = u.weapon.snapv();
     ring = u.ring.snapv();
+    /* New approach on attack procs:
+     *
+     * 1) Vampire ring now does a fixed heal equal to its vamping damage,
+     * clipped to the curhp of the victim.
+     *
+     * 2) Item proc damage is independent of the player's weapon type.
+     */
     if (wep)
     {
         pwep = permobjs + wep->obj_id;
@@ -113,49 +106,37 @@ int uhitm(Mon_handle mon)
     {
         damage = u.net_body() / 10;
     }
-    if (ring)
+    if (u.status.test_flag(Perseff_smash))
     {
-        pring = permobjs + ring->obj_id;
-        switch (ring->obj_id)
+        damage *= 2;
+    }
+    bool killed = damage_mon(mon, damage, true, &returned_damage, true);
+    if ((!killed) && u.status.test_flag(Perseff_death_song))
+    {
+        // Melee blow didn't kill, apply the effect of Death Song.
+    }
+    if (wep)
+    {
+        if (killed)
         {
-        case PO_FIRE_RING:
-            if (!pmon_resists_fire(mp->mon_id))
-            {
-                if (!pring->known)
-                {
-                    pring->known = 1;
-                }
-                print_msg(0, "Your ring burns %s!", victim_name.c_str());
-                damage += (damage + 1) / 2 + dice(2, 4);
-            }
-            break;
-        case PO_VAMPIRE_RING:
-            if (!pmon_is_undead(mp->mon_id))
-            {
-                if (!pring->known)
-                {
-                    pring->known = 1;
-                }
-                print_msg(0, "Your ring drains %s!", victim_name.c_str());
-                damage += (damage + 3) / 4 + dice(2, 4);
-                healing = (damage + 5) / 6;
-                heal_u(healing, 0, 1);
-            }
-            break;
-        case PO_FROST_RING:
-            if (!pmon_resists_cold(mp->mon_id))
-            {
-                if (!pring->known)
-                {
-                    pring->known = 1;
-                }
-                print_msg(0, "Your ring freezes %s!", victim_name.c_str());
-                damage += (damage + 2) / 3 + dice(1, 6);
-            }
+            weapon_prekill_proc(pm, u.weapon, saved_mhp);
+        }
+        else
+        {
+            killed = weapon_melee_proc(mon, u.weapon);
         }
     }
-    print_msg(MSGCHAN_NUMERIC, "You do %d damage.", damage);
-    damage_mon(mon, damage, 1);
+    if (ring)
+    {
+        if (killed)
+        {
+            ring_prekill_proc(pm, u.ring, saved_mhp);
+        }
+        else
+        {
+            killed = ring_melee_proc(mon, u.ring);
+        }
+    }
     if (u.weapon.valid())
     {
         damage_obj(u.weapon);
@@ -177,7 +158,7 @@ int ushootm(libmrl::Coord dir)
     int damage;
     int rv = 0;
     std::string victim_name;
-    renew_combat_timer();
+    u.renew_combat_timer();
     wep = u.weapon.snapv();
     pwep = permobjs + wep->obj_id;
     damage = one_die(pwep->power);
@@ -197,7 +178,7 @@ int ushootm(libmrl::Coord dir)
             if (range == 1)
             {
                 /* Shooting at point-blank is tricky */
-                tohit = (tohit + 1) / 2;
+                tohit = libmrl::div_up(tohit, 2);
             }
             if (tohit >= mptr->defence)
             {
@@ -235,7 +216,12 @@ int mhitu(Mon_handle mon, Damtyp dtype)
     std::string attackername;
     std::string Attackername;
     Mon *mptr = mon.snapv();
-    renew_combat_timer();
+    u.renew_combat_timer();
+    // Fighters regain Violence when attacked.
+    if (u.job == Prof_fighter)
+    {
+        u.restore_mana(1 + permons[mptr->mon_id].power / 10);
+    }
     mptr->get_name(&attackername, 1);
     mptr->get_name(&Attackername, 3);
     tohit = zero_die(mptr->mtohit + 5);
@@ -253,6 +239,11 @@ int mhitu(Mon_handle mon, Damtyp dtype)
             print_msg(0, "%s misses you.", Attackername.c_str());
         }
         return 0;
+    }
+    // Fighters regain *more* Violence when actually *hit*.
+    if (u.job == Prof_fighter)
+    {
+        u.restore_mana(2 + permons[mptr->mon_id].power / 10);
     }
     damage = one_die(mptr->mdam);
     unaffected = player_resists_dtype(dtype);
@@ -523,6 +514,111 @@ int mshootu(Mon_handle mon, Damtyp dtyp)
     }
     projectile_done();
     return rv;
+}
+
+bool weapon_melee_proc(Mon_handle mon, Obj_handle obj)
+{
+    Obj *optr = obj.snapv();
+    Mon *mptr = mon.snapv();
+    bool killed = false;
+    int damage;
+    // no weapon procs yet.
+    switch (optr->obj_id)
+    {
+    case PO_GOLEM_STAFF:
+        // 2d10+10 damage to golems. Remember, the golem staff, like all
+        // artifacts, is unbreakable.
+        if (permons[mptr->mon_id].sym == PMSYM_GOLEM)
+        {
+            damage = 10 + dice(2, 10);
+            print_msg(0, "The golem staff's power is unleashed!");
+            killed = damage_mon(mon, damage, true);
+        }
+        break;
+    default:
+        break;
+    }
+    return killed;
+}
+
+bool ring_melee_proc(Mon_handle mon, Obj_handle obj)
+{
+    Obj *optr = obj.snapv();
+    Mon *mptr = mon.snapv();
+    std::string victim_name;
+    int damage;
+    int heal;
+    bool killed = false;
+    Permobj *poptr = permobjs + optr->obj_id;
+    mptr->get_name(&victim_name, 1, false);
+    switch (optr->obj_id)
+    {
+    case PO_FIRE_RING:
+        if (!pmon_resists_fire(mptr->mon_id))
+        {
+            if (!poptr->known)
+            {
+                poptr->known = 1;
+            }
+            print_msg(0, "Your ring burns %s!", victim_name.c_str());
+            damage = dice(3, 4);
+            killed = damage_mon(mon, damage, true);
+        }
+        break;
+    case PO_VAMPIRE_RING:
+        if (!pmon_resists_necro(mptr->mon_id))
+        {
+            if (!poptr->known)
+            {
+                poptr->known = 1;
+            }
+            print_msg(0, "Your ring drains %s!", victim_name.c_str());
+            damage = libmrl::min(dice(3, 4), mptr->hpcur);
+            heal = libmrl::div_up(damage, 2);
+            killed = damage_mon(mon, damage, true);
+            heal_u(heal, 0, 1);
+        }
+        break;
+    case PO_FROST_RING:
+        if (!pmon_resists_cold(mptr->mon_id))
+        {
+            print_msg(0, "Your ring freezes %s!", victim_name.c_str());
+            damage = one_die(6) + 4;
+            killed = damage_mon(mon, damage, true);
+        }
+        break;
+    }
+    return killed;
+}
+
+bool ring_prekill_proc(int pm, Obj_handle obj, int blow_hp)
+{
+    Obj *optr = obj.snapv();
+    Permobj *poptr = permobjs + optr->obj_id;
+    Permon *pmptr = permons + pm;
+    std::string victim_name;
+    int heal;
+    switch (optr->obj_id)
+    {
+    case PO_VAMPIRE_RING:
+        if (!pmon_resists_necro(pm))
+        {
+            poptr->known = true;
+            print_msg(0, "Your ring draws on your victim's freshly-taken life.");
+            heal = libmrl::div_up(libmrl::min(dice(3, 4), blow_hp), 2);
+            heal_u(heal, 0, 1);
+            return true;
+        }
+        return false;
+    default:
+        return false;
+    }
+}
+
+bool weapon_prekill_proc(int pm, Obj_handle obj, int blow_hp)
+{
+    // no prekill-proccing weapons yet.
+    return false;
 }
 
 /* combat.c */

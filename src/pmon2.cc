@@ -29,6 +29,11 @@
 #include "monsters.hh"
 #include "pmonid.hh"
 
+bool pmon_resists_necro(int pm)
+{
+    return !!(permons[pm].flags & PMF_RESIST_NECR);
+}
+
 bool pmon_resists_elec(int pm)
 {
     return !!(permons[pm].flags & PMF_RESIST_ELEC);

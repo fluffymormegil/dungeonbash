@@ -142,7 +142,7 @@ int zapeff_corpse_explosion(libmrl::Coord pos)
         std::string namestr;
         Corpseblast_data data;
         optr->get_name(&namestr);
-        data.max = libmrl::min(permons[optr->meta].hp, 20);
+        data.max = libmrl::min(permons[optr->meta[0]].hp, 20);
         print_msg(0, "Arcane energy detonates %s!", namestr.c_str());
         release_obj(obj);
         newsym(pos);

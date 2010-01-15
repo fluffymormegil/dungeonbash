@@ -41,12 +41,15 @@ enum Persistent_effect
     Perseff_might, Perseff_fell_dominion,
     // Buffs: fighter
     Perseff_berserk, Perseff_martial_trance, Perseff_iron_soul,
+    Perseff_smash,
     // Buffs: preacher
     Perseff_aspect_severity, Perseff_aspect_mercy,
     // Buffs: thanatophile
     Perseff_death_song, Perseff_assassin_soul,
     // Buffs: scroll
     Perseff_protection,
+    // Debuffs: suppressions
+    Perseff_suppress_mana_regen, Perseff_suppress_health_regen,
     // Debuffs: elemental
     Perseff_bitter_chill, Perseff_searing_flames,
     // Debuffs: curses
@@ -114,12 +117,12 @@ struct Status_flags
     bool test_flag(Persistent_effect pef) const
     {
         int f = pef;
-        return !!(data[f >> 5] & (1 << (f & 31)));
+        return (data[f >> 5] & (1 << (f & 31)));
     }
-    bool set_flag(Persistent_effect pef)
+    void set_flag(Persistent_effect pef)
     {
         int f = pef;
-        return !!(data[f >> 5] & (1 << (f & 31)));
+        data[f >> 5] |= (1 << (f & 31));
     }
 };
 

@@ -52,6 +52,10 @@ Perseff_metadata perseff_meta[Total_perseffs] =
         true, false, Stack_none
     },
     {
+        "Smash", "This turn's attack autohits for double damage.",
+        true, false, Stack_none
+    },
+    {
         "Aspect of Severity", "Increases the Preacher's physical damage at the expense of weaker healing.",
         true, false, Stack_none
     },

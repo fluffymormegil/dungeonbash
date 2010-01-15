@@ -131,6 +131,7 @@ struct Mon_rattk
 #define PMSYM_ZOMBIE 'z'
 #define PMSYM_CENTAUR 'C'
 #define PMSYM_DRAGON 'D'
+#define PMSYM_GOLEM 'G'
 #define PMSYM_GIANT 'H'
 #define PMSYM_ICE_MONSTER 'I'
 #define PMSYM_LICH 'L'
@@ -156,6 +157,7 @@ struct Permon {
     int exp;            /* Unaffected by OOD rating. */
     Creature_speed speed;          /* 0 = slow; 1 = normal; 2 = quick */
     uint32_t flags;          /* resistances, AI settings, etc. */
+    Anatomy anatomy;
 };
 
 extern Permon permons[];

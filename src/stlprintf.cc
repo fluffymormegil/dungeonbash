@@ -28,6 +28,7 @@
 
 #include <stdarg.h>
 #include <string>
+#include "stlprintf.hh"
 
 std::string libmrl::vstlprintf(const char *fmt, va_list args)
 {

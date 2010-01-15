@@ -135,6 +135,8 @@ static void deserialise(FILE *fp, Player *ptmp)
     ptmp->experience = deserialise_uint32(fp);
     ptmp->speed = deserialise_uint32(fp);
     deserialise(fp, ptmp->resistances, DT_COUNT);
+    deserialise(fp, ptmp->cooldowns, 10);
+    ptmp->combat_timer = deserialise_uint32(fp);
     ptmp->level = deserialise_uint32(fp);
     ptmp->gold = deserialise_uint32(fp);
     deserialise_ohandle_array(fp, ptmp->inventory, INVENTORY_SIZE);
@@ -198,7 +200,8 @@ void deserialise(FILE *fp, Obj *optr)
     deserialise(fp, &(optr->lev));
     deserialise(fp, &(optr->pos));
     optr->durability = int(deserialise_uint32(fp));
-    optr->meta = int(deserialise_uint32(fp));
+    deserialise(fp, optr->meta, 2);
+    //optr->meta = int(deserialise_uint32(fp));
 #ifdef DEBUG_LOADSAVE
     print_msg(0, "   deserialised object of type %d pos %d %d levtag %d %d withyou %d", optr->obj_id, optr->pos.y, optr->pos.x, optr->lev.dungeon, optr->lev.level, optr->with_you);
 #endif
@@ -478,6 +481,8 @@ static void serialise(FILE *fp, Player const *ptmp)
     serialise(fp, ptmp->experience);
     serialise(fp, uint32_t(ptmp->speed));
     serialise(fp, ptmp->resistances, DT_COUNT);
+    serialise(fp, ptmp->cooldowns, 10);
+    serialise(fp, uint32_t(ptmp->combat_timer));
     serialise(fp, uint32_t(ptmp->level));
     serialise(fp, uint32_t(ptmp->gold));
     serialise_ohandle_array(fp, ptmp->inventory, INVENTORY_SIZE);
@@ -515,7 +520,7 @@ void serialise(FILE *fp, Obj const *optr)
     serialise(fp, &(optr->lev));
     serialise(fp, optr->pos);
     serialise(fp, uint32_t(optr->durability));
-    serialise(fp, uint32_t(optr->meta));
+    serialise(fp, optr->meta, 2);
 }
 
 void serialise_objects(FILE *fp)

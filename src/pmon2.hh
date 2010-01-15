@@ -50,6 +50,7 @@ extern bool pmon_resists_cold(int pm);
 extern bool pmon_resists_fire(int pm);
 extern bool pmon_resists_elec(int pm);
 extern bool pmon_resists_acid(int pm);
+extern bool pmon_resists_necro(int pm);
 extern bool pmon_always_neuter(int pm);
 extern bool pmon_always_male(int pm);
 extern bool pmon_always_female(int pm);

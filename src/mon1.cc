@@ -428,7 +428,7 @@ int knock_mon(Mon_handle mon, libmrl::Coord step, int force, bool by_you)
     }
 }
 
-bool damage_mon(Mon_handle mon, int amount, int by_you)
+bool damage_mon(Mon_handle mon, int amount, bool by_you, int *real_dmg, bool noisy)
 {
     Mon *mptr = mon.snapv();
     libmrl::Coord pos = mptr->pos;
@@ -450,12 +450,16 @@ bool damage_mon(Mon_handle mon, int amount, int by_you)
     }
     if (amount >= mptr->hpcur)
     {
+        if (real_dmg)
+        {
+            *real_dmg = mptr->hpcur;
+        }
         if (by_you)
         {
             print_msg(0, "You kill %s!", name.c_str());
             gain_experience(permons[mptr->mon_id].exp);
         }
-        else if (mptr->in_fov())
+        else if (mptr->in_fov() && noisy)
         {
             print_msg(0, "%s dies.", name.c_str());
         }
@@ -468,7 +472,15 @@ bool damage_mon(Mon_handle mon, int amount, int by_you)
     }
     else
     {
+        if (real_dmg)
+        {
+            *real_dmg = amount;
+        }
 	mptr->hpcur -= amount;
+        if (noisy && by_you)
+        {
+            print_msg(MSGCHAN_NUMERIC, "You do %d damage.\n", amount);
+        }
         return false;
     }
 }

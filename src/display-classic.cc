@@ -260,12 +260,16 @@ static void update_message(unsigned int line)
         size_t close;
 
         if (msg[i] != '<')
+        {
             goto literal;
+        }
 
         close = msg.find('>', i + 1);
 
         if (close == std::string::npos)
+        {
             goto literal;
+        }
 
         for (int cand = 0; cand < 15; ++cand)
         {
@@ -299,9 +303,13 @@ std::string get_reply(int mid, unsigned nmax)
         for (unsigned i = 0; i < buf.size(); ++i)
         {
             if (buf[i] == '<')
+            {
                 out += "<<lgrey>";
+            }
             else
+            {
                 out += buf[i];
+            }
         }
 
         update_message(mid);
@@ -326,10 +334,10 @@ std::string get_reply(int mid, unsigned nmax)
  * with messages that it's dangerous to let them just fly past (2)
  * that messages will be of sane length and nicely formatted. THIS
  * IS VERY BAD CODING PRACTICE! */
-/* Note that every message forces a call to display_update().
- * Events that cause changes to the map or the player should flag
- * the change before calling printmsg. */
-std::string message_line(bool visible, const std::string& msg, int reply)
+/* Note that every visible message forces a call to display_update().  Events
+ * that cause changes to the map or the player should flag the change before
+ * emitting messages. */
+std::string message_line(bool visible, const std::string& msg, int expected)
 {
     std::string ret;
 
@@ -341,14 +349,16 @@ std::string message_line(bool visible, const std::string& msg, int reply)
             messages.erase(messages.begin());
 
             for (int i = 0; i < MSGLINES - 1; ++i)
+            {
                 update_message(i);
+            }
         }
 
         int msg_num = messages.size();
         messages.push_back(msg);
         update_message(msg_num);
 
-        if (reply == 1)
+        if (expected == 1)
         {
             int key = wgetch(message_window);
 
@@ -360,19 +370,25 @@ std::string message_line(bool visible, const std::string& msg, int reply)
                 messages[msg_num] += static_cast<char>(key + '@');
             }
             else if (key == 127)
+            {
                 messages[msg_num] += "^?";
+            }
             else if (key >= 128 && key < 160)
             {
                 messages[msg_num] += '~';
                 messages[msg_num] += static_cast<char>(key - 128 + '@');
             }
             else
+            {
                 messages[msg_num] += key;
+            }
 
             update_message(msg_num);
         }
-        else if (reply)
-            ret = get_reply(msg_num, reply);
+        else if (expected)
+        {
+            ret = get_reply(msg_num, expected);
+        }
 
         display_update();
     }

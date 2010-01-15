@@ -33,8 +33,10 @@ extern bool string_to_bool(std::string& s);
 
 extern std::string configured_system_playground;
 extern std::string configured_name;
+extern std::string configured_profession;
 extern std::string configured_language;
 extern std::string preferred_display;
+
 extern bool suppressions[];
 extern bool fruit_salad_inventory;
 extern bool levelup_wait;

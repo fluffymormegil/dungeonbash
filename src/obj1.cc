@@ -474,12 +474,15 @@ void Obj::get_name(std::string *s) const
     char tmpbuf[32];
     char const *an;
     Permobj *poptr = permobjs + obj_id;
-    if (obj_id == PO_CORPSE)
+    /* TODO tweak this later to handle carrion that shouldn't be recognizable
+     * as coming from any given species. */
+    if (poptr->poclass == POCLASS_CARRION)
     {
-        Permon *pmptr = permons + meta;
+        Permon *pmptr = permons + meta[0];
         *s = is_vowel(pmptr->name[0]) ? "an " : "a ";
         *s += pmptr->name;
-        *s += " corpse";
+        *s += " ";
+        *s += poptr->name;
     }
     else if (poptr->known)
     {
@@ -836,7 +839,7 @@ Obj_handle create_corpse(int pm_idx, libmrl::Coord pos, Level *lptr)
     Obj_handle obj = create_obj(PO_CORPSE, 1, false, pos, lptr);
     if (obj.valid())
     {
-        obj.snapv()->meta = pm_idx;
+        obj.snapv()->meta[0] = pm_idx;
     }
     return obj;
 }

@@ -140,5 +140,19 @@ enum Critter_sex
     Csex_neuter, Csex_female, Csex_male, Csex_other
 };
 
+// for now I am keeping this to major-body-part anatomy. Organs can wait for a
+// highly hypothetical "gorebash" or "hentaibash" fork.
+enum Anatomy_bits
+{
+    Anat_head, Anat_torso, // Fundamentals of meaty critters
+    Anat_left_leg, Anat_right_leg, // bipeds
+    Anat_LF_leg, Anat_RF_leg, Anat_LR_leg, Anat_RR_leg, // quadruped legs
+    Anat_left_arm, Anat_right_arm, // manuals
+    Anat_left_wing, Anat_right_wing // avians, chiropterans, etc.
+};
+
+typedef uint32_t Anatomy;
+#define anatomy_mask(i) (1 << i)
+
 #define COMPASS_POINTS  8
 /* indie.h */

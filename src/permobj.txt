@@ -64,6 +64,18 @@ power 20
 known true
 depth 12
 
+# The golem staff is an artifact, and hence unbreakable; this makes it a decent, if lackluster, backup weapon.
+#
+# All artifacts are rarity 100; they can only be generated in specific circumstances.
+obj WEAPON "golem staff" "golem staves"
+desc Created by a powerful wizard in the distant past of the world, this simple wooden staff strikes golems with crushing force.
+rarity 100
+symbol MELEE_WEAPON
+colour BROWN
+power 8
+known true
+depth 1
+
 obj WEAPON "bow" "bows"
 desc A recurve composite bow.
 rarity 45
@@ -379,7 +391,7 @@ known false
 depth 1
 
 obj FOOD "iron ration" "iron rations"
-desc A parcel of hardtack and beef jerky. Dull but nutritious.
+desc A parcel of hardtack and beef jerky. Dull, but it keeps you going.
 rarity 75
 symbol FOOD
 colour BROWN
@@ -475,6 +487,33 @@ depth 10
 
 obj CARRION "corpse" "corpses"
 desc Mortal remains, seldom edible.
+rarity 100
+symbol CARRION
+colour L_GREY
+power 0
+known true
+depth 1
+
+obj CARRION "arm" "arms"
+desc A lifeless arm, separated from its former body.
+rarity 100
+symbol CARRION
+colour L_GREY
+power 0
+known true
+depth 1
+
+obj CARRION "leg" "legs"
+desc A lifeless leg, separated from its former body.
+rarity 100
+symbol CARRION
+colour L_GREY
+power 0
+known true
+depth 1
+
+obj CARRION "torso" "torsos"
+desc A dismembered torso.
 rarity 100
 symbol CARRION
 colour L_GREY

@@ -64,6 +64,7 @@ struct Pmparse_state
     int exper;
     std::string speed_string;
     std::string flag_string;
+    std::string anatomy_string;
 };
 
 struct Flag_table
@@ -97,6 +98,7 @@ namespace
     int extract_mon_experience(const char *s);
     int extract_mon_speed(const char *s);
     int extract_mon_flags(const char *s);
+    int extract_mon_anatomy(const char *s);
     void commit_monster(void);
 
     void commit_monster(void)
@@ -119,8 +121,8 @@ namespace
                 working_monster.ranged.auxchance,
                 working_monster.raux_string.c_str(),
                 working_monster.ranged.aux_strength);
-        fprintf(srcfile, "    %d, %d, %d, %s, %s\n", working_monster.defence, working_monster.armour, working_monster.exper,
-                working_monster.speed_string.c_str(), working_monster.flag_string.c_str());
+        fprintf(srcfile, "    %d, %d, %d, %s, %s,\n    %s\n", working_monster.defence, working_monster.armour, working_monster.exper,
+                working_monster.speed_string.c_str(), working_monster.flag_string.c_str(), working_monster.anatomy_string.c_str());
         fprintf(srcfile, "}");
 
         // to header
@@ -312,6 +314,54 @@ namespace
         return 0;
     }
 
+    int extract_mon_anatomy(const char *s)
+    {
+        char tmpbuf[128];
+        bool done = false;
+        int i;
+        while ((*s) && isspace(*s))
+        {
+            ++s;
+        }
+        /* We're allowed arbitrarily many body parts in principle, but the
+         * code is currently built on the assumption that we have at most 32
+         * possible body parts. Organs can wait for the hypothetical gorebash
+         * / hentaibash forks. */
+        working_monster.anatomy_string = "0";
+        do
+        {
+            i = 0;
+            while ((*s) && isascii(*s) && !isspace(*s))
+            {
+                if (i < 127)
+                {
+                    tmpbuf[i++] = *s;
+                }
+                ++s;
+            }
+            if (i)
+            {
+                tmpbuf[libmrl::min(i, 127)] = '\0';
+                working_monster.anatomy_string += " | (1 << Anat_";
+                working_monster.anatomy_string += tmpbuf;
+                working_monster.anatomy_string += ")";
+            }
+            else
+            {
+                done = true;
+            }
+            while ((*s) && isascii(*s) && isspace(*s))
+            {
+                ++s;
+            }
+            if ((*s == '\n') || !*s)
+            {
+                done = true;
+            }
+        } while (!done);
+        return 0;
+    }
+
     int extract_mon_flags(const char *s)
     {
         char tmpbuf[128];
@@ -356,6 +406,7 @@ namespace
         } while (!done);
         return 0;
     }
+
     struct Pmparse_action
     {
         const char *tag;
@@ -379,6 +430,7 @@ namespace
         { "experience", extract_mon_experience },
         { "speed", extract_mon_speed },
         { "flags", extract_mon_flags },
+        { "anatomy", extract_mon_anatomy },
         { 0, 0 }
     };
 

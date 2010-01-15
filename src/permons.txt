@@ -39,6 +39,7 @@ defence 0
 experience 0
 speed NORMAL
 flags MEATY STUPID
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "smith" "smiths"
 descripton An innocent artisan, devoid of any malice.
@@ -53,6 +54,7 @@ defence 0
 experience 0
 speed NORMAL
 flags MEATY RESIST_FIRE PEACEFUL SMART
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "newt" "newts"
 description An amphibious creature of unusual size.
@@ -66,6 +68,7 @@ defence 1
 experience 1
 speed SLOW
 flags MEATY STUPID
+anatomy head torso LF_leg RF_leg LR_leg RR_leg
 
 mon "rat" "rats"
 description The rats here are the kind that eat cats.
@@ -79,6 +82,7 @@ defence 4
 experience 2
 speed FAST
 flags MEATY STUPID
+anatomy head torso LF_leg RF_leg LR_leg RR_leg
 
 mon "wolf" "wolves"
 description What a wolf is doing in a mysterious hole in the ground is anyone's guess.
@@ -92,6 +96,7 @@ defence 6
 experience 15
 speed FAST
 flags MEATY
+anatomy head torso LF_leg RF_leg LR_leg RR_leg
 
 mon "snake" "snakes"
 description Long, slithery, venomous.
@@ -105,6 +110,7 @@ defence 9
 experience 40
 speed FAST
 flags STUPID MEATY
+anatomy head torso
 
 mon "human" "humans"
 description You know what a human is, right?
@@ -119,6 +125,7 @@ defence 0
 experience 0
 speed NORMAL
 flags MEATY
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "thug" "thugs"
 description An unpleasant person in leather, carrying a blunt instrument.
@@ -133,6 +140,7 @@ defence 4
 experience 5
 speed NORMAL
 flags ARMED MEATY
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "goon" "goons"
 description A particularly unpleasant person in leather, carrying a blunt instrument.
@@ -147,6 +155,7 @@ defence 8
 experience 10
 speed NORMAL
 flags ARMED MEATY
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "hunter" "hunters"
 description A talented, but somewhat amoral, bowman.
@@ -162,6 +171,7 @@ defence 10
 experience 50
 speed NORMAL
 flags ARCHER MEATY ARMED
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "sybarite" "sybarites" 
 description A devoted shrine-guardian, naked save for a simple leather sword-harness.
@@ -176,6 +186,7 @@ defence 10
 experience 60
 speed NORMAL
 flags SMART MEATY ARMED
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "iron priest" "iron priests"
 description A devoted shrine-guardian, armoured in massive steel.
@@ -190,6 +201,7 @@ defence 20
 experience 100
 speed NORMAL
 flags SMART MEATY ARMED RESIST_FIRE RESIST_COLD
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "slime priest" "slime priests"
 description A devoted shrine-guardian, bloated and disfigured by pestilence.
@@ -203,6 +215,7 @@ defence 5
 experience 40
 speed NORMAL
 flags SMART MEATY RESIST_POIS
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "fire priest" "fire priests"
 description A devoted shrine-guardian, robed and cowled in vivid scarlet.
@@ -216,6 +229,7 @@ defence 8
 experience 100
 speed NORMAL
 flags SMART MEATY ARMED RESIST_FIRE
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "death priest" "death priests"
 description A devoted shrine-guardian, mailed and skull-masked.
@@ -229,6 +243,7 @@ defence 8
 experience 100
 speed NORMAL
 flags SMART MEATY ARMED RESIST_COLD RESIST_POIS RESIST_NECR
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "duellist" "duellists"
 description A masterful swordsman.
@@ -243,6 +258,7 @@ defence 15
 experience 130
 speed NORMAL
 flags SMART MEATY ARMED
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "warlord" "warlords"
 description A skilled and tenacious warrior, well armed to deal with visiting maniacs.
@@ -257,6 +273,7 @@ defence 20
 experience 400
 speed NORMAL
 flags SMART MEATY ARMED
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "wizard" "wizards"
 description A student of the Arcane.
@@ -272,6 +289,7 @@ defence 15
 experience 200
 speed NORMAL
 flags SMART MAGICIAN MEATY
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "archmage" "archmagi"
 description A master of the Arcane.
@@ -287,6 +305,7 @@ defence 15
 experience 1500
 speed NORMAL
 flags SMART MAGICIAN MEATY
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "goblin" "goblins"
 description A skulking, grey-skinned humanoid.
@@ -300,6 +319,7 @@ defence 3
 experience 3
 speed NORMAL
 flags ARMED MEATY
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "elf" "elves"
 description A tall and uncannily slender humanoid.
@@ -314,6 +334,7 @@ defence 8
 experience 15
 speed FAST
 flags SMART MEATY ARMED
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "bad elf" "bad elves"
 description Banished from the elven homelands for sadism even they could not tolerate.
@@ -327,6 +348,7 @@ defence 8
 experience 15
 speed FAST
 flags SMART MEATY ARMED
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "troll" "trolls"
 description A twisted humanoid figure taller than a tall man, with leathery green hide and long limbs.
@@ -340,6 +362,7 @@ defence 13
 experience 150
 speed NORMAL
 flags STUPID MEATY
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "giant" "giants"
 description A humanoid twice or more a man's height, noted for its strength but not its wits.
@@ -354,6 +377,7 @@ defence 20
 experience 500
 speed NORMAL
 flags STUPID MEATY ARMED
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "giant jarl" "giant jarls"
 description A humanoid twice or more a man's height, possessed of rather more wit than his kin.
@@ -368,6 +392,7 @@ defence 22
 experience 1000
 speed NORMAL
 flags MEATY ARMED
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "zombie" "zombies"
 description A perambulatory cadaver; you'll probably have to hack it to bits to stop it.
@@ -381,6 +406,7 @@ defence 1
 experience 7
 speed SLOW
 flags STUPID UNDEAD RESIST_COLD MEATY NOCORPSE
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "wraith" "wraiths"
 description The ghostly remnant of a past adventurer, filled with a terrible hunger for living souls.
@@ -394,6 +420,7 @@ defence 5
 experience 100
 speed SLOW
 flags SMART UNDEAD RESIST_COLD MEATY ETHEREAL ALWAYS_NEUTER
+anatomy head torso
 
 mon "lich" "liches"
 description A long-dead student of foul sorcery whose obsession with knowledge quickens his withered frame.
@@ -408,6 +435,7 @@ defence 15
 experience 250
 speed NORMAL
 flags SMART UNDEAD RESIST_COLD MAGICIAN SKELETAL NOCORPSE
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "master lich" "master liches"
 description A long-dead master of foul sorcery, armed with the very power of death itself.
@@ -421,6 +449,7 @@ defence 30
 experience 3000
 speed NORMAL
 flags SMART UNDEAD RESIST_COLD MAGICIAN SKELETAL NOCORPSE
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "vampire" "vampires"
 description A blood-drinking horror that was once a man.
@@ -434,6 +463,7 @@ defence 22
 experience 750
 speed NORMAL
 flags SMART UNDEAD RESIST_COLD MEATY NOCORPSE
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "imp" "imps"
 description An annoying minor demon.
@@ -447,6 +477,7 @@ defence 15
 experience 20
 speed FAST
 flags DEMONIC RESIST_FIRE NOCORPSE TELE_HARASS
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "iron snake" "iron snakes"
 description A slithering mechanical abomination in the service of the Lords of Iron.
@@ -460,6 +491,7 @@ defence 12
 experience 40
 speed FAST
 flags DEMONIC RESIST_FIRE RESIST_COLD NOCORPSE
+anatomy head torso
 
 mon "foetid ooze" "foetid oozes"
 description A hell-spawned blob of festering corruption.
@@ -488,6 +520,7 @@ defence 15
 experience 50
 speed FAST
 flags DEMONIC NOCORPSE ALWAYS_OTHER
+anatomy torso
 
 mon "hellhound" "hellhounds"
 description A vaguely dog-like thing from the Inferno, belching stinking flames.
@@ -502,6 +535,7 @@ defence 12
 experience 50
 speed NORMAL
 flags DEMONIC NOCORPSE RESIST_FIRE ALWAYS_NEUTER
+anatomy head torso LF_leg RF_leg LR_leg RR_leg
 
 mon "flying skull" "flying skulls"
 description A disembodied skull propelled by some malicious spirit of the Necropolis.
@@ -515,6 +549,7 @@ defence 12
 experience 40
 speed NORMAL
 flags DEMONIC NOCORPSE RESIST_COLD RESIST_POIS RESIST_NECR RESIST_ELEC SKELETAL ALWAYS_NEUTER
+anatomy head
 
 mon "ironguard" "ironguards"
 description The massively armed legionaries of the Halls of Iron.
@@ -528,6 +563,7 @@ defence 15
 experience 500
 speed SLOW
 flags SMART DEMONIC RESIST_FIRE RESIST_COLD NOCORPSE
+anatomy head torso left_arm right_arm left_leg right_leg
 
 mon "festering horror" "festering horrors"
 description A man-shaped mound of filth vomited up from some unspeakable Hell.
@@ -541,6 +577,7 @@ defence 10
 experience 500
 speed NORMAL
 flags SMART DEMONIC RESIST_FIRE RESIST_POIS RESIST_ACID NOCORPSE ALWAYS_NEUTER
+anatomy head torso left_arm right_arm left_leg right_leg
 
 mon "flayer" "flayers"
 description A gaunt humanoid with scythe-like blades where its hands should be.
@@ -554,6 +591,7 @@ defence 15
 experience 500
 speed NORMAL
 flags SMART DEMONIC RESIST_FIRE RESIST_POIS NOCORPSE ALWAYS_NEUTER
+anatomy head torso left_arm right_arm left_leg right_leg
 
 mon "scorcher" "scorchers"
 description A muscular scarlet-skinned humanoid wreathed in fire and smoke.
@@ -567,6 +605,7 @@ defence 15
 experience 500
 speed NORMAL
 flags SMART DEMONIC RESIST_FIRE NOCORPSE
+anatomy head torso left_arm right_arm left_leg right_leg
 
 mon "reaper" "reapers"
 description A perambulatory skeleton with darkness blazing in its eyes, armed with a wickedly sharp scythe.
@@ -580,6 +619,7 @@ defence 15
 experience 500
 speed NORMAL
 flags SMART DEMONIC RESIST_COLD RESIST_POIS RESIST_NECR RESIST_ELEC NOCORPSE SKELETAL
+anatomy head torso left_arm right_arm left_leg right_leg
 
 mon "iron lord" "iron lords"
 description A massively armoured slayer of heroes and armies alike, one of the lords and masters of the Halls of Iron.
@@ -593,6 +633,7 @@ defence 30
 experience 2000
 speed SLOW
 flags SMART DEMONIC RESIST_FIRE RESIST_COLD NOCORPSE GDEMON
+anatomy head torso left_arm right_arm left_leg right_leg
 
 mon "defiler" "defilers"
 decription An incarnation of decay, one of the lords and masters of the nameless Hells of slime.
@@ -606,6 +647,7 @@ defence 25
 experience 2000
 speed NORMAL
 flags SMART DEMONIC RESIST_FIRE MAGICIAN NOCORPSE GDEMON
+anatomy head torso left_arm right_arm left_leg right_leg
 
 mon "dominator" "dominators"
 description The lords and masters of the fleshy Hells, so devoted to the study of flesh that they experiment upon themselves.
@@ -619,6 +661,7 @@ defence 25
 experience 2000
 speed NORMAL
 flags SMART DEMONIC RESIST_FIRE MAGICIAN NOCORPSE GDEMON
+anatomy head torso left_arm right_arm left_leg right_leg
 
 mon "immolator" "immolators"
 description To look upon this mighty fiend of the Inferno is to look upon the incarnate essence of Fire.
@@ -632,6 +675,7 @@ defence 25
 experience 2000
 speed NORMAL
 flags SMART DEMONIC RESIST_FIRE MAGICIAN NOCORPSE GDEMON
+anatomy head torso left_arm right_arm left_leg right_leg
 
 mon "deathlord" "deathlords"
 description Death given form, the keepers of the souls of the unrighteous, the lords of the Necropolis.
@@ -645,6 +689,7 @@ defence 25
 experience 2000
 speed NORMAL
 flags SMART DEMONIC RESIST_FIRE RESIST_COLD RESIST_NECR RESIST_POIS RESIST_ELEC MAGICIAN NOCORPSE GDEMON SKELETAL
+anatomy head torso left_arm right_arm left_leg right_leg
 
 mon "dark angel" "dark angels"
 description One of those who passed down into Hell seeking peace, and now craves total war.
@@ -657,6 +702,7 @@ melee 30 20 0 none 0
 defence 25
 experience 2000
 flags SMART DEMONIC RESIST_ELEC RESIST_NECR RESIST_POIS MAGICIAN NOCORPSE GDEMON MEATY
+anatomy head torso left_arm right_arm left_leg right_leg left_wing right_wing
 
 mon "archdevil" "archdevils"
 description The mightiest among demons, to whose faces all others bow.
@@ -667,6 +713,20 @@ threat 1000
 health 1
 speed NORMAL
 flags NOCORPSE GDEMON
+anatomy head torso left_arm right_arm left_leg right_leg
+
+mon "flesh golem" "flesh golems"
+description A hideous surgical construct quickened to a mocking semblance of life by arcane rituals.
+symbol GOLEM
+colour L_RED
+rarity 100
+threat 10
+melee 15 15 0 none 0
+defence 10
+experience 40
+speed FAST
+flags MEATY STUPID RESIST_ELEC ALWAYS_NEUTER
+anatomy head torso left_arm right_arm left_leg right_leg
 
 mon "centaur" "centaurs"
 description The wise man does not think too hard about the circumstances of a centaur's conception.
@@ -680,6 +740,7 @@ defence 10
 experience 50
 speed FAST
 flags MEATY
+anatomy head torso left_arm right_arm LF_leg RF_leg LR_leg RR_leg
 
 mon "ice monster" "ice monsters"
 description A vaguely humanoid figure of living ice.
@@ -694,6 +755,7 @@ defence 10
 experience 35
 speed SLOW
 flags RESIST_COLD ARCHER NOCORPSE ALWAYS_NEUTER
+anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "dragon" "dragons"
 description Of the very smallest sort, not even so large as an elephant. Its fire will burn you all the same.
@@ -707,8 +769,22 @@ ranged 20 20 FIRE 0 "breathes" none 0
 defence 18
 experience 300
 speed NORMAL
-flags RESIST_FIRE RESIST_POIS ARCHER MEATY
+flags RESIST_FIRE RESIST_POIS ARCHER MEATY BREATHER
+anatomy head torso LF_leg RF_leg LR_leg RR_leg left_wing right_wing
 
+mon "moondrake" "moondrakes"
+description Barely larger than a man, this gleaming silver dragon hails from the hidden moon, the moon of corruption.
+symbol DRAGON
+colour L_CYAN
+rarity 75
+threat 35
+health 250
+melee 30 40 0 none 0
+defence 25
+experience 5000
+speed FAST
+flags RESIST_POIS RESIST_COLD RESIST_ELEC RESIST_ACID RESIST_NECR ALWAYS_OTHER MEATY MAGICIAN SMART
+anatomy head torso LF_leg RF_leg LR_leg RR_leg left_wing right_wing
 ENDMONS
 
 vim:tw=0:wm=0

@@ -268,6 +268,16 @@ struct Terrain_desc
 
 extern const Terrain_desc terrain_data[];
 
+struct Damage_desc
+{
+    int values[DT_COUNT];
+    int sum;
+    bool by_you;
+    Mon_handle damagee;
+    Mon_handle damager;
+    bool sum_cached;
+};
+
 /* XXX misc.c data and funcs */
 extern const char *damtype_names[DT_COUNT];
 extern void get_iso_8601_time(std::string& dest);

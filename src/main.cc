@@ -45,6 +45,7 @@ int game_uid;
 int run_delay;
 
 std::string configured_name;
+std::string configured_profession;
 std::string configured_language;
 std::string configured_system_playground(PLAYGROUND);
 std::string preferred_display;

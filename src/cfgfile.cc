@@ -36,7 +36,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#define CFGFILE_DEBUG
+#undef CFGFILE_DEBUG
 struct Bool_config_var
 {
     const char *name;
@@ -75,6 +75,7 @@ String_config_var string_syscfg_vars[] =
 String_config_var string_config_vars[] =
 {
     { "name", &configured_name, "Ingold" },
+    { "profession", &configured_profession, "none" },
     { "language", &configured_language, "en" },
     { "preferred_display", &preferred_display, COMPILED_DEFAULT_DISPLAY },
     { 0, 0, 0 }
