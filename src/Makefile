@@ -5,7 +5,7 @@ OBJ_OBJS=obj1.o obj2.o permobj.o
 ALG_OBJS=astar.o hexpi.o misc.o radiance.o rng.o spiralpath.o stlprintf.o vector.o vision.o
 OS_OBJS=cfgfile.o loadsave.o main.o
 CMBT_OBJS=bmagic.o combat.o
-PLYR_OBJS=prof-fighter.o prof-thanato.o u.o
+PLYR_OBJS=prof-fighter.o prof-preacher.o prof-thanato.o u.o
 DUN_OBJS=cloud.o map.o rooms.o
 # When new UI and display modules get written, they go into the next line as
 # appropriate to the build.
