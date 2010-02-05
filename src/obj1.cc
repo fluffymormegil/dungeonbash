@@ -35,25 +35,37 @@ std::map<uint64_t, Obj *> objects;
 const Obj_handle NO_OBJECT(0ull);
 uint64_t next_obj_handle = 1ull;
 
-const char ring_colours[20][16] = {
-    "gold", "ruby", "sapphire", "ivory", "coral",
-    "amethyst", "silver", "iron", "copper", "jade",
-    "haematite", "bone", "crystal", "platinum", "lead",
-    "diamond", "topaz", "emerald", "electrum", "smoky quartz"
+const char ring_colours[32][32] = {
+    "gold", "ruby", "sapphire", "ivory",
+    "coral", "amethyst", "silver", "iron",
+    "copper", "jade", "haematite", "bone",
+    "crystal", "platinum", "lead", "diamond",
+    "topaz", "emerald", "electrum", "smoky quartz",
+    "orichalcum", "lunargent", "inusitatium", "obsidian",
+    "garnet", "carnelian", "sardonyx", "brass",
+    "bronze", "hyacinth", "aquamarine", "lapis lazuli"
 };
 
-const char scroll_titles[20][16] = {
-    "grem pho", "terra terrax", "phong", "ateh malkuth", "xixaxa",
-    "aku ryo tai san", "qoph shin tau", "ythek shri", "ia ia", "cthulhu fhtagn",
-    "arifech malex", "DOOM", "leme athem", "hail smkznrf", "rorrim foo",
-    "ad aerarium", "ligemrom", "asher ehiyeh", "YELLOW SIGN", "ELDER SIGN"
+const char scroll_titles[32][32] = {
+    "grem pho", "terra terrax", "phong", "ateh malkuth",
+    "xixaxa", "aku ryo tai san", "qoph shin tau", "ythek shri",
+    "ia ia", "cthulhu fhtagn", "arifech malex", "DOOM",
+    "leme athem", "hail smkznrf", "rorrim foo", "ad aerarium",
+    "ligemrom", "asher ehiyeh", "YELLOW SIGN", "ELDER SIGN",
+    "nihil durat", "exit pursued by a bear", "om nom nom narayana", "das stille lied",
+    "zettai unmei", "take a walk with me", "new creation", "per ardua ad astra",
+    "vo vo lio vo", "redde caesari", "eet dotor fugai", "lorem ipsum"
 };
 
-const char potion_colours[20][16] = {
-    "purple", "red", "blue", "green", "yellow",
-    "orange", "white", "black", "brown", "fizzy",
-    "grey", "silver", "gold", "shimmering", "glowing",
-    "navy blue", "bottle green", "amber", "lilac", "ivory"
+const char potion_colours[32][32] = {
+    "purple", "red", "blue", "green",
+    "yellow", "orange", "white", "black",
+    "brown", "fizzy", "grey", "silver",
+    "gold", "shimmering", "glowing", "navy blue",
+    "bottle green", "amber", "lilac", "ivory",
+    "cloudy", "milky", "iridescent", "ecru",
+    "clear", "dun", "celandine", "fuchsia",
+    "viridian", "light-devouring", "indigo", "swirly"
 };
 
 void identify_pobj(int num)
@@ -285,7 +297,7 @@ void flavours_init(void)
     /* Rings */
     for (i = 0; i < 10;)
     {
-	colour_choices[i] = zero_die(20);
+	colour_choices[i] = zero_die(32);
 	done = 1;
 	for (j = 0; j < i; j++)
 	{
@@ -309,7 +321,7 @@ void flavours_init(void)
     /* Scrolls */
     for (i = 0; i < 10;)
     {
-	colour_choices[i] = zero_die(20);
+	colour_choices[i] = zero_die(32);
 	done = 1;
 	for (j = 0; j < i; j++)
 	{
@@ -332,7 +344,7 @@ void flavours_init(void)
     /* Potions */
     for (i = 0; i < 10;)
     {
-	colour_choices[i] = zero_die(20);
+	colour_choices[i] = zero_die(32);
 	done = 1;
 	for (j = 0; j < i; j++)
 	{
@@ -717,7 +729,7 @@ void damage_obj(Obj_handle obj)
 	consume_obj(obj);
 	recalc_defence();
     }
-} 
+}
 
 void describe_object(Obj_handle obj)
 {
