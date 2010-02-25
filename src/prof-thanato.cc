@@ -118,7 +118,6 @@ int do_death_song(Player *ptmp)
 
 int do_life_leech(Player *ptmp)
 {
-    // TODO Implement thanatophile life leech power
     if (ptmp->check_mana(thanato_costs[Thanato_life_leech]))
     {
         return 0;
@@ -129,13 +128,14 @@ int do_life_leech(Player *ptmp)
         return 0;
     }
     // Roughly speaking, anything capable of acting has life essence to drain.
-    // Yes, this includes the undead. If they didn't have any life essence,
-    // they would simply be the _dead_.
+    // Yes, this includes undeads. If they didn't have any life essence, they
+    // would simply be deads.
     //
     // There will be _consequences_ for leeching demons and undeads in future.
-    // Whether they're worth it is a question for the player to answer.
+    // Whether they're worth enduring is a question for the player to answer.
     libmrl::Coord step;
     Mon_handle mon;
+    Mon *mptr;
     int i;
     i = ptmp->get_adjacent_monster(&mon, &step);
     if (i == -1)
@@ -146,6 +146,12 @@ int do_life_leech(Player *ptmp)
     if (mon.valid())
     {
         // Life leech is autohit.
+        int maxdam = mptr->hpcur;
+        int dmg = libmrl::min(ptmp->level + dice(2, 10), maxdam);
+        print_msg(0, "You drain life from your foe.");
+        damage_mon(mon, dmg, true);
+        heal_u(dmg, false, true);
+        return 1;
     }
     return 0;
 }
@@ -175,8 +181,8 @@ int do_thanato_explosion(Player *ptmp)
     }
     // We spiralpath from the target point all the way to range 10, building
     // a list of all corpses and a list of all corporeal undeads. The first
-    // corpse or undead we find yields an explosion; the rest simply get
-    // removed from play.
+    // corpse or undead we find yields an explosion. Any further corpses get
+    // removed from play; any further 
     std::list<Obj_handle> corpses;
     std::list<Mon_handle> undeads;
     return 0;

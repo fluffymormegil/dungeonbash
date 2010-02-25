@@ -89,6 +89,7 @@ struct Player {
     int level;	/* Each level gets you +1 body, +1 agility, +1 random
                    point, and +(10+body/10) hit points */
     int gold;
+    uint32_t next_cloud_tick;
     Obj_handle inventory[INVENTORY_SIZE];	/* 19 inventory slots, leaving room for a prompt */
     Obj_handle weapon;		/* For now, you can only wield one weapon. */
     Obj_handle armour;		/* For now, you can only wear one item of armour. */
@@ -108,6 +109,7 @@ struct Player {
     void dispel_noncom_only(void);
     bool suffer(Perseff_data& peff);
     void resolve_dispel(std::list<Perseff_data>::iterator peff_iter);
+    void resolve_dissipate(std::list<Perseff_data>::iterator peff_iter);
     void notify_cooldown(int which) const;
     // invocations...
     int do_profession_command(int which);
@@ -129,7 +131,7 @@ struct Player {
 extern void u_init(void);
 extern void write_char_dump(void);
 extern int do_death(Death d, const char *what);
-extern void heal_u(int amount, int boost, int loud);
+extern void heal_u(int amount, bool boost, bool loud);
 extern void disturb_u(void);
 extern int damage_u(int amount, Death d, const char *what);
 extern int gain_body(int amount, int loud);

@@ -48,6 +48,7 @@
 #define PMF_MEATY       0x00100000 /* Not just corporeal, but MADE OF MEAT */
 #define PMF_SKELETAL    0x00200000 /* Made of bones */
 #define PMF_NOCORPSE    0x00400000 /* Leaves neither corpse nor bones */
+#define PMF_MECHANICAL  0x00800000 /* Made of machinery */
 #define PMF_MAGICIAN    0x01000000
 #define PMF_ARCHER      0x02000000
 #define PMF_BREATHER    0x04000000
@@ -112,6 +113,7 @@ struct Mon_rattk
     int aux_strength;
 };
 
+#define PMSYM_GENERATOR '8'
 #define PMSYM_LESSER_DEMON '4'
 #define PMSYM_MIDDLE_DEMON '3'
 #define PMSYM_GREATER_DEMON '2'

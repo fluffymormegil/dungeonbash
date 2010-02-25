@@ -517,8 +517,15 @@ void Obj::get_name(std::string *s) const
             {
                 *s = an;
                 *s += poptr->name;
-                sprintf(tmpbuf, " (%d/%d)", durability, OBJ_MAX_DUR);
-                *s += tmpbuf;
+                if (poptr->flags & POF_ARTIFACT)
+                {
+                    *s += " (unbreakable)";
+                }
+                else
+                {
+                    sprintf(tmpbuf, " (%d/%d)", durability, OBJ_MAX_DUR);
+                    *s += tmpbuf;
+                }
             }
             else if (poptr->poclass == POCLASS_WAND)
             {
@@ -702,13 +709,21 @@ common:
     print_msg(0, "%c) %s", 'a' + i, namebuf.c_str());
 }
 
-void damage_obj(Obj_handle obj)
+int damage_obj(Obj_handle obj)
 {
+    // returns:
+    //   0 = no damage
+    //   1 = damaged
+    //   2 = broke
     Obj *optr = obj.snapv();
     if (!optr)
     {
         print_msg(0, "internal error: bad handle passed to damage_obj()");
-        return;
+        return 0;
+    }
+    if (permobjs[optr->obj_id].flags & POF_ARTIFACT)
+    {
+        return 0;
     }
     optr->durability--;
     if (optr->durability <= 0)
@@ -728,7 +743,9 @@ void damage_obj(Obj_handle obj)
         }
 	consume_obj(obj);
 	recalc_defence();
+        return 2;
     }
+    return 1;
 }
 
 void describe_object(Obj_handle obj)
@@ -787,6 +804,9 @@ int evasion_penalty(Obj_handle obj)
 {
     switch (obj.otyp())
     {
+    case PO_PAIR_OF_PANTS:
+        // Your starting pants afford neither bonus nor penalty.
+        return 0;
     case PO_MUNDANE_ROBE:
 	return 5;
 

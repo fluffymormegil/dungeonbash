@@ -29,6 +29,8 @@
 
 extern int do_preacher_mercy(Player *ptmp);
 extern int do_preacher_severity(Player *ptmp);
+extern int do_preacher_veil(Player *ptmp);
+extern int do_preacher_glory(Player *ptmp);
 
 #endif
 

@@ -244,12 +244,12 @@ void encounter_terrain(void)
                     dmg /= 2;
                     print_msg(0, "Your armour and flesh are eroded by caustic acid!");
                     damage_obj(u.armour);
-                    damage_u(dice(1, 10), DEATH_KILLED, "a pool of acid");
                 }
                 else
                 {
                     print_msg(0, "Caustic acid burns your flesh!");
                 }
+                damage_u(dmg, DEATH_KILLED, "a pool of acid");
             }
             break;
         case LAVA_POOL:
@@ -457,7 +457,7 @@ int damage_u(int amount, Death d, const char *what)
     return 0;
 }
 
-void heal_u(int amount, int boost, int loud)
+void heal_u(int amount, bool boost, bool loud)
 {
     if (u.hpcur + amount > u.hpmax)
     {
@@ -661,9 +661,14 @@ void u_init(void)
     {
 	print_msg(MSGCHAN_INTERROR, "Couldn't create ration!");
     }
+    u.inventory[2] = create_obj(PO_PAIR_OF_PANTS, 1, 1, libmrl::NOWHERE);
+    if (!u.inventory[2].valid())
+    {
+	print_msg(MSGCHAN_INTERROR, "Couldn't create pants!");
+    }
     u.weapon = u.inventory[0];
     u.ring = NO_OBJECT;
-    u.armour = NO_OBJECT;
+    u.armour = u.inventory[2];
     recalc_defence();
 }
 
@@ -950,7 +955,7 @@ void update_player(void)
             }
             else
             {
-                u.resolve_dispel(peff_iter);
+                u.resolve_dissipate(peff_iter);
             }
         }
         u.status = new_status;
@@ -1096,6 +1101,24 @@ bool Player::test_mobility(bool noisy) const
     return retval;
 }
 
+void Player::resolve_dissipate(std::list<Perseff_data>::iterator peff_iter)
+{
+    // For effects which have run down naturally rather than being forcibly
+    // dispelled.
+    switch (peff_iter->flavour)
+    {
+    case Perseff_creeping_death:
+        print_msg(0, "Death strikes!");
+        damage_u(dice(1, 20), DEATH_KILLED, "creeping death");
+        break;
+    default:
+        // For effects without dissipation consequences, treat dissipate as
+        // dispel.
+        resolve_dispel(peff_iter);
+        break;
+    }
+}
+
 void Player::resolve_dispel(std::list<Perseff_data>::iterator peff_iter)
 {
     switch (peff_iter->flavour)
@@ -1136,7 +1159,14 @@ void Player::resolve_dispel(std::list<Perseff_data>::iterator peff_iter)
         print_msg(0, "The veil of darkness surrounds you no more.");
         break;
 
+    case Perseff_berserk:
+        print_msg(0, "You calm down.");
+        break;
+
     default:
+#ifdef DEBUG_U_PEFFS
+        print_msg(0, "Effect %d terminated.", peff_iter->flavour);
+#endif
         break;
     }
     perseffs.erase(peff_iter);

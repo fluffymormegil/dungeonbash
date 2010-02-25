@@ -76,6 +76,7 @@ Monspell selector_immolator(Mon const *mptr, bool cansee, const Direction_data& 
 Monspell selector_dominator(Mon const *mptr, bool cansee, const Direction_data& dir_data);
 Monspell selector_deathlord(Mon const *mptr, bool cansee, const Direction_data& dir_data);
 Monspell selector_darkangel(Mon const *mptr, bool cansee, const Direction_data& dir_data);
+Monspell selector_moondrake(Mon const *mptr, bool cansee, const Direction_data& dir_data);
 Monspell selector_lich(Mon const *mptr, bool cansee, const Direction_data& dir_data);
 Monspell selector_master_lich(Mon const *mptr, bool cansee, const Direction_data& dir_data);
 
@@ -85,6 +86,8 @@ Monspell selector_master_lich(Mon const *mptr, bool cansee, const Direction_data
  * TODO Delayed-triggering spells. (For ones directly cast on the player, these
  * can be implemented as persistent effects whose per-turn action is to do
  * nothing.)
+ *
+ * TODO Spells that create clouds.
  */
 int corruption_spell(Mon const *mptr);
 int animate_dead(Mon const *mptr);
@@ -122,6 +125,10 @@ int use_black_magic(Mon_handle mon)
 
     case PM_LICH:
         to_cast = selector_lich(mptr, cansee, dir_data);
+        break;
+
+    case PM_MOONDRAKE:
+        to_cast = selector_moondrake(mptr, cansee, dir_data);
         break;
 
     case PM_DEFILER:
@@ -309,18 +316,18 @@ void malignant_aura()
     print_msg(MSGCHAN_BORINGFAIL, "A malignant aura surrounds you briefly.");
 }
 
-void Mon::curses() const
-{
-    std::string castername;
-    get_name(&castername, 3, true);
-    print_msg(0, "%s points at you and curses horribly.", castername.c_str());
-}
+char const * caster_fluffs_en[Total_caster_fluffs] = {
+    "points at you and curses horribly.",
+    "utters a fell incantation."
+};
 
-void Mon::incants() const
+char const ** caster_fluffs = caster_fluffs_en;
+
+void Mon::curses(Caster_fluff fluff) const
 {
     std::string castername;
     get_name(&castername, 3, true);
-    print_msg(0, "%s utters a fell incantation.", castername.c_str());
+    print_msg(0, "%s %s", castername.c_str(), caster_fluffs[fluff]);
 }
 
 Monspell selector_archmage(Mon const *mptr, bool cansee, const Direction_data& dir_data)
@@ -682,10 +689,28 @@ Monspell selector_darkangel(Mon const *mptr, bool cansee, const Direction_data& 
 {
     if (cansee)
     {
+        // TODO write spell list for darkangels
     }
     else
     {
         // dark angels don't do assault teleports.
+    }
+    return MS_REJECT;
+}
+
+Monspell selector_moondrake(Mon const *mptr, bool cansee, const Direction_data& dir_data)
+{
+    if (cansee)
+    {
+        // TODO decide what other spells moondrakes cast; for now we'll just
+        // run with them casting Corruption. Note that this means a moondrake
+        // will cast Corruption every time it acts while the player is in
+        // sight.
+        return MS_CORRUPTION;
+    }
+    else
+    {
+        // TODO decide if moondrakes do anything when out of LOS
     }
     return MS_REJECT;
 }
@@ -719,7 +744,7 @@ int animate_dead(Mon const *mptr)
         3,
         block_vision
     };
-    mptr->incants();
+    mptr->curses(Cfluff_incant);
     memset(animation_map.array, 0, sizeof animation_map.array);
     animation_map.array[10][10] = 1;
     irradiate_square(&animation_map);
@@ -769,6 +794,7 @@ int corruption_spell(Mon const *mptr)
 {
     int dieroll = zero_die(10);
     int rv = 0;
+    int i;
     mptr->curses();
     switch (dieroll)
     {
@@ -776,13 +802,41 @@ int corruption_spell(Mon const *mptr)
         print_msg(0, "The air smells of bitter almonds for a moment.");
         break;
     case 1:
-        print_msg(0, "Your weapon seems more fragile.");
-        damage_obj(u.weapon);
+        i = damage_obj(u.weapon);
+        switch (i)
+        {
+        case 0:
+            print_msg(0, "Your weapon glows chartreuse for a moment.");
+            break;
+        case 1:
+            print_msg(0, "Your weapon seems more fragile.");
+            break;
+        case 2:
+            // silence
+            break;
+        default:
+            print_msg(MSGCHAN_INTERROR, "corruption_spell: Bad value returned from damage_obj().");
+            break;
+        }
         rv = 1;
         break;
     case 2:
-        print_msg(0, "Your armour seems more fragile.");
-        damage_obj(u.armour);
+        i = damage_obj(u.armour);
+        switch (i)
+        {
+        case 0:
+            print_msg(0, "Your armour glows fuchsia for a moment.");
+            break;
+        case 1:
+            print_msg(0, "Your armour seems more fragile.");
+            break;
+        case 2:
+            // silence
+            break;
+        default:
+            print_msg(MSGCHAN_INTERROR, "corruption_spell: Bad value returned from damage_obj().");
+            break;
+        }
         rv = 1;
         break;
     case 3:
@@ -858,6 +912,12 @@ void shackle_spell(Mon const *mptr)
             print_msg(0, "Chains reach up from the floor to seize you, but you elude their grasp.");
         }
     }
+}
+
+/* new spell for dungeonbash 1.131.0: Judgement of the Fallen */
+
+void judgement_of_the_fallen(Mon const *mptr)
+{
 }
 
 /* bmagic.cc */

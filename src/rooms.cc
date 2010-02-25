@@ -168,29 +168,6 @@ void Levext_rooms::excavate_smithy(int rnum)
     parent->set_terrain(c2, FURNACE);
 }
 
-void Levext_rooms_boss::add_random_room(int yseg, int xseg)
-{
-    int roomidx = (yseg * 3) + xseg;
-    libmrl::Coord topleft;
-    libmrl::Coord botright;
-    if (roomidx != zoo_room)
-    {
-        Levext_rooms::add_random_room(yseg, xseg);
-        return;
-    }
-    segsused[yseg * 3 + xseg] = 1;
-    topleft.y = 1 + yseg * (parent->height / 3);
-    botright.y = (yseg + 1) * (parent->height / 3) - 1;
-    topleft.x = 1 + xseg * (parent->width / 3);
-    botright.x = (xseg + 1) * (parent->width / 3) - 1;
-    bounds[roomidx][0] = topleft;
-    bounds[roomidx][1] = botright;
-}
-
-void Levext_rooms_boss::excavate_zoo_room(void)
-{
-}
-
 void Levext_rooms::add_random_room(int yseg, int xseg)
 {
     int roomidx = (yseg * 3) + xseg;
@@ -653,13 +630,6 @@ int Levext_rooms::get_levgen_mon_spot(libmrl::Coord *ppos) const
     return 0;
 }
 
-void Levext_rooms_boss::populate(void)
-{
-    // Populate the rest of the level first.
-    Levext_rooms::populate();
-    // Now do the boss room.
-}
-
 void Levext_rooms::populate(void)
 {
     int i;
@@ -741,11 +711,11 @@ Levext_rooms::Levext_rooms() : Levextra(),
     }
 }
 
-// This function sets the appropriate NOPIERCE flag for the squares adjacent
-// to the corridor, but does not check such flags itself, nor does it set the
-// NOPIERCE flags adjacent to the ends of the segments. As such, it is the
-// caller's responsibility to perform any "survey" work required before
-// deciding where to excavate a corridor segment.
+/* This function sets the appropriate NOPIERCE flag for the squares adjacent
+ * to the corridor, but does not check such flags itself, nor does it set the
+ * NOPIERCE flags adjacent to the ends of the segments. As such, it is the
+ * caller's responsibility to perform any "survey" work required before
+ * deciding where to excavate a corridor segment. */
 void Levext_rooms::excavate_corridor_segment(libmrl::Coord c1, libmrl::Coord c2, bool door1, bool door2)
 {
     libmrl::Coord sgn = libmrl::sign(c2 - c1);
@@ -800,32 +770,6 @@ int Levext_rooms::leave_region(libmrl::Coord c)
         }
     }
     return 1;
-}
-
-int Levext_rooms_boss::leave_region(libmrl::Coord c)
-{
-    if (parent->region_at(c) == zoo_room)
-    {
-        // react to bossroom departure
-        return 1;
-    }
-    else
-    {
-        return Levext_rooms::leave_region(c);
-    }
-}
-
-int Levext_rooms_boss::enter_region(libmrl::Coord c)
-{
-    if (parent->region_at(c) == zoo_room)
-    {
-        // react to bossroom departure
-        return 1;
-    }
-    else
-    {
-        return Levext_rooms::enter_region(c);
-    }
 }
 
 /* rooms.cc */

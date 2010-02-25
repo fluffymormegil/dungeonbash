@@ -29,6 +29,7 @@
 #include "monsters.hh"
 #include "combat.hh"
 #include "rooms.hh"
+#include "bossroom.hh"
 #include "vision.hh"
 #include <stdio.h>
 #include <string.h>
@@ -137,13 +138,14 @@ static void deserialise(FILE *fp, Player *ptmp)
     deserialise(fp, ptmp->resistances, DT_COUNT);
     deserialise(fp, ptmp->cooldowns, 10);
     ptmp->combat_timer = deserialise_uint32(fp);
+    ptmp->next_cloud_tick = deserialise_uint32(fp);
     ptmp->level = deserialise_uint32(fp);
     ptmp->gold = deserialise_uint32(fp);
     deserialise_ohandle_array(fp, ptmp->inventory, INVENTORY_SIZE);
     // The following are stored as inventory offsets
-    ptmp->weapon = deserialise_uint32(fp);
-    ptmp->armour = deserialise_uint32(fp);
-    ptmp->ring = deserialise_uint32(fp);
+    deserialise_ohandle_array(fp, &(ptmp->weapon), 1);
+    deserialise_ohandle_array(fp, &(ptmp->armour), 1);
+    deserialise_ohandle_array(fp, &(ptmp->ring), 1);
     uint32_t flav = deserialise_uint32(fp);
     while (flav != 0xffffffffu)
     {
@@ -483,12 +485,13 @@ static void serialise(FILE *fp, Player const *ptmp)
     serialise(fp, ptmp->resistances, DT_COUNT);
     serialise(fp, ptmp->cooldowns, 10);
     serialise(fp, uint32_t(ptmp->combat_timer));
+    serialise(fp, uint32_t(ptmp->next_cloud_tick));
     serialise(fp, uint32_t(ptmp->level));
     serialise(fp, uint32_t(ptmp->gold));
     serialise_ohandle_array(fp, ptmp->inventory, INVENTORY_SIZE);
-    serialise(fp, uint32_t(ptmp->weapon.value));
-    serialise(fp, uint32_t(ptmp->armour.value));
-    serialise(fp, uint32_t(ptmp->ring.value));
+    serialise_ohandle_array(fp, &(ptmp->weapon), 1);
+    serialise_ohandle_array(fp, &(ptmp->armour), 1);
+    serialise_ohandle_array(fp, &(ptmp->ring), 1);
     std::list<Perseff_data>::const_iterator peffiter;
     for (peffiter = u.perseffs.begin(); peffiter != u.perseffs.end(); ++peffiter)
     {

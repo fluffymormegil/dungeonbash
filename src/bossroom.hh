@@ -27,6 +27,14 @@
 #ifndef BOSSROOM_HH
 #define BOSSROOM_HH
 
+#ifndef MONSTERS_HH
+#include "monsters.hh"
+#endif
+
+#ifndef ROOMS_HH
+#include "rooms.hh"
+#endif
+
 struct Bossroom
 {
     Level_tag parent;
@@ -39,6 +47,23 @@ struct Bossroom
     void base_reset();
     // extended_reset 
     void (*extended_reset)();
+};
+
+struct Levext_rooms_boss : public Levext_rooms
+{
+    enum Boss_flavour
+    {
+        Boss_lord, // Physical combatant with bodyguards
+        Boss_sculptor, // Caster who animates golems during fight
+        Total_bosses
+    };
+    Mon_handle boss;
+    std::set<Mon_handle> guards;
+    virtual void add_random_room(int yseg, int xseg);
+    virtual void excavate_zoo_room(void);
+    virtual int leave_region(libmrl::Coord c);
+    virtual int enter_region(libmrl::Coord c);
+    virtual void populate(void);
 };
 
 #endif

@@ -18,6 +18,8 @@ currently equipped by the player character.
 reassigned as the triggers for the player character's profession-specific
 abilities.
 
++ Pants!
+
 Bug fixes
 ---------
 

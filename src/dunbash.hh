@@ -202,6 +202,7 @@ struct Level
     void set_mon_at(libmrl::Coord c, Mon_handle m) { mmons[c.y][c.x] = m; }
     void set_obj_at(libmrl::Coord c, Obj_handle o) { mobjs[c.y][c.x] = o; }
     Cloud cloud_at(libmrl::Coord c) const { std::map<libmrl::Coord, Cloud>::const_iterator iter = clouds.find(c); if (iter != clouds.end()) { return iter->second; } return no_cloud; }
+    void set_cloud_at(libmrl::Coord c, Cloud const& cld) { clouds[c] = cld; }
     int region_at(libmrl::Coord c) const { return rnums[c.y][c.x]; }
     void set_region(libmrl::Coord c, int r) const { rnums[c.y][c.x] = r; }
     int as_gscore(libmrl::Coord c) const { return gscores[c.y][c.x]; }

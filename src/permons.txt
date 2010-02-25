@@ -174,7 +174,7 @@ flags ARCHER MEATY ARMED
 anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "sybarite" "sybarites" 
-description A devoted shrine-guardian, naked save for a simple leather sword-harness.
+description A devoted shrine-guardian, naked save for a finely tooled leather sword-harness.
 species human
 symbol PRIEST
 colour L_PURPLE
@@ -785,6 +785,85 @@ experience 5000
 speed FAST
 flags RESIST_POIS RESIST_COLD RESIST_ELEC RESIST_ACID RESIST_NECR ALWAYS_OTHER MEATY MAGICIAN SMART
 anatomy head torso LF_leg RF_leg LR_leg RR_leg left_wing right_wing
+
+mon "zombie generator" "zombie generators"
+description A detestable contrivance of metal, dredging up corpses from somewhere out of sight and quickening them to unlife.
+symbol GENERATOR
+colour D_GREY
+rarity 100
+threat 0
+health 250
+melee 0 0 0 none 0
+defence 0
+experience 0
+speed SLOW
+flags RESIST_POIS RESIST_NECR MECHANICAL NOCORPSE
+
+mon "fleshy hellgate" "fleshy hellgates"
+description An archway of living flesh, surrounded by incense burners and silk drapes.
+symbol GENERATOR
+colour L_PURPLE
+rarity 100
+threat 0
+health 250
+melee 0 0 0 none 0
+defence 0
+experience 0
+speed SLOW
+flags RESIST_POIS RESIST_FIRE RESIST_COLD RESIST_ELEC RESIST_NECR MECHANICAL NOCORPSE
+
+mon "iron hellgate" "iron hellgates"
+description An iron arch surrounded by braziers and lined with jagged spikes.
+symbol GENERATOR
+colour L_CYAN
+rarity 100
+threat 0
+health 250
+melee 0 0 0 none 0
+defence 0
+experience 0
+speed SLOW
+flags RESIST_POIS RESIST_FIRE RESIST_COLD RESIST_ELEC RESIST_NECR MECHANICAL NOCORPSE
+
+mon "basalt hellgate" "basalt hellgates"
+description An arch of volcanic rock in the middle of a smouldering bonfire.
+symbol GENERATOR
+colour L_RED
+rarity 100
+threat 0
+health 250
+melee 0 0 0 none 0
+defence 0
+experience 0
+speed SLOW
+flags RESIST_POIS RESIST_FIRE RESIST_COLD RESIST_ELEC RESIST_NECR MECHANICAL NOCORPSE
+
+mon "bone hellgate" "bone hellgates"
+description Massive bones arranged in an post-and-lintel structure, surrounded by neatly stacked mounds of skulls.
+symbol GENERATOR
+colour L_RED
+rarity 100
+threat 0
+health 250
+melee 0 0 0 none 0
+defence 0
+experience 0
+speed SLOW
+flags RESIST_POIS RESIST_FIRE RESIST_COLD RESIST_ELEC RESIST_NECR MECHANICAL NOCORPSE
+
+mon "festering hellgate" "festering hellgates"
+description An arch of pitted and verdigrised bronze surrounded by rotting corpses and pools of bubbling slime.
+symbol GENERATOR
+colour L_GREEN
+rarity 100
+threat 0
+health 250
+melee 0 0 0 none 0
+defence 0
+experience 0
+speed SLOW
+flags RESIST_POIS RESIST_FIRE RESIST_COLD RESIST_ELEC RESIST_NECR MECHANICAL NOCORPSE
+
 ENDMONS
 
 vim:tw=0:wm=0

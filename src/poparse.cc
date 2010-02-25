@@ -56,6 +56,7 @@ struct Poparse_state
     unsigned power;
     std::string known_string;
     unsigned depth;
+    std::string flag_string;
 };
 
 struct Flag_table
@@ -77,6 +78,7 @@ namespace
     int extract_obj_power(const char *s);
     int extract_obj_known(const char *s);
     int extract_obj_depth(const char *s);
+    int extract_obj_flags(const char *s);
     void commit_object(void);
     struct Poparse_action
     {
@@ -95,6 +97,7 @@ namespace
         { "power", extract_obj_power },
         { "known", extract_obj_known },
         { "depth", extract_obj_depth },
+        { "flags", extract_obj_flags },
         { 0, 0 }
     };
 
@@ -122,6 +125,7 @@ namespace
         fprintf(srcfile, "    %s, %s,\n", working_object.pocl_string.c_str(), working_object.qual_string.c_str());
         fprintf(srcfile, "    %u, %s, %s,\n", working_object.rarity, working_object.sym_string.c_str(), working_object.colour_string.c_str());
         fprintf(srcfile, "    %u, %s, %u,\n", working_object.power, working_object.known_string.c_str(), working_object.depth);
+        fprintf(srcfile, "    %s,\n", working_object.flag_string.c_str());
         fprintf(srcfile, "}");
         ++obj_idx;
 
@@ -175,6 +179,7 @@ namespace
         working_object.sym_string = "OSYM_NONE";
         working_object.known_string = "false";
         working_object.live = true;
+        working_object.flag_string = "0";
         return 0;
     }
 
@@ -246,6 +251,51 @@ namespace
         unsigned depth = 0;
         sscanf(s, " %u", &depth);
         working_object.depth = depth;
+        return 0;
+    }
+
+    int extract_obj_flags(const char *s)
+    {
+        char tmpbuf[128];
+        bool done = false;
+        int i;
+        while ((*s) && isspace(*s))
+        {
+            ++s;
+        }
+        /* We're allowed arbitrarily many flags in principle. */
+        working_object.flag_string = "0";
+        do
+        {
+            i = 0;
+            while ((*s) && isascii(*s) && !isspace(*s))
+            {
+                if (i < 127)
+                {
+                    tmpbuf[i++] = *s;
+                }
+                ++s;
+            }
+            if (i)
+            {
+                tmpbuf[libmrl::min(i, 127)] = '\0';
+                working_object.flag_string += " | ";
+                char *tmpstr = create_tag_from_name(tmpbuf, "POF_");
+                working_object.flag_string += tmpstr;
+            }
+            else
+            {
+                done = true;
+            }
+            while ((*s) && isascii(*s) && isspace(*s))
+            {
+                ++s;
+            }
+            if ((*s == '\n') || !*s)
+            {
+                done = true;
+            }
+        } while (!done);
         return 0;
     }
 

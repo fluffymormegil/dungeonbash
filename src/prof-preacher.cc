@@ -29,4 +29,24 @@
 #include "player.hh"
 #include "prof-preacher.hh"
 
+int do_preacher_mercy(Player *ptmp)
+{
+    // TODO implement Mercy
+}
+
+int do_preacher_severity(Player *ptmp)
+{
+    // TODO implement Severity
+}
+
+int do_preacher_veil(Player *ptmp)
+{
+    // TODO implement Veil
+}
+
+int do_preacher_glory(Player *ptmp)
+{
+    // TODO implement Glory
+}
+
 /* prof-preacher.cc */

@@ -121,8 +121,7 @@ struct Mon
     }
     bool in_fov() const;
     void get_name(std::string *dest, int article = 0, bool shortname = false) const;
-    void curses() const;
-    void incants() const;
+    void curses(Caster_fluff fluff = Cfluff_curse) const;
     void notice_you(bool quiet = false);
     bool suffer(Perseff_data& peff); // true = mon dead
     bool apply_effect(Perseff_data& peff);

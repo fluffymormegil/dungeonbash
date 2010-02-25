@@ -599,6 +599,7 @@ bool mon_acts(Mon_handle mon)
     }
     else if (mptr->in_fov())
     {
+        // TODO implement checking for Assassin Soul
         /* In FOV. */
         mptr->notice_you();
         if (pmon_is_magician(mptr->mon_id))

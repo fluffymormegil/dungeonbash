@@ -63,6 +63,15 @@ enum Poclass_num {
 #define POSYM_CARRION '&'
 #define POSYM_COIN '$'
 
+/* Many of these flags are "reserved for future expansion". */
+#define POF_WEAR_SHOES 0x00000001u /* armours your feet */
+#define POF_WEAR_PANTS 0x00000002u /* armours your legs */
+#define POF_WEAR_SHIRT 0x00000004u /* armours your torso */
+#define POF_WEAR_GLOVES 0x00000010u /* armours your hands */
+#define POF_WEAR_SHOULDERS 0x00000020u /* armours your shoulders */
+#define POF_WEAR_HAT 0x00000040u /* armours your head */
+#define POF_ARTIFACT 0x80000000u /* untouchable infallible divine */
+
 struct Permobj {
     const char name[48];
     const char plural[48];
@@ -78,6 +87,9 @@ struct Permobj {
 		 * during play when items identified. */
     int depth;	/* If greater than 1, this item cannot be given out
 		 * by get_random_pobj() before the specified depth. */
+    /* The flag field is used for things like "is this an artifact?", "what is
+     * this object's wearmask", etc. */
+    uint32_t flags;
 };
 
 extern Permobj permobjs[];

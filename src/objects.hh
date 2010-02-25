@@ -126,7 +126,7 @@ extern int read_scroll(Obj_handle obj);
 extern int quaff_potion(Obj_handle obj);
 extern int eat_food(Obj_handle obj);
 extern void attempt_pickup(void);
-extern void damage_obj(Obj_handle obj);
+extern int damage_obj(Obj_handle obj);
 extern int evasion_penalty(Obj_handle obj);
 
 #endif

@@ -151,6 +151,11 @@ enum Anatomy_bits
     Anat_left_wing, Anat_right_wing // avians, chiropterans, etc.
 };
 
+enum Caster_fluff
+{
+    Cfluff_curse, Cfluff_incant, Total_caster_fluffs
+};
+
 typedef uint32_t Anatomy;
 #define anatomy_mask(i) (1 << i)
 

@@ -57,6 +57,8 @@ enum Persistent_effect
     Perseff_armourmelt_curse,
     // Debuffs: physical
     Perseff_binding_chains, Perseff_tentacle_embrace,
+    // Debuffs: dispellable delayed damage
+    Perseff_creeping_death,
     // fencepost / count
     Total_perseffs
 };

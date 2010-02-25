@@ -41,6 +41,8 @@ struct Cloud
 {
     Cloud_flavour flavour;
     int intensity;
+    int duration;
+    bool by_you; // you can still be roasted by your own clouds.
     bool operator !=(const Cloud& right)
     {
         return (flavour != right.flavour) || (intensity != right.intensity);
@@ -48,7 +50,7 @@ struct Cloud
 };
 
 extern const Cloud no_cloud;
-extern void encounter_cloud(Cloud cld, bool announce_cloud = false);
+extern void encounter_cloud(Cloud cld, bool entering = false);
 extern void mon_endure_cloud(Mon_handle mh);
 #endif
 

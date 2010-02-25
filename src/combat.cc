@@ -325,14 +325,53 @@ test_unaffected:
             break;
         }
         print_msg(MSGCHAN_NUMERIC, "You take %d damage.", damage);
-        if ((mptr->mon_id == PM_VAMPIRE) && !player_resists_dtype(DT_NECRO))
+        int auxroll = zero_die(100);
+        if (auxroll < permons[mptr->mon_id].melee.auxchance)
         {
-            heal_mon(mon, damage * 2 / 5, 1);
-        }
-        else if ((tohit - u.defence >= 5) && (mptr->mon_id == PM_SNAKE) &&
-                 !player_resists_dtype(DT_POISON))
-        {
-            drain_body(1, "snake venom", 0);
+            switch (permons[mptr->mon_id].melee.auxtyp)
+            {
+            case Maux_none:
+                print_msg(MSGCHAN_INTERROR, "Coding error: monster with non-zero melee aux chance but aux flavour set to none");
+                break;
+            case Maux_drink_blood:
+                if (!player_resists_dtype(DT_NECRO))
+                {
+                    print_msg(0, "Sharp teeth drain your blood.");
+                    heal_mon(mon, damage * 2 / 5, 1);
+                }
+                break;
+            case Maux_poison_body:
+                if (!player_resists_dtype(DT_POISON))
+                {
+                    print_msg(0, "Poison burns in your veins.");
+                    drain_body(1, "debilitating venom", 0);
+                }
+                break;
+            case Maux_shieldbreaker:
+                if (u.armour.valid())
+                {
+                    int i = damage_obj(u.armour);
+                    if (i == 1)
+                    {
+                        print_msg(0, "The crushing blow damages your armour.");
+                    }
+                }
+                break;
+            case Maux_hentacle:
+                {
+                    Perseff_data peff = {
+                        Perseff_tentacle_embrace,
+                        1, 10, false, false, mon, Mon_handle(0)
+                    };
+                    print_msg(0, "Tentacles bind your legs.");
+                    u.apply_effect(peff);
+                }
+                break;
+            default:
+                // Anything without a case should generate an error.
+                print_msg(MSGCHAN_INTERROR, "Coding error: unimplemented melee aux triggered.");
+                break;
+            }
         }
         damage_u(damage, DEATH_KILLED_MON, permons[mptr->mon_id].name);
         display_update();
@@ -453,9 +492,23 @@ int mshootu(Mon_handle mon, Damtyp dtyp)
                 }
                 else
                 {
+                    int auxroll = zero_die(100);
                     damage = one_die(mptr->rdam);
                     print_msg(MSGCHAN_NUMERIC, "You take %d damage.", damage);
                     damage_u(damage, DEATH_KILLED_MON, permons[mptr->mon_id].name);
+                    if (auxroll < permons[mptr->mon_id].ranged.auxchance)
+                    {
+                        switch (permons[mptr->mon_id].ranged.auxtyp)
+                        {
+                        case Raux_none:
+                            print_msg(MSGCHAN_INTERROR, "Coding error: monster with non-zero ranged aux chance but aux flavour set to none");
+                            break;
+                        default:
+                            /* no ranged auxes supported yet */
+                            print_msg(MSGCHAN_INTERROR, "Coding error: unimplemented ranged aux triggered");
+                            break;
+                        }
+                    }
                 }
                 display_update();
                 rv = 1;

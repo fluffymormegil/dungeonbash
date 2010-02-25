@@ -64,6 +64,16 @@ power 20
 known true
 depth 12
 
+obj WEAPON "tentacle rod" "tentacle rods"
+desc Three glistening purple tentacles fused to a gold-fitted ebony haft.
+rarity 80
+symbol MELEE_WEAPON
+colour PURPLE
+quality excellent
+power 25
+known true
+depth 15
+
 # The golem staff is an artifact, and hence unbreakable; this makes it a decent, if lackluster, backup weapon.
 #
 # All artifacts are rarity 100; they can only be generated in specific circumstances.
@@ -72,6 +82,7 @@ desc Created by a powerful wizard in the distant past of the world, this simple 
 rarity 100
 symbol MELEE_WEAPON
 colour BROWN
+quality excellent
 power 8
 known true
 depth 1
@@ -224,6 +235,15 @@ quality great
 known false
 depth 8
 
+obj ARMOUR "pair of pants" "pairs of pants"
+desc A pair of woolen barbarian leg coverings.
+rarity 100
+symbol ARMOUR
+colour L_GREY
+power 0
+known true
+flags WEAR_PANTS
+
 obj ARMOUR "leather armour" "suits of leather armour"
 desc A heavy leather jerkin and breeches, providing some protection.
 rarity 25
@@ -232,6 +252,7 @@ colour BROWN
 power 3
 known true
 depth 1
+flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "chainmail" "suits of chainmail"
 desc A suit of interlocking metal rings, providing better protection than leather.
@@ -241,6 +262,7 @@ colour CYAN
 power 6
 known true
 depth 3
+flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "plate armour" "suits of plate armour"
 desc A suit of steel plates, providing better protection than chainmail.
@@ -250,6 +272,7 @@ colour CYAN
 power 10
 known true
 depth 6
+flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "mage armour" "suits of mage armour"
 desc A suit of glowing steel plates bearing enchantments of defence.
@@ -260,6 +283,7 @@ power 15
 quality good
 known true
 depth 12
+flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "mundane robe" "mundane robes"
 desc A simple woolen robe. It's better protection than your skin, but not by much.
@@ -269,6 +293,7 @@ colour GREEN
 power 2
 known false
 depth 1
+flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "robe of swiftness" "robes of swiftness"
 desc A simple woolen robe that bears a potent enchantment, protecting the wearer and making him unnaturally swift.
@@ -279,6 +304,7 @@ power 8
 quality great
 known false
 depth 8
+flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "robe of shadows" "robes of shadows"
 desc A simple woolen robe that bears an awesome enchantment, protecting the wearer better than steel plate.
@@ -289,6 +315,7 @@ power 14
 quality great
 known false
 depth 18
+flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "dragonhide armour" "suits of dragonhide armour"
 desc The skin of a dragon, formed into a jerkin and breeches; it turns blows like steel plate and absorbs flames.
@@ -299,6 +326,7 @@ power 12
 quality great
 known true
 depth 21
+flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "meteoric plate armour" "suits of meteoric plate armour"
 desc This plate armour has been forged out of metal taken from a fallen star.
@@ -309,6 +337,7 @@ power 18
 quality excellent
 known true
 depth 27
+flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "sacred chainmail" "suits of sacred chainmail"
 desc This suit of interlocking rings has been consecrated to the gods of the Light.
@@ -319,6 +348,7 @@ power 15
 quality great
 known true
 depth 24
+flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj RING "regeneration ring" "regeneration rings"
 desc This magical ring increases the wearer's healing rate, but also increases the rate at which they must consume food.

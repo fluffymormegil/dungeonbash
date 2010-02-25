@@ -6,7 +6,7 @@ ALG_OBJS=astar.o hexpi.o misc.o radiance.o rng.o spiralpath.o stlprintf.o vector
 OS_OBJS=cfgfile.o loadsave.o main.o
 CMBT_OBJS=bmagic.o combat.o
 PLYR_OBJS=prof-fighter.o prof-preacher.o prof-thanato.o u.o
-DUN_OBJS=cloud.o map.o rooms.o
+DUN_OBJS=bossrooms.o cloud.o map.o rooms.o
 # When new UI and display modules get written, they go into the next line as
 # appropriate to the build.
 UI_CLASSIC_OBJS=display-classic.o ui-classic.o
