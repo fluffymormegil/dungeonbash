@@ -1,0 +1,14 @@
+Source: dungeonbash
+Depends: libc6, ncurses
+Build-Depends: ncurses-dev
+Maintainer: Martin Read <mpread@chiark.greenend.org.uk>
+Section: games
+Priority: extra
+Architecture: i386
+Description: An unwinnable roguelike game
+ dungeonbash is a "roguelike" game, in which the player's in-game avatar goes
+ down a hole in the ground to kill things and take their stuff. The current
+ version of the game uses character-cell terminal graphics to display the
+ player's avatar and its surroundings.
+ .
+Homepage: http://github.org/fluffymormegil/dungeonbash

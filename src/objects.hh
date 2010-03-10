@@ -44,6 +44,7 @@
 #endif
 
 #include <string>
+#include <map>
 
 struct Obj;
 
@@ -128,6 +129,8 @@ extern int eat_food(Obj_handle obj);
 extern void attempt_pickup(void);
 extern int damage_obj(Obj_handle obj);
 extern int evasion_penalty(Obj_handle obj);
+
+typedef Obj_handle (Inventory)[INVENTORY_SIZE];
 
 #endif
 

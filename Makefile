@@ -8,6 +8,8 @@ PATCHVERS=0
 PRERELEASE=
 # To make a prerelease package, define the next rule
 #PRERELEASE=+pr1
+ARCHIVEDIR=$(GAME)-$(MAJVERS).$(MINVERS).$(PATCHVERS)$(PRERELEASE)
+ARCHIVEMANIFEST=Makefile *.mk README man src html share skel
 
 # The os.mk, dirs.mk, and permissions.mk files are where configuration should
 # be set up.
@@ -27,14 +29,20 @@ install: all
 	install -d -o $(games_user) -g $(games_group) -m $(PLAYGROUNDMODE) $(DESTDIR)$(PLAYGROUND)/save
 	install -d -m $(GLOBALCFGDIRMODE) $(DESTDIR)$(GLOBALCFGDIR)
 
-# archive builds a source code archive.
-archive: distclean
-	(cd .. && ln -s dungeonbash dungeonbash-$(MAJVERS).$(MINVERS).$(PATCHVERS)$(PRERELEASE) )
-	(cd .. && tar cvzf dungeonbash-$(MAJVERS).$(MINVERS).$(PATCHVERS)$(PRERELEASE).tar.gz -h dungeonbash-$(MAJVERS).$(MINVERS).$(PATCHVERS)$(PRERELEASE)/* )
+# srcarch builds a source code archive suitable for distribution
+srcarch: distclean
+	mkdir $(ARCHIVEDIR)
+	cp -R $(ARCHIVEMANIFEST) $(ARCHIVEDIR)
+	tar cvzf $(ARCHIVEDIR).tar.gz $(ARCHIVEDIR)
+	-rm -rf $(ARCHIVEDIR)
 
-# distclean removes 
+# deb builds the packages dungeonbash and dungeonbash-data
+deb: 
+
+# distclean tidies up all generated files.
 distclean:
 	(cd src && make distclean)
+	-rm -rf $(ARCHIVEDIR)
 
 clean:
 	(cd src && make clean)

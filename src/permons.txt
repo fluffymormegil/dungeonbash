@@ -161,7 +161,7 @@ mon "hunter" "hunters"
 description A talented, but somewhat amoral, bowman.
 species human
 symbol HUNTER
-colour GREEN
+colour BROWN
 rarity 30
 threat 9
 health 40
@@ -171,6 +171,37 @@ defence 10
 experience 50
 speed NORMAL
 flags ARCHER MEATY ARMED
+anatomy head torso left_leg right_leg left_arm right_arm
+
+mon "marksman" "marksmen"
+description A highly talented and distinctly amoral bowman.
+species human
+symbol HUNTER
+colour GREEN
+rarity 30
+threat 9
+health 60
+melee 6 6 0 none 0
+ranged 25 15 PHYS 0 "shoots an arrow" none 0
+defence 15
+experience 150
+speed NORMAL
+flags ARCHER MEATY ARMED ALWAYS_MALE
+anatomy head torso left_leg right_leg left_arm right_arm
+
+mon "fell huntress" "fell huntresses"
+description The cruellest masters of the archer's craft, it turns out, are women.
+species human
+symbol HUNTER
+colour L_CYAN
+rarity 60
+threat 16
+health 80
+melee 6 6 0 none 0
+ranged 40 20 PHYS 0 "shoots an arrow" none 0
+defence 20
+experience 350
+flags ARCHER MEATY ARMED ALWAYS_FEMALE
 anatomy head torso left_leg right_leg left_arm right_arm
 
 mon "sybarite" "sybarites" 
@@ -792,7 +823,7 @@ symbol GENERATOR
 colour D_GREY
 rarity 100
 threat 0
-health 250
+health 100
 melee 0 0 0 none 0
 defence 0
 experience 0

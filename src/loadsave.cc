@@ -1,6 +1,7 @@
 /* loadsave.cc
  * 
- * Copyright 2009 Martin Read
+ * Copyright 2009,2010 Martin Read
+ * Copyright 2009 Stefan O'Rear
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions

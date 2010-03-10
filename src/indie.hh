@@ -160,4 +160,7 @@ typedef uint32_t Anatomy;
 #define anatomy_mask(i) (1 << i)
 
 #define COMPASS_POINTS  8
+
+#define INVENTORY_SIZE 19
+
 /* indie.h */

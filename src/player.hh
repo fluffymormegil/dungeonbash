@@ -64,7 +64,6 @@ struct Stat_handling
 
 extern const Stat_handling stat_handling[Total_professions];
 
-#define INVENTORY_SIZE 19
 /* XXX struct Player */
 struct Player {
     char name[17];	/* including '\0' the fencepost. */

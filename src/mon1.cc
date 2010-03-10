@@ -272,12 +272,46 @@ void death_drop(Mon_handle mon)
 	}
 	break;
     case PM_HUNTER:
+    case PM_MARKSMAN:
+    case PM_FELL_HUNTRESS:
 	if (!zero_die(6))
 	{
 	    k = create_obj(PO_BOW, 1, 0, pos);
 	}
 	break;
+    case PM_IRON_PRIEST:
+	if (!zero_die(7))
+	{
+	    k = create_obj(PO_LONG_SWORD, 1, 0, pos);
+	}
+        else if (!zero_die(6))
+        {
+            k = create_obj(PO_PLATE_ARMOUR, 1, 0, pos);
+        }
+        break;
+    case PM_DEATH_PRIEST:
+	if (!zero_die(7))
+	{
+	    k = create_obj(PO_MACE, 1, 0, pos);
+	}
+        else if (!zero_die(6))
+        {
+            k = create_obj(PO_CHAINMAIL, 1, 0, pos);
+        }
+        break;
+    case PM_SLIME_PRIEST:
+    case PM_FIRE_PRIEST:
+	if (!zero_die(6))
+	{
+	    k = create_obj(PO_MACE, 1, 0, pos);
+	}
+        else
+        {
+	    k = create_obj(PO_MUNDANE_ROBE, 1, 0, pos);
+        }
+	break;
     case PM_DUELLIST:
+    case PM_SYBARITE:
 	if (!zero_die(6))
 	{
 	    k = create_obj(PO_LONG_SWORD, 1, 0, pos);
@@ -743,15 +777,14 @@ void release_monster(Mon_handle mon)
     std::set<Mon_handle>::iterator iter = lptr->denizens.find(mon);
     if (iter == lptr->denizens.end())
     {
-        print_msg(MSGCHAN_INTERROR, "iter == lptr->denizens.end()");
+        print_msg(MSGCHAN_INTERROR, "release_monster: Mon not in its alleged level's denizen set");
         press_enter();
-        abort();
     }
     else
     {
         lptr->denizens.erase(iter);
+        lptr->set_mon_at(mptr->pos, NO_MONSTER);
     }
-    lptr->set_mon_at(mptr->pos, NO_MONSTER);
     if (mptr->current_path)
     {
         mptr->discard_path();

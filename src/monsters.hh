@@ -45,6 +45,10 @@ struct Mon;
 #include "astar.hh"
 #endif
 
+#ifndef OBJECTS_HH
+#include "objects.hh"
+#endif
+
 #include <string>
 #include <map>
 #include <stdint.h>
@@ -102,6 +106,7 @@ struct Mon
     Critter_sex sex;
 
     char *name;
+    Obj_handle inventory[INVENTORY_SIZE];
 
     Astar_path *current_path;
     std::list<Perseff_data> perseffs;
