@@ -217,6 +217,7 @@ int irradiate_square(Square_radiance *square, bool hole_in_middle)
 int spiral_square(Square_radiance *square, Square_eff_func fptr, void *data)
 {
     int i;
+    bool rv = false;
     libmrl::Coord c;
     libmrl::Coord o = { 10, 10 };
     for (i = 0; i < 21 * 21; ++i)
@@ -224,10 +225,14 @@ int spiral_square(Square_radiance *square, Square_eff_func fptr, void *data)
         c = spiral_path[i] + o;
         if (square->array[c.y][c.x])
         {
-            fptr(spiral_path[i] + square->origin, data);
+            bool tmp = fptr(spiral_path[i] + square->origin, data);
+            if (tmp)
+            {
+                rv = true;
+            }
         }
     }
-    return 0;
+    return rv;
 }
 
 /*****************************************************************************/

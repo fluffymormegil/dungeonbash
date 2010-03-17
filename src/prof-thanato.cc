@@ -29,6 +29,8 @@
 #include "ui.hh"
 #include "combat.hh"
 #include "radiance.hh"
+#include "pobjid.hh"
+#include "pmonid.hh"
 #include <limits.h>
 
 const int thanato_cooldowns[] =
@@ -48,6 +50,25 @@ const int thanato_costs[] =
     5, // constant cost for life leech
     20 // high constant cost for corpse explosion
 };
+
+static bool thanato_corpseblast_func(libmrl::Coord c, void *data)
+{
+    // Class-ability corpse blasts never hurt the caster.
+    Mon_handle mon = currlev->monster_at(c);
+    if (mon.valid())
+    {
+        int *maxdmg_ptr = (int *)data;
+        Mon *mptr = mon.snapv();
+        std::string namestr;
+        mptr->get_name(&namestr, 3);
+        namestr += " is blasted.";
+        int dmg = one_die(*maxdmg_ptr);
+        print_msg(0, "%s", namestr.c_str());
+        damage_mon(mon, dmg, true);
+        return true;
+    }
+    return false;
+}
 
 int do_assassin_soul(Player *ptmp)
 {
@@ -172,6 +193,9 @@ int do_thanato_explosion(Player *ptmp)
     // XXX This should be a smite-targeted effect.
     // XXX Incomplete remains generate smaller blasts.
     libmrl::Coord tgt;
+    libmrl::Coord c;
+    Obj_handle obj;
+    Mon_handle mon;
     int i;
     i = get_smite_target(&tgt, true);
     if (i < 0)
@@ -182,9 +206,78 @@ int do_thanato_explosion(Player *ptmp)
     // We spiralpath from the target point all the way to range 10, building
     // a list of all corpses and a list of all corporeal undeads. The first
     // corpse or undead we find yields an explosion. Any further corpses get
-    // removed from play; any further 
+    // removed from play.
     std::list<Obj_handle> corpses;
     std::list<Mon_handle> undeads;
+    int corpse_range = 99;
+    int undead_range = 99;
+    for (i = 0; i < 21 * 21; ++i)
+    {
+        c = tgt + spiral_path[i];
+        mon = currlev->monster_at(c);
+        obj = currlev->object_at(c);
+        if (mon.valid() && pmon_is_undead(mon.snapc()->mon_id) && !pmon_is_ethereal(mon.snapc()->mon_id))
+        {
+            undeads.push_back(mon);
+            if (undead_range > int(spiral_path[i]))
+            {
+                undead_range = int(spiral_path[i]);
+            }
+        }
+        if (obj.valid() && (obj.snapc()->obj_id == PO_CORPSE))
+        {
+            corpses.push_back(obj);
+            if (corpse_range > int(spiral_path[i]))
+            {
+                corpse_range = int(spiral_path[i]);
+            }
+        }
+    }
+    if (undead_range < corpse_range)
+    {
+        print_msg(0, "Death cleanses an abomination!");
+        mon = *undeads.begin();
+        Mon *mptr = mon.snapv();
+        int max_dmg;
+        if (mptr->mon_id == PM_ZOMBIE)
+        {
+            max_dmg = libmrl::min(permons[mptr->meta].hp, 20);
+        }
+        else
+        {
+            max_dmg = libmrl::min(permons[mptr->mon_id].hp, 20);
+        }
+        Square_radiance t_corpseblast = 
+        {
+            { { 0 } }, mptr->pos, 2, block_vision
+        };
+        irradiate_square(&t_corpseblast);
+        spiral_square(&t_corpseblast, thanato_corpseblast_func, &max_dmg);
+    }
+    else if (corpse_range < 99)
+    {
+        print_msg(0, "The power of death explodes from a corpse!");
+        obj = *corpses.begin();
+        Obj *optr = obj.snapv();
+        int max_dmg = libmrl::min(permons[optr->obj_id].hp, 20);
+        Square_radiance t_corpseblast = 
+        {
+            { { 0 } }, optr->pos, 2, block_vision
+        };
+        irradiate_square(&t_corpseblast);
+        spiral_square(&t_corpseblast, thanato_corpseblast_func, &max_dmg);
+        release_obj(obj);
+        corpses.pop_front();
+    }
+    if (!corpses.empty())
+    {
+        print_msg(0, "Death gathers the dead.");
+        while (!corpses.empty())
+        {
+            release_obj(*corpses.begin());
+            corpses.pop_front();
+        }
+    }
     return 0;
 }
 

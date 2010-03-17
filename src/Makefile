@@ -94,7 +94,7 @@ permons.cc pmonid.hh: permons.txt $(SRCGEN)$(EXECUTABLE_SUFFIX)
 
 pmon2.o: pmon2.cc dunbash.hh monsters.hh dbashcfg.hh pmonid.hh
 
-prof-fighter.o: prof-thanato.cc player.hh prof-thanato.hh dunbash.hh monsters.hh
+prof-preacher.o: prof-preacher.cc player.hh prof-preacher.hh dunbash.hh monsters.hh
 
 prof-thanato.o: prof-thanato.cc player.hh prof-thanato.hh dunbash.hh monsters.hh
 

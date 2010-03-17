@@ -86,6 +86,7 @@ quality excellent
 power 8
 known true
 depth 1
+flags ARTIFACT
 
 obj WEAPON "bow" "bows"
 desc A recurve composite bow.

@@ -1312,6 +1312,17 @@ void Player::notify_cooldown(int which) const
     case Prof_thanatophile:
         switch (which)
         {
+        case Thanato_assassin_soul:
+        case Thanato_death_song:
+            /* for now, these never go on cooldown. */
+            print_msg(0, "Curious: a no-cooldown ability was on cooldown.");
+            break;
+        case Thanato_life_leech:
+            print_msg(0, "You hunger for life.");
+            break;
+        case Thanato_corpse_explosion:
+            print_msg(0, "You are ready to cleanse the dead once more.");
+            break;
         }
     }
 }
