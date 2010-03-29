@@ -30,7 +30,7 @@
 #include "monsters.hh"
 #include "combat.hh"
 #include "rooms.hh"
-#include "bossroom.hh"
+#include "bossrooms.hh"
 #include "vision.hh"
 #include <stdio.h>
 #include <string.h>

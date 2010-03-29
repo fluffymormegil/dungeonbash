@@ -66,7 +66,7 @@ ui-classic.o: ui-classic.cc dunbash.hh dbashcfg.hh pobjid.hh pmonid.hh
 
 prof-fighter.o: prof-fighter.cc dunbash.hh dbashcfg.hh player.hh combat.hh
 
-loadsave.o: loadsave.cc dunbash.hh monsters.hh objects.hh rooms.hh player.hh loadsave.hh
+loadsave.o: loadsave.cc dunbash.hh monsters.hh objects.hh rooms.hh player.hh loadsave.hh bossrooms.hh
 
 main.o: main.cc combat.hh dunbash.hh monsters.hh pobjid.hh dbashcfg.hh
 
