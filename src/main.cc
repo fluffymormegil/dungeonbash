@@ -894,7 +894,9 @@ int main(void)
     game_uid = geteuid();
 #endif
     get_config();
-    display_init();
+    display_init_common();
+    /* TODO move the below into common */
+    display_init_classic();
     ui_init();
     ptac_init();
     monsters_init();

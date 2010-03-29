@@ -163,4 +163,9 @@ typedef uint32_t Anatomy;
 
 #define INVENTORY_SIZE 19
 
+/* The world window _must_ accommodate a 21x21 view. If it doesn't, your port
+ * will always be unofficial. */
+#define DISP_HEIGHT 21
+#define DISP_WIDTH 21
+
 /* indie.h */
