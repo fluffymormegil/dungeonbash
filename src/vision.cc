@@ -41,15 +41,16 @@ Square_radiance vismap = {
 
 bool block_vision(libmrl::Coord pos)
 {
-    if (currlev->monster_at(pos).valid() && currlev->terrain_at(pos) == DOOR)
-    {
-        return false;
-    }
+    int terr = currlev->terrain_at(pos);
     if (pos == u.pos)
     {
         return false;
     }
-    return terrain_data[currlev->terrain_at(pos)].opaque;
+    if ((terr == DOOR) && currlev->monster_at(pos).valid())
+    {
+        return false;
+    }
+    return terrain_data[terr].opaque;
 }
 
 bool pos_visible(libmrl::Coord pos)
