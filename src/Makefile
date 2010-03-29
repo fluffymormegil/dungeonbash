@@ -10,7 +10,7 @@ DUN_OBJS=bossrooms.o cloud.o map.o rooms.o
 # When new UI and display modules get written, they go into the next line as
 # appropriate to the build.
 UI_CLASSIC_OBJS=display-classic.o ui-classic.o
-UI_OBJS=$(UI_CLASSIC_OBJS)
+UI_OBJS=hci-common.o $(UI_CLASSIC_OBJS)
 
 # Gather everything up.
 OBJS=$(ALG_OBJS) $(OS_OBJS) $(UI_OBJS) $(MON_OBJS) $(OBJ_OBJS) $(CMBT_OBJS) $(PLYR_OBJS) $(DUN_OBJS)
@@ -30,7 +30,7 @@ include ../features.mk
 # other than (e)glibc, you may well need to review the compiler options in
 # CXXFLAGS.
 
-CXXFLAGS=-c -g -pipe -Wall -Wwrite-strings -Wredundant-decls \
+CXXFLAGS=-c -O -g -pipe -Wall -Wwrite-strings -Wredundant-decls \
 	-DMAJVERS=$(MAJVERS) -DMINVERS=$(MINVERS) -DPATCHVERS=$(PATCHVERS) \
 	-D_POSIX_SOURCE -DEXPERIMENTAL -DPLAYGROUND=\"$(PLAYGROUND)\" \
 	-DGLOBALCFGDIR=\"$(GLOBALCFGDIR)\" $(DEF_MULTIUSER)
