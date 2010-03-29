@@ -1,6 +1,6 @@
-/* display.cc
+/* display-sdl.cc
  * 
- * Copyright 2005-2009 Martin Read
+ * Copyright 2010 Martin Read
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,48 +24,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define DISPLAY_C
+#define DISPLAY_SDL_CC
 #include "dunbash.hh"
 #include "player.hh"
-#include <curses.h>
 #include <stdio.h>
-#include <panel.h>
 #include <string.h>
 
 #include <vector>
 
-WINDOW *status_window;
-WINDOW *world_window;
-WINDOW *message_window;
-PANEL *status_panel;
-PANEL *world_panel;
-PANEL *message_panel;
-
-int dgamelaunch_karma;
-
-int status_updated;
-int map_updated;
-int hard_redraw;
-
-/* If your terminal defaults to black text on a white background instead of
- * light grey text on a black background, this will fuck up. */
-chtype colour_attrs[15] =
+const char *colour_names[15] =
 {
-    0,
-    COLOR_PAIR(DBCLR_D_GREY) | A_BOLD,
-    COLOR_PAIR(DBCLR_RED),
-    COLOR_PAIR(DBCLR_BLUE),
-    COLOR_PAIR(DBCLR_GREEN),
-    COLOR_PAIR(DBCLR_PURPLE),
-    COLOR_PAIR(DBCLR_BROWN),
-    COLOR_PAIR(DBCLR_CYAN),
-    A_BOLD,
-    COLOR_PAIR(DBCLR_RED) | A_BOLD,
-    COLOR_PAIR(DBCLR_BLUE) | A_BOLD,
-    COLOR_PAIR(DBCLR_GREEN) | A_BOLD,
-    COLOR_PAIR(DBCLR_PURPLE) | A_BOLD,
-    COLOR_PAIR(DBCLR_BROWN) | A_BOLD,
-    COLOR_PAIR(DBCLR_CYAN) | A_BOLD
+    "lgrey", "dgrey", "red", "blue", "green", "purple", "brown", "cyan",
+    "white", "lred", "lblue", "lgreen", "lpurple", "yellow", "lcyan"
 };
 
 #define DISP_HEIGHT 21
@@ -164,10 +134,19 @@ void display_update(void)
     doupdate();
 }
 
-int display_init_classic(void)
+int display_init(void)
 {
     int i, j;
-
+#ifdef LOG_MESSAGES
+#ifdef MULTIUSER
+    user_permissions();
+#endif
+    msglog_fp = fopen("msglog.txt", "a");
+    fprintf(msglog_fp, "-----------\nTimestamp %#Lx\n", uint64_t(time(0)));
+#ifdef MULTIUSER
+    game_permissions();
+#endif
+#endif
     for (i = 0; i < DISP_HEIGHT; ++i)
     {
         for (j = 0; j < DISP_WIDTH; ++j)
@@ -231,9 +210,7 @@ static void update_message(unsigned int line)
     std::string msg;
 
     if (line < messages.size())
-    {
         msg = messages[line];
-    }
 
     wmove(message_window, line, 0);
 
@@ -429,4 +406,4 @@ bool cursor_highlight(libmrl::Coord onto)
     return true;
 }
 
-/* display.cc */
+/* display-sdl.cc */

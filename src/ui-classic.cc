@@ -1,6 +1,6 @@
 /* ui-classic.cc
  * 
- * Copyright 2005-2009 Martin Read
+ * Copyright 2005-2010 Martin Read and Stefan O'Rear
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,14 +35,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "stlprintf.hh"
-
-// Message channel suppression
-bool suppressions[] =
-{
-    false, false, false, false,
-    false, false, false, false,
-    false, true
-};
+#include "cfgfile.hh"
 
 bool fruit_salad_inventory;
 
@@ -51,8 +44,7 @@ libmrl::Coord curr_projectile_pos = libmrl::NOWHERE;
 Dbash_colour projectile_colour = DBCLR_L_GREY;
 int projectile_delay = 40;
 
-int wall_colour;
-int you_colour;
+int you_colour = DBCLR_WHITE;
 int show_terrain;
 
 /* Prototypes for static funcs */
@@ -147,8 +139,6 @@ void newsym(libmrl::Coord c)
 
 void ui_init(void)
 {
-    wall_colour = DBCLR_BROWN;
-    you_colour = DBCLR_WHITE;
 }
 
 void press_enter(void)
@@ -849,4 +839,4 @@ void print_version(void)
     print_msg(0, "You are using Martin's Dungeon Bash version %s", LONG_VERSION);
 }
 
-/* display.cc */
+/* ui-classic.cc */

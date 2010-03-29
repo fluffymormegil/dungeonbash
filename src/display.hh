@@ -40,10 +40,12 @@
 
 #include "coord.hh"
 #include <string>
+#include <stdio.h>
 
 /* XXX display.c data and funcs */
 extern std::string message_line(bool vs, const std::string& msg, int expected = 0);
-extern int display_init(void);
+extern int display_init_common(void);
+extern int display_init_classic(void);
 extern void display_update(void);
 extern void full_redraw(void);
 extern int display_shutdown(void);
@@ -64,6 +66,8 @@ extern int back_buffer[MAX_DUN_HEIGHT][MAX_DUN_WIDTH];
 extern int hard_redraw;
 extern int status_updated;
 extern int map_updated;
+extern const char *colour_names[15];
+extern FILE *msglog_fp;
 
 #endif
 /* display.hh */
