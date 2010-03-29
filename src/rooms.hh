@@ -128,7 +128,8 @@ struct Levext_rooms : public Levextra
     void excavate_room(int roomidx);
     void link_rooms(int r1, int r2);
     void put_stairs(void);
-    void populate_zoo(void);
+    void populate_zoo_room(void);
+    void populate_treasure_zoo(void);
     void populate_smithy(void);
     void populate_shrine(void);
     void populate_morgue(void);

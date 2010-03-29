@@ -50,6 +50,7 @@ void Levext_rooms::excavate_normal_room(int rnum)
     libmrl::Coord topleft = bounds[rnum][0];
     libmrl::Coord botright = bounds[rnum][1];
     libmrl::Coord c;
+    print_msg(0,"room bounds %d: x %d %d y %d %d", rnum, topleft.x, botright.x, topleft.y, botright.y);
     for (c.y = topleft.y + 1; c.y < botright.y; c.y++)
     {
         for (c.x = topleft.x + 1; c.x < botright.x; c.x++)
@@ -184,6 +185,10 @@ void Levext_rooms::add_random_room(int yseg, int xseg)
     topleft.x = centre.x - ROOM_WD_DELTA - 1 + zero_die(((ROOM_WD_DELTA + 1) * 2) - wd);
     botright.y = topleft.y + ht;
     botright.x = topleft.x + wd;
+    topleft.y = std::max(topleft.y, yseg * (parent->height / 3));
+    topleft.x = std::max(topleft.x, xseg * (parent->width / 3));
+    botright.y = std::min(botright.y, (yseg + 1) * (parent->height / 3));
+    botright.x = std::min(botright.x, (xseg + 1) * (parent->width / 3));
     bounds[roomidx][0] = topleft;
     bounds[roomidx][1] = botright;
     segsused[yseg * 3 + xseg] = 1;
@@ -497,7 +502,7 @@ void Levext_rooms::excavate(void)
     put_stairs();
 }
 
-void Levext_rooms::populate_zoo()
+void Levext_rooms::populate_treasure_zoo()
 {
     int mons;
     int items;
@@ -630,17 +635,12 @@ int Levext_rooms::get_levgen_mon_spot(libmrl::Coord *ppos) const
     return 0;
 }
 
-void Levext_rooms::populate(void)
+void Levext_rooms::populate_zoo_room(void)
 {
-    int i;
-    int j;
-    libmrl::Coord pos;
-    int ic;
-    /* Check for a "treasure zoo" */
     switch (zoo_style)
     {
     case ZOO_TREASURE:
-        populate_zoo();
+        populate_treasure_zoo();
         break;
     case ZOO_SMITHY:
         populate_smithy();
@@ -658,6 +658,16 @@ void Levext_rooms::populate(void)
     default:
         break;
     }
+}
+
+void Levext_rooms::populate(void)
+{
+    int i;
+    int j;
+    libmrl::Coord pos;
+    int ic;
+    /* Check for a "treasure zoo" */
+    populate_zoo_room();
     /* Generate some random monsters */
     for (i = 0; i < 10; i++)
     {
