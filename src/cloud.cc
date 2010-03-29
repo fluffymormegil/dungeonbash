@@ -96,16 +96,18 @@ void encounter_cloud(Cloud cld, bool entering)
 
 Cloud resolve_conflict(const Cloud& left, const Cloud& right)
 {
+    Cloud cld;
+    /* if the clouds are identical, merge them. */
     if (left.flavour == right.flavour)
     {
-        Cloud cld;
         cld.flavour = left.flavour;
         cld.intensity = libmrl::max(left.intensity, right.intensity);
         cld.duration = left.duration * left.intensity + right.duration * right.intensity;
         cld.duration /= cld.intensity;
-        cld.by_you = left.by_you | right.by_you;
+        cld.by_you = left.by_you || right.by_you;
         return cld;
     }
+    /* Abyssal stomps all */
     if (left.flavour == Cloud_abyssal)
     {
         return left;
@@ -114,6 +116,7 @@ Cloud resolve_conflict(const Cloud& left, const Cloud& right)
     {
         return right;
     }
+    /* Fog yields to all */
     if (left.flavour == Cloud_fog)
     {
         return right;
@@ -122,16 +125,34 @@ Cloud resolve_conflict(const Cloud& left, const Cloud& right)
     {
         return left;
     }
+    /* Fire stomps what remains, except that it merges with ice to make fog. */
     if (left.flavour == Cloud_fire)
     {
         switch (right.flavour)
         {
+        case Cloud_ice:
+            cld.flavour = Cloud_fog;
+            cld.intensity = 1;
+            cld.duration = 5 + zero_die(6);
+            cld.by_you = left.by_you || right.by_you;
+            return cld;
+        default:
+            return left;
         }
     }
+    /* Ice stomps what remains, except that it merges with fire to make fog. */
     if (left.flavour == Cloud_ice)
     {
         switch (right.flavour)
         {
+        case Cloud_fire:
+            cld.flavour = Cloud_fog;
+            cld.intensity = 1;
+            cld.duration = 5 + zero_die(6);
+            cld.by_you = left.by_you || right.by_you;
+            return cld;
+        default:
+            return left;
         }
     }
     return left;
@@ -154,8 +175,7 @@ bool put_cloud(Level *lptr, libmrl::Coord pos, Cloud cld)
     existing = lptr->cloud_at(pos);
     if (existing != no_cloud)
     {
-        // TODO implement cloud conflict resolution
-        
+        lptr->set_cloud_at(pos, resolve_conflict(cld, existing));
     }
     else
     {
