@@ -28,7 +28,7 @@
 #include "monsters.hh"
 #include "objects.hh"
 #include "rooms.hh"
-#include "bossroom.hh"
+#include "bossrooms.hh"
 #include "loadsave.hh"
 
 #include <string.h>
