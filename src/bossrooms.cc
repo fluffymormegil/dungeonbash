@@ -1,6 +1,6 @@
-/* bossroom.cc - Boss rooms for Martin's Dungeon Bash
+/* bossrooms.cc - Boss rooms for Martin's Dungeon Bash
  * 
- * Copyright 2009 Martin Read
+ * Copyright 2009-2010 Martin Read
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,7 +28,8 @@
 
 #include "dunbash.hh"
 #include "rooms.hh"
-#include "bossroom.hh"
+#include "bossrooms.hh"
+#include "pmonid.hh"
 
 /* Boss rooms for different styles of level have different geometric
  * considerations. For *all* boss rooms, we have the geometric constraint that
@@ -56,49 +57,116 @@ const char boss_template[12][13] =
 {
     "XXXXXX#XXXXX",
     "X...+..#...X",
-    "X...####...X",
+    "X.4.####.5.X",
     "X..........X",
-    "X##......#+X",
-    "#.#......#.X",
-    "X.#......#.#",
-    "X+#......##X",
+    "X##.~~~~.#+X",
+    "#.#.~01~.#.X",
+    "X.#.~23~.#.#",
+    "X+#.~~~~.##X",
     "X..........X",
-    "X...####...X",
+    "X.6.####.7.X",
     "X...#..+...X",
     "XXXXX#XXXXXX",
 };
 
-void Levext_rooms_boss::populate(void)
+const char corner_shrine_template[12][13] =
 {
-    // Populate the rest of the level first.
-    Levext_rooms::populate();
-    // Now do the boss room.
+    "XXXXXXXXXXXX",
+    "X..........X",
+    "X........_.X",
+    "X..........X",
+    "X....~~~~~~X",
+    "X..........X",
+    "X....~..###X",
+    "X....~..+..X",
+    "X....~..##.X",
+    "X....~...#+X",
+    "X....~...#.#",
+    "XXXXXXXXXX#X",
+};
+
+const char edge_shrine_template[12][13] =
+{
+    "XXXXXXXXXX#X",
+    "X....~...#.X",
+    "X....~...#+X",
+    "X....~...+.X",
+    "X....~...#+X",
+    "X....~...#.#",
+    "X_.......#+X",
+    "X....~...#.X",
+    "X....~...+.X",
+    "X....~...#+X",
+    "X....~...#.X",
+    "XXXXXXXXXX#X",
+};
+
+void Levext_rooms_boss::populate_zoo_room(void)
+{
 }
+
+Boss_spec goblin_chieftain_boss =
+{
+    // X # . ~
+    WALL, WALL, FLOOR, FLOOR,
+    // monsters at the numbered positions
+    {
+        PM_GOBLIN_CHIEFTAIN, PM_GOBLIN, PM_GOBLIN, PM_GOBLIN, PM_GOBLIN,
+        PM_GOBLIN, PM_GOBLIN, PM_GOBLIN, PM_GOBLIN, PM_GOBLIN
+    },
+    // objects at the numbered positions
+    {
+        -1, -1, -1, -1, -1,
+        -1, -1, -1, -1, -1,
+    },
+    // terrains at the numbered positions
+    {
+        FLOOR, FLOOR, FLOOR, FLOOR, FLOOR,
+        FLOOR, FLOOR, FLOOR, FLOOR, FLOOR
+    }
+};
 
 void Levext_rooms_boss::excavate_zoo_room(void)
 {
     /* TODO implement boss level zoo room excavation. */
     int yseg = zoo_room / 3;
     int xseg = zoo_room % 3;
+    Terrain_num terr[8];
+    int pms[8];
     libmrl::Coord topleft;
     libmrl::Coord botright;
     libmrl::Coord c;
+    Terrain_num tilde_terrain = FLOOR;
     if ((parent->height < 42) || (parent->width < 42))
     {
         print_msg(MSGCHAN_INTERROR, "fatal error: boss room generation on Classic Rooms level smaller than 42x42.");
         press_enter();
         abort();
     }
+    /* Select bossroom subflavour; we will have separate code later but for
+     * now it gets embedded in this function in one big blob */
+    if (parent->self.level == 5)
+    {
+        /*  */
+    }
+    else if (parent->self.level == 10)
+    {
+        /* level 10 will be a shrine of evil */
+    }
     /* the following is a temporary hack. */
     topleft.y = (yseg * (parent->height / 3)) + 1;
     topleft.x = (xseg * (parent->width / 3)) + 1;
     botright.y = (yseg * (parent->height / 3)) + 12;
     botright.x = (xseg * (parent->width / 3)) + 12;
-    for (c.y = topleft.y; c.y < botright.y; ++(c.y))
+    bounds[zoo_room][0] = topleft;
+    bounds[zoo_room][1] = botright;
+    print_msg(0, "room bounds %d: x %d %d y %d %d", zoo_room, topleft.x, botright.x, topleft.y, botright.y);
+    for (c.y = topleft.y; c.y <= botright.y; ++(c.y))
     {
-        for (c.x = topleft.x; c.x < botright.x; ++(c.x))
+        for (c.x = topleft.x; c.x <= botright.x; ++(c.x))
         {
-            switch (boss_template[c.y - topleft.y][c.x - topleft.x])
+            int ch = boss_template[c.y - topleft.y][c.x - topleft.x];
+            switch (ch)
             {
             case 'X':
                 parent->set_flag_at(c, MAPFLAG_NOPIERCE);
@@ -113,8 +181,41 @@ void Levext_rooms_boss::excavate_zoo_room(void)
             case '+':
                 parent->set_terrain(c, DOOR);
                 break;
+            case '0':
+                parent->set_terrain(c, terr[0]);
+                break;
+            case '1':
+                parent->set_terrain(c, terr[1]);
+                break;
+            case '2':
+                parent->set_terrain(c, terr[2]);
+                break;
+            case '3':
+                parent->set_terrain(c, terr[3]);
+                break;
+            case '4':
+                parent->set_terrain(c, terr[4]);
+                break;
+            case '5':
+                parent->set_terrain(c, terr[5]);
+                break;
+            case '6':
+                parent->set_terrain(c, terr[6]);
+                break;
+            case '7':
+                parent->set_terrain(c, terr[7]);
+                break;
+            case '8':
+                parent->set_terrain(c, terr[8]);
+                break;
+            case '9':
+                parent->set_terrain(c, terr[9]);
+                break;
+            case '~':
+                parent->set_terrain(c, tilde_terrain);
+                break;
             default:
-                print_msg(MSGCHAN_INTERROR, "internal error: garbage character in boss room template.");
+                print_msg(MSGCHAN_INTERROR, "internal error: garbage character '%c' (hex %2.2x) in boss room template.", ch, ch & 0xff);
                 parent->set_terrain(c, IRON_FLOOR);
                 break;
             }
@@ -158,7 +259,7 @@ int Levext_rooms_boss::enter_region(libmrl::Coord c)
 {
     if (parent->region_at(c) == zoo_room)
     {
-        // react to bossroom departure
+        // react to bossroom entry
         return 1;
     }
     else

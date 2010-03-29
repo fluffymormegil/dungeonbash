@@ -1,6 +1,6 @@
 /* bossroom.hh - Boss rooms for Martin's Dungeon Bash
  * 
- * Copyright 2009 Martin Read
+ * Copyright 2009-2010 Martin Read
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +35,17 @@
 #include "rooms.hh"
 #endif
 
+struct Boss_spec
+{
+    Terrain_num x_terrain;
+    Terrain_num hash_terrain;
+    Terrain_num dot_terrain;
+    Terrain_num tilde_terrain;
+    int num_pmons[10];
+    int num_pobjs[10];
+    Terrain_num num_terrs[10];
+};
+
 struct Bossroom
 {
     Level_tag parent;
@@ -63,7 +74,7 @@ struct Levext_rooms_boss : public Levext_rooms
     virtual void excavate_zoo_room(void);
     virtual int leave_region(libmrl::Coord c);
     virtual int enter_region(libmrl::Coord c);
-    virtual void populate(void);
+    virtual void populate_zoo_room(void);
 };
 
 #endif
