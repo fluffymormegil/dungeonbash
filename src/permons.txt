@@ -352,6 +352,20 @@ speed NORMAL
 flags ARMED MEATY
 anatomy head torso left_leg right_leg left_arm right_arm
 
+mon "Goblin Chieftain" "Goblin Chieftains"
+description A ruler of goblins, rather stronger than his skulking kin. It is said he holds a weapon out of legend in his treasure-cache.
+symbol GOBLIN
+colour YELLOW
+rarity 100
+threat 5
+health 30
+melee 10 10 0 none 0
+defence 8
+experience 300
+speed NORMAL
+flags ARMED MEATY BOSS
+anatomy head torso left_leg right_leg left_arm right_arm
+
 mon "elf" "elves"
 description A tall and uncannily slender humanoid.
 species elf
