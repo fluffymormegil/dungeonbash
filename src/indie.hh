@@ -153,7 +153,7 @@ enum Anatomy_bits
 
 enum Caster_fluff
 {
-    Cfluff_curse, Cfluff_incant, Total_caster_fluffs
+    Cfluff_curse, Cfluff_incant, Cfluff_judge, Total_caster_fluffs
 };
 
 typedef uint32_t Anatomy;
