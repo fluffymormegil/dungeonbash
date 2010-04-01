@@ -45,6 +45,8 @@
 // cannot be overwritten.
 //
 // TODO actually use the intensity field.
+//
+// TODO actually time clouds out.
 
 const Cloud no_cloud = { Total_clouds, 0 };
 
