@@ -82,6 +82,10 @@ extern std::map<uint64_t, Obj *> objects;
 
 inline Obj *Obj_handle::snapv() const
 {
+    if (!value) 
+    {
+        return 0;
+    }
     std::map<uint64_t, Obj *>::iterator iter = objects.find(value);
     return (iter == objects.end()) ? 0 : iter->second;
 }
