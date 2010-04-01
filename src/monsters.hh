@@ -139,6 +139,10 @@ extern uint64_t next_mon_handle;
 
 inline Mon *Mon_handle::snapv() const
 {
+    if (!value)
+    {
+        return 0;
+    }
     std::map<uint64_t, Mon *>::iterator iter = monsters.find(value);
     return (iter == monsters.end()) ? 0 : iter->second;
 }
@@ -154,6 +158,9 @@ extern bool update_mon(Mon_handle mon);
 extern bool mon_acts(Mon_handle mon);
 extern void death_drop(Mon_handle mon);
 extern void print_mon_name(Mon_handle mon, int article, bool shortname = false);
+
+/* a null Level pointer passed to monster creation functions is translated to
+ * mean currlev */
 extern void summon_mon_near(int pm_idx, libmrl::Coord pos, Level *lptr = 0);
 extern Mon_handle create_mon(int pm_idx, libmrl::Coord pos, Level *lptr = 0);
 extern int summoning(libmrl::Coord c, int how_many, Level *lptr = 0);
