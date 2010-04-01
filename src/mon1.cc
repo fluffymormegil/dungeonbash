@@ -491,7 +491,10 @@ bool damage_mon(Mon_handle mon, int amount, bool by_you, int *real_dmg, bool noi
         if (by_you)
         {
             print_msg(0, "You kill %s!", name.c_str());
-            gain_experience(permons[mptr->mon_id].exp);
+            if (!mptr->no_exp)
+            {
+                gain_experience(permons[mptr->mon_id].exp);
+            }
         }
         else if (mptr->in_fov() && noisy)
         {
