@@ -1,6 +1,6 @@
-/* monsters.cc
+/* mon1.cc
  * 
- * Copyright 2005-2009 Martin Read
+ * Copyright 2005-2010 Martin Read
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,7 +24,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define MONSTERS_C
+#define MON1_CC
 
 #include "dunbash.hh"
 #include "objects.hh"
@@ -113,9 +113,9 @@ int get_random_pmon(int depth)
 Mon_handle create_zombie(int corpse_mon, libmrl::Coord c, Level *lptr)
 {
     Mon_handle mon = create_mon(PM_ZOMBIE, c, lptr);
-    if (mon.valid())
+    Mon *mptr = mon.snapv();
+    if (mptr)
     {
-        Mon *mptr = mon.snapv();
         mptr->meta = corpse_mon;
     }
     return mon;
@@ -770,20 +770,22 @@ void release_monster(Mon_handle mon)
     Level *lptr = mptr->lev.snapv();
     if (!lptr)
     {
-        print_msg(MSGCHAN_INTERROR, "levelsnap failed");
-        press_enter();
-        abort();
-    }
-    std::set<Mon_handle>::iterator iter = lptr->denizens.find(mon);
-    if (iter == lptr->denizens.end())
-    {
-        print_msg(MSGCHAN_INTERROR, "release_monster: Mon not in its alleged level's denizen set");
+        print_msg(MSGCHAN_INTERROR, "release_monster: Mon had invalid level handle");
         press_enter();
     }
     else
     {
-        lptr->denizens.erase(iter);
-        lptr->set_mon_at(mptr->pos, NO_MONSTER);
+        std::set<Mon_handle>::iterator iter = lptr->denizens.find(mon);
+        if (iter == lptr->denizens.end())
+        {
+            print_msg(MSGCHAN_INTERROR, "release_monster: Mon not in its alleged level's denizen set");
+            press_enter();
+        }
+        else
+        {
+            lptr->denizens.erase(iter);
+            lptr->set_mon_at(mptr->pos, NO_MONSTER);
+        }
     }
     if (mptr->current_path)
     {
@@ -796,17 +798,13 @@ void release_monster(Mon_handle mon)
     }
     delete mptr;
     std::map<uint64_t, Mon *>::iterator miter = monsters.find(mon.value);
-    if (miter == monsters.end())
-    {
-        print_msg(MSGCHAN_INTERROR, "miter == monsters.end() before erase from monsters");
-        press_enter();
-        abort();
-    }
+    /* No need to validate the iterator, because we've already snapped this
+     * handle once! */
     monsters.erase(miter);
     miter = monsters.find(mon.value);
     if (miter != monsters.end())
     {
-        print_msg(MSGCHAN_INTERROR, "miter != monsters.end()");
+        print_msg(MSGCHAN_INTERROR, "release_monster: monster map corrupt - duplicate entries");
         press_enter();
         abort();
     }
@@ -818,4 +816,5 @@ void release_monster(Mon_handle mon)
         abort();
     }
 }
-/* monsters.cc */
+
+/* mon1.cc */
