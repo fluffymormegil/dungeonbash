@@ -1,6 +1,6 @@
 /* bmagic.cc - monster spellcasting code
  * 
- * Copyright 2005-2009 Martin Read
+ * Copyright 2005-2010 Martin Read
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -720,12 +720,10 @@ Monspell selector_mundane(Mon const *mptr, bool cansee, const Direction_data& di
     return MS_REJECT;
 }
 
-/* New spell for v1.128.0 Experimental: Raise Dead.
- *
+/*
  * This spell turns all corpses within a 3sq radius of the caster (and in
- * their FOV) into zombies.
- *
- * When I add boneyard floors, it will raise skeletons from them.
+ * their FOV) into zombies. Any boneyard square in that radius which is not
+ * occupied by a corpse may spawn a skeleton.
  *
  * Returns: The number of corpses raised.
  */
@@ -736,7 +734,9 @@ int animate_dead(Mon const *mptr)
     libmrl::Coord indices;
     libmrl::Coord cell;
     int zombies = 0;
+    int skeletons = 0;
     bool saw_zombie;
+    bool saw_skeleton;
     Square_radiance animation_map =
     {
         {},
@@ -757,37 +757,44 @@ int animate_dead(Mon const *mptr)
              indices.x++, cell.x++)
         {
             Obj_handle oh = currlev->object_at(cell);
-            if (oh.valid())
+            optr = oh.snapv();
+            if (optr && (optr->obj_id == PO_CORPSE))
             {
-                optr = oh.snapv();
-                if (optr->obj_id == PO_CORPSE)
+                libmrl::Coord pos = get_mon_scatter(cell);
+                if (pos != libmrl::NOWHERE)
                 {
-                    libmrl::Coord pos = get_mon_scatter(cell);
-                    if (pos != libmrl::NOWHERE)
+                    ++zombies;
+                    if (pos_visible(cell) || pos_visible(pos))
                     {
-                        ++zombies;
-                        if (pos_visible(cell) || pos_visible(pos))
-                        {
-                            saw_zombie = true;
-                        }
-                        create_mon(optr->meta[0], pos);
+                        saw_zombie = true;
                     }
+                    create_zombie(optr->meta[0], pos);
                 }
                 consume_obj(oh);
             }
+            else if ((currlev->terrain_at(cell) == BONE_FLOOR) &&
+                     !(currlev->monster_at(cell).valid()))
+            {
+                create_mon(PM_SKELETON, cell);
+                ++skeletons;
+                if (pos_visible(cell))
+                {
+                    saw_skeleton = true;
+                }
+            }
         }
     }
-    if (saw_zombie)
+    if (saw_zombie || saw_skeletons)
     {
         print_msg(0, "The dead rise up!");
     }
-    return zombies;
+    return zombies + skeletons;
 }
 
-/* New spell for 1.128.0 Experimental: Corruption
- *
- * This spell is *nasty*. It either drains a stat point, damages your armour,
- * damages your weapon, or just does some damage.
+/*
+ * Corruption is *nasty*. It's smite-targeted and inflicts one of the
+ * following fates: do nothing, drain one point of body or agility, one point
+ * of armour damage, one point of weapon damage, or 1d10 HP damage.
  */
 
 int corruption_spell(Mon const *mptr)
@@ -858,7 +865,9 @@ int corruption_spell(Mon const *mptr)
     return rv;
 }
 
-/* New spell for 1.130.0 Experimental: Chainstrike
+/*
+ * Chainstrike makes 1d4 attacks at 1d10 damage, each with a defence-in-50
+ * chance of missing.
  */
 
 void chainstrike_spell(Mon const *mptr)
@@ -918,6 +927,7 @@ void shackle_spell(Mon const *mptr)
 
 void judgement_of_the_fallen(Mon const *mptr)
 {
+    mptr->curse(Cfluff_judge);
 }
 
 /* bmagic.cc */
