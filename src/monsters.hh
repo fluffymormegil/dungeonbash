@@ -1,6 +1,6 @@
 /* monsters.hh
  * 
- * Copyright 2005-2009 Martin Read
+ * Copyright 2005-2010 Martin Read
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -163,6 +163,7 @@ extern void print_mon_name(Mon_handle mon, int article, bool shortname = false);
  * mean currlev */
 extern void summon_mon_near(int pm_idx, libmrl::Coord pos, Level *lptr = 0);
 extern Mon_handle create_mon(int pm_idx, libmrl::Coord pos, Level *lptr = 0);
+extern Mon_handle create_zombie(int corpse_mon, libmrl::Coord pos, Level *lptr = 0);
 extern int summoning(libmrl::Coord c, int how_many, Level *lptr = 0);
 extern int ood(int power, int ratio);
 extern int get_random_pmon(int depth);
