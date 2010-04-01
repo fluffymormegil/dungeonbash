@@ -50,7 +50,6 @@ void Levext_rooms::excavate_normal_room(int rnum)
     libmrl::Coord topleft = bounds[rnum][0];
     libmrl::Coord botright = bounds[rnum][1];
     libmrl::Coord c;
-    print_msg(0,"room bounds %d: x %d %d y %d %d", rnum, topleft.x, botright.x, topleft.y, botright.y);
     for (c.y = topleft.y + 1; c.y < botright.y; c.y++)
     {
         for (c.x = topleft.x + 1; c.x < botright.x; c.x++)
