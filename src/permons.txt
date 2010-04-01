@@ -439,10 +439,24 @@ speed NORMAL
 flags MEATY ARMED
 anatomy head torso left_leg right_leg left_arm right_arm
 
+mon "skeleton" "skeletons"
+description The bones of the dead, stirred into a deadly dance by foul magic.
+symbol ZOMBIE
+colour WHITE
+rarity 100
+threat 3
+health 30
+melee 2 12 0 none 0
+defence 1
+experience 7
+speed SLOW
+flags STUPID UNDEAD RESIST_COLD SKELETAL NOCORPSE
+anatomy head torso left_leg right_leg left_arm right_arm
+
 mon "zombie" "zombies"
 description A perambulatory cadaver; you'll probably have to hack it to bits to stop it.
 symbol ZOMBIE
-colour L_GREY
+colour BROWN
 rarity 25
 threat 3
 health 30
