@@ -56,6 +56,8 @@ astar.o: astar.cc monsters.hh dunbash.hh dbashcfg.hh
 
 bmagic.o: bmagic.cc dunbash.hh bmagic.hh pmonid.hh pobjid.hh dbashcfg.hh
 
+bossrooms.o: bossrooms.cc dunbash.hh pmonid.hh pobjid.hh rooms.hh monsters.hh objects.hh player.hh
+
 cfgfile.o: cfgfile.cc cfgfile.hh
 
 combat.o: combat.cc combat.hh dunbash.hh pmonid.hh pobjid.hh dbashcfg.hh monsters.hh
