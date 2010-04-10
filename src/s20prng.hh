@@ -1,4 +1,4 @@
-/* s20prng.cc - PRNG using Salsa20 for Martin's Dungeon Bash
+/* s20prng.cc - PRNG using Salsa20 for "libmrl"
  * 
  * Copyright 2010 Martin Read
  *
@@ -17,10 +17,8 @@
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
  * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- LOSS OF USE,
- * DATA, OR PROFITS;
- OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -36,7 +34,7 @@ namespace libmrl
     struct S20prng
     {
         uint32_t state[16];
-        int tap_point;
+        uint64_t counter;
         void doubleround()
         {
             state[ 4] ^= (state[ 0]+state[12])<<7;
@@ -78,27 +76,6 @@ namespace libmrl
             for (int i = 0; i < (n >> 1); ++i)
             {
                 doubleround();
-            }
-        }
-        S20prng(uint32_t *key_words, uint32_t *streampos_words,
-                uint32_t *nonce_words, uint32_t *fixed_words)
-        {
-            int i;
-            for (i = 0; i < 8; ++i)
-            {
-                state[i] = key_words[i];
-            }
-            for (i = 0; i < 2; ++i)
-            {
-                state[i + 8] = streampos_words[i];
-            }
-            for (i = 0; i < 2; ++i)
-            {
-                state[i + 10] = nonce_words[i];
-            }
-            for (i = 0; i < 4; ++i)
-            {
-                state[i + 12] = fixed_words[i];
             }
         }
     };
