@@ -784,7 +784,7 @@ int animate_dead(Mon const *mptr)
             }
         }
     }
-    if (saw_zombie || saw_skeletons)
+    if (saw_zombie || saw_skeleton)
     {
         print_msg(0, "The dead rise up!");
     }
@@ -927,7 +927,7 @@ void shackle_spell(Mon const *mptr)
 
 void judgement_of_the_fallen(Mon const *mptr)
 {
-    mptr->curse(Cfluff_judge);
+    mptr->curses(Cfluff_judge);
 }
 
 /* bmagic.cc */

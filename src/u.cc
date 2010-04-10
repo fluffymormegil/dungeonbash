@@ -714,6 +714,12 @@ void gain_experience(int amount)
             agilgain = gain_agility(1, 0);
             powergain = gain_mp(10, 0);
             break;
+
+        default:
+            print_msg(MSGCHAN_INTERROR, "unexpected profession %d\n", u.job);
+            powergain = 1;
+            bodygain = 1;
+            agilgain = 1;
 	}
         if (bodygain || agilgain)
         {
@@ -1040,9 +1046,6 @@ void describe_profession(Player_profession prof)
         print_msg(0, "");
         break;
 
-    case Prof_preacher:
-        break;
-
     case Prof_thanatophile:
         print_msg(0, "The thanatophile is obsessed with death. Not the dead -");
         print_msg(0, "this is no necrophile - but *death*.");
@@ -1076,6 +1079,9 @@ void describe_profession(Player_profession prof)
         print_msg(0, "   great violence.");
         print_msg(0, "");
         break;
+
+    default:
+        print_msg(MSGCHAN_INTERROR, "exciting! you have an unsupported profession.");
     }
 }
 
@@ -1324,6 +1330,9 @@ void Player::notify_cooldown(int which) const
             print_msg(0, "You are ready to cleanse the dead once more.");
             break;
         }
+        break;
+    default:
+        print_msg(MSGCHAN_INTERROR, "notify_cooldown(): Exciting! You have an unsupported profession.");
     }
 }
 
@@ -1377,6 +1386,9 @@ int Player::do_profession_command(int which)
         default:
             break;
         }
+        break;
+    default:
+        print_msg(MSGCHAN_INTERROR, "Player::do_profession_command: unsupported profession %d\n", which);
         break;
     }
     print_msg(0, "No such ability %d", which);

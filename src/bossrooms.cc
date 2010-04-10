@@ -24,7 +24,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define BOSSROOM_CC
+#define BOSSROOMS_CC
 
 #include "dunbash.hh"
 #include "rooms.hh"
@@ -131,12 +131,10 @@ void Levext_rooms_boss::excavate_zoo_room(void)
     /* TODO implement boss level zoo room excavation. */
     int yseg = zoo_room / 3;
     int xseg = zoo_room % 3;
-    Terrain_num terr[8];
-    int pms[8];
     libmrl::Coord topleft;
     libmrl::Coord botright;
     libmrl::Coord c;
-    Terrain_num tilde_terrain = FLOOR;
+    int i;
     if ((parent->height < 42) || (parent->width < 42))
     {
         print_msg(MSGCHAN_INTERROR, "fatal error: boss room generation on Classic Rooms level smaller than 42x42.");
@@ -147,11 +145,15 @@ void Levext_rooms_boss::excavate_zoo_room(void)
      * now it gets embedded in this function in one big blob */
     if (parent->self.level == 5)
     {
-        /*  */
+        spec = &goblin_chieftain_boss;
     }
     else if (parent->self.level == 10)
     {
         /* level 10 will be a shrine of evil */
+    }
+    else
+    {
+        /* Otherwise we get a golem foundry. */
     }
     /* the following is a temporary hack. */
     topleft.y = (yseg * (parent->height / 3)) + 1;
@@ -160,7 +162,10 @@ void Levext_rooms_boss::excavate_zoo_room(void)
     botright.x = (xseg * (parent->width / 3)) + 12;
     bounds[zoo_room][0] = topleft;
     bounds[zoo_room][1] = botright;
-    print_msg(0, "room bounds %d: x %d %d y %d %d", zoo_room, topleft.x, botright.x, topleft.y, botright.y);
+    for (i = 0; i < 10; ++i)
+    {
+        num_posns[i] = libmrl::NOWHERE;
+    }
     for (c.y = topleft.y; c.y <= botright.y; ++(c.y))
     {
         for (c.x = topleft.x; c.x <= botright.x; ++(c.x))
@@ -170,49 +175,27 @@ void Levext_rooms_boss::excavate_zoo_room(void)
             {
             case 'X':
                 parent->set_flag_at(c, MAPFLAG_NOPIERCE);
-                parent->set_terrain(c, IRON_WALL);
+                parent->set_terrain(c, spec->x_terrain);
                 break;
             case '#':
-                parent->set_terrain(c, IRON_WALL);
+                parent->set_terrain(c, spec->hash_terrain);
                 break;
             case '.':
-                parent->set_terrain(c, IRON_FLOOR);
+                parent->set_terrain(c, spec->dot_terrain);
+                break;
+            case '~':
+                parent->set_terrain(c, spec->tilde_terrain);
                 break;
             case '+':
                 parent->set_terrain(c, DOOR);
                 break;
-            case '0':
-                parent->set_terrain(c, terr[0]);
-                break;
-            case '1':
-                parent->set_terrain(c, terr[1]);
-                break;
-            case '2':
-                parent->set_terrain(c, terr[2]);
-                break;
-            case '3':
-                parent->set_terrain(c, terr[3]);
-                break;
-            case '4':
-                parent->set_terrain(c, terr[4]);
-                break;
-            case '5':
-                parent->set_terrain(c, terr[5]);
-                break;
-            case '6':
-                parent->set_terrain(c, terr[6]);
-                break;
-            case '7':
-                parent->set_terrain(c, terr[7]);
-                break;
-            case '8':
-                parent->set_terrain(c, terr[8]);
-                break;
-            case '9':
-                parent->set_terrain(c, terr[9]);
-                break;
-            case '~':
-                parent->set_terrain(c, tilde_terrain);
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9': 
+                /* what's that? your platform's native character set doesn't
+                 * store the ten standard numerals as a dense sequence?  Even
+                 * IBM use ASCII these days, for crying out louud! */
+                parent->set_terrain(c, spec->num_terrs[ch - '0']);
+                num_posns[ch - '0'] = c;
                 break;
             default:
                 print_msg(MSGCHAN_INTERROR, "internal error: garbage character '%c' (hex %2.2x) in boss room template.", ch, ch & 0xff);
@@ -247,6 +230,29 @@ int Levext_rooms_boss::leave_region(libmrl::Coord c)
     if (parent->region_at(c) == zoo_room)
     {
         // react to bossroom departure
+        if (boss.snapv())
+        {
+            /* Boss hasn't been killed, so mock the craven hero and despawn
+             * the denizens. */
+            mock_coward();
+            while (!guards.empty())
+            {
+                release_monster(*guards.begin());
+                guards.erase(guards.begin());
+            }
+            release_monster(boss);
+            boss = NO_MONSTER;
+            libmrl::Coord c;
+            /* Cleanup: purge clouds. No, this is not "OP". Everything else
+             * resets, after all. */
+            for (c.y = bounds[zoo_room][0].y; c.y <= bounds[zoo_room][1].y; ++(c.y))
+            {
+                for (c.x = bounds[zoo_room][0].x; c.x <= bounds[zoo_room][1].x; ++(c.x))
+                {
+                    parent->clear_cloud_at(c);
+                }
+            }
+        }
         return 1;
     }
     else
@@ -257,15 +263,28 @@ int Levext_rooms_boss::leave_region(libmrl::Coord c)
 
 int Levext_rooms_boss::enter_region(libmrl::Coord c)
 {
-    if (parent->region_at(c) == zoo_room)
+    int i;
+    if ((parent->region_at(c) == zoo_room) && !cleared)
     {
-        // react to bossroom entry
+        /* initialize monsters. */
+        boss = create_mon(spec->num_pmons[0], num_posns[0], parent);
+        for (i = 1; i < 10; ++i)
+        {
+            Mon_handle mon = create_mon(spec->num_pmons[i], num_posns[i], parent);
+            mon.snapv()->no_exp = true;
+            guards.insert(mon);
+        }
         return 1;
     }
     else
     {
         return Levext_rooms::enter_region(c);
     }
+}
+
+void Levext_rooms_boss::mock_coward() const
+{
+    print_msg(0, "Coward! Wretch! Craven! Stand and fight!");
 }
 
 /* bossrooms.cc */

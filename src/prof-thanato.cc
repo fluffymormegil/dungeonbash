@@ -164,7 +164,8 @@ int do_life_leech(Player *ptmp)
         print_msg(0, "You steal no life.");
         return 0;
     }
-    if (mon.valid())
+    mptr = mon.snapv();
+    if (mptr)
     {
         // Life leech is autohit.
         int maxdam = mptr->hpcur;

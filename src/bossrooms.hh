@@ -68,6 +68,10 @@ struct Levext_rooms_boss : public Levext_rooms
         Boss_sculptor, // Caster who animates golems during fight
         Total_bosses
     };
+    void mock_coward() const;
+    bool cleared;
+    Boss_spec const *spec;
+    libmrl::Coord num_posns[10];
     Mon_handle boss;
     std::set<Mon_handle> guards;
     virtual void add_random_room(int yseg, int xseg);

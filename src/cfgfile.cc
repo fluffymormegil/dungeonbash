@@ -104,9 +104,6 @@ Bool_config_var bool_config_vars[] =
     { 0, 0, false }
 };
 
-/* TODO - find someone who groks Windows to tell me the canonical way to
- * find the user's home directory. */
-
 #ifdef MULTIUSER
 static char system_cfgfile_name[1024];
 static char system_cfgdir_name[1024];
@@ -120,7 +117,8 @@ void build_cfg_names()
     const char *eptr;
     /* The following should work on any UNIX-like system that isn't
      * unutterably ancient. I don't know how to canonically do the equivalent
-     * operation on Windows. */
+     * operation on Windows, and I don't care. Windows doesn't deserve my
+     * code. */
     eptr = getenv("HOME");
     if (!eptr)
     {
@@ -177,6 +175,8 @@ int cfgfile_to_stringvec(const char *file, std::map<std::string, std::string> *p
                 buf = (char *) malloc(1024);
                 leftside = (char *) malloc(512);
                 rightside = (char *) malloc(512);
+                leftside[511] = '\0';
+                rightside[511] = '\0';
                 do
                 {
                     char *s;
