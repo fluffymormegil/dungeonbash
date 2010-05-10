@@ -320,6 +320,7 @@ extern unsigned int convert_range(int dy, int dx);
 extern bool game_finished;
 extern uint32_t game_tick;
 extern bool wizard_mode;
+extern bool nightmare_mode;
 extern int game_uid;
 extern int user_uid;
 extern int action_speed;

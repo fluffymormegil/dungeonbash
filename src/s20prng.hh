@@ -27,49 +27,67 @@
 #ifndef S20PRNG_HH
 #define S20PRNG_HH
 
+#include <stdio.h>
+#include <stdint.h>
+#include "serial.hh"
+#include "mathops.hh"
+
 namespace libmrl
 {
     /* An S20prng object holds the state of a Salsa20 stream cipher
      * implementation. */
-    struct S20prng
+    class S20prng
     {
+    private:
         uint32_t state[16];
-        uint64_t counter;
+        uint32_t nonce[2];
+        uint32_t key[8];
+        uint64_t streampos;
+        uint32_t loop;
+        uint32_t depth;
+    public:
+        static const uint32_t fixed0 = 0x4a409382;
+        static const uint32_t fixed1 = 0x2299f31d;
+        static const uint32_t fixed2 = 0x0082efa9;
+        static const uint32_t fixed3 = 0x8ec4e6c8;
+        S20prng() : streampos(0), loop(0), depth(12) { }
+        /* if performance issues crop up, I'll break out the assembly-language
+         * versions. */
         void doubleround()
         {
-            state[ 4] ^= (state[ 0]+state[12])<<7;
-            state[ 9] ^= (state[ 5]+state[ 1])<<7;
-            state[14] ^= (state[10]+state[ 6])<<7;
-            state[ 3] ^= (state[15]+state[11])<<7;
-            state[ 8] ^= (state[ 4]+state[ 0])<<9;
-            state[13] ^= (state[ 9]+state[ 5])<<9;
-            state[ 2] ^= (state[14]+state[10])<<9;
-            state[ 7] ^= (state[ 3]+state[15])<<9;
-            state[12] ^= (state[ 8]+state[ 4])<<13;
-            state[ 1] ^= (state[13]+state[ 9])<<13;
-            state[ 6] ^= (state[ 2]+state[14])<<13;
-            state[11] ^= (state[ 7]+state[ 3])<<13;
-            state[ 0] ^= (state[12]+state[ 8])<<18;
-            state[ 5] ^= (state[ 1]+state[13])<<18;
-            state[10] ^= (state[ 6]+state[ 2])<<18;
-            state[15] ^= (state[11]+state[ 7])<<18;
+            state[ 4] ^= rotl(state[ 0] + state[12], 7);
+            state[ 8] ^= rotl(state[ 4] + state[ 0], 9);
+            state[12] ^= rotl(state[ 8] + state[ 4], 13);
+            state[ 0] ^= rotl(state[12] + state[ 8], 18);
+            state[ 9] ^= rotl(state[ 5] + state[ 1], 7);
+            state[13] ^= rotl(state[ 9] + state[ 5], 9);
+            state[ 1] ^= rotl(state[13] + state[ 9], 13);
+            state[ 5] ^= rotl(state[ 1] + state[13], 18);
+            state[14] ^= rotl(state[10] + state[ 6], 7);
+            state[ 2] ^= rotl(state[14] + state[10], 9);
+            state[ 6] ^= rotl(state[ 2] + state[14], 13);
+            state[10] ^= rotl(state[ 6] + state[ 2], 18);
+            state[ 3] ^= rotl(state[15] + state[11], 7);
+            state[ 7] ^= rotl(state[ 3] + state[15], 9);
+            state[11] ^= rotl(state[ 7] + state[ 3], 13);
+            state[15] ^= rotl(state[11] + state[ 7], 18);
 
-            state[ 1] ^= (state[ 0]+state[ 3])<<7;
-            state[ 6] ^= (state[ 5]+state[ 3])<<7;
-            state[11] ^= (state[10]+state[ 9])<<7;
-            state[12] ^= (state[15]+state[14])<<7;
-            state[ 2] ^= (state[ 1]+state[ 0])<<9;
-            state[ 7] ^= (state[ 6]+state[ 5])<<9;
-            state[ 8] ^= (state[11]+state[10])<<9;
-            state[13] ^= (state[12]+state[15])<<9;
-            state[ 3] ^= (state[ 2]+state[ 1])<<13;
-            state[ 4] ^= (state[ 7]+state[ 6])<<13;
-            state[ 9] ^= (state[ 8]+state[11])<<13;
-            state[14] ^= (state[13]+state[12])<<13;
-            state[ 0] ^= (state[ 3]+state[ 2])<<18;
-            state[ 5] ^= (state[ 4]+state[ 7])<<18;
-            state[10] ^= (state[ 9]+state[ 8])<<18;
-            state[15] ^= (state[14]+state[13])<<18;
+            state[ 1] ^= rotl(state[ 0] + state[ 3], 7);
+            state[ 2] ^= rotl(state[ 1] + state[ 0], 9);
+            state[ 3] ^= rotl(state[ 2] + state[ 1], 13);
+            state[ 0] ^= rotl(state[ 3] + state[ 2], 18);
+            state[ 6] ^= rotl(state[ 5] + state[ 4], 7);
+            state[ 7] ^= rotl(state[ 6] + state[ 5], 9);
+            state[ 4] ^= rotl(state[ 7] + state[ 6], 13);
+            state[ 5] ^= rotl(state[ 4] + state[ 7], 18);
+            state[11] ^= rotl(state[10] + state[ 9], 7);
+            state[ 8] ^= rotl(state[11] + state[10], 9);
+            state[ 9] ^= rotl(state[ 8] + state[11], 13);
+            state[10] ^= rotl(state[ 9] + state[ 8], 18);
+            state[12] ^= rotl(state[15] + state[14], 7);
+            state[13] ^= rotl(state[12] + state[15], 9);
+            state[14] ^= rotl(state[13] + state[12], 13);
+            state[15] ^= rotl(state[14] + state[13], 18);
         }
         void slash(int n)
         {
@@ -78,6 +96,21 @@ namespace libmrl
                 doubleround();
             }
         }
+        int initialize(void const *keybuf, void const *noncebuf);
+        void refill_state();
+        uint32_t get_num()
+        {
+            uint32_t val = state[loop];
+            ++loop;
+            loop &= 15;
+            if (loop == 0)
+            {
+                ++streampos;
+                refill_state();
+            }
+            return val;
+        }
+        void restore(FILE *fp, S20prng *buf);
     };
 }
 #endif

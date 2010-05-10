@@ -611,6 +611,12 @@ int Levext_rooms::get_levgen_mon_spot(libmrl::Coord *ppos) const
 	{
 	    continue;
 	}
+        if ((!nightmare_mode) && (room == ustairs_room) &&
+            (parent->self.dungeon == Dungeon_main) &&
+            (parent->self.level == 1))
+        {
+            continue;
+        }
 	for (cell_try = 0; cell_try < 200; cell_try++)
 	{
             trypos = get_room_cell(room);

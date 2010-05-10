@@ -26,21 +26,41 @@ Any lines not conforming to this format are discarded by the parser.
 
 The following parameters are valid in a dungeonbashrc file:
 
-name - specifies the default name for the player character.
+name - [string] specifies the default name for the player character.
 
-language - specifies a preferred output language; if the requested language is not available, British English will be used instead.
+language - [string] specifies a preferred output language; if the requested language is not available, British English will be used instead.
 
-preferred_display - specifies the preferred user interface; at present only the tty interface using ncurses is supported.
+profession - [string] specifies the profession which the player wishes to play.
 
-suppress_boringfail - suppresses output of failure messages officially decreed boring.
+preferred_display - [string] specifies the preferred user interface; at present only the tty interface using ncurses is supported.
 
-suppress_fluff - suppresses output of messages officially decreed to be fluff (these messages do nothing important).
+suppress_boringfail - [boolean] suppresses output of failure messages officially decreed boring.
 
-suppress_taunt - suppresses output of messages officially decreed to be mere taunts (these messages do nothing important).
+suppress_fluff - [boolean] suppresses output of messages officially decreed to be fluff (these messages do nothing important).
 
-suppress_numeric - suppresses output of messages conveying numerical information e.g. amount of damage taken on a hit.
+suppress_taunt - [boolean] suppresses output of messages officially decreed to be mere taunts (these messages do nothing important).
 
-suppress_mon_alert - suppresses output of messages warning that a monster has noticed your presence.
+suppress_numeric - [boolean] suppresses output of messages conveying numerical information e.g. amount of damage taken on a hit.
+
+suppress_mon_alert - [boolean] suppresses output of messages warning that a monster has noticed your presence.
+
+name_prompt - [boolean] prompts the player to specify a name. If the "name" option has not been configured, this option is always regarded as enabled.
+
+save_on_stairs - [boolean] updates the player's save file after every level transition.
+
+levelup_wait - [boolean] prompts the player to press SPACE/ENTER after the player character gains a level.
+
+save_wait - [boolean] prompts the player to press SPACE/ENTER before exiting after using the "save" command.
+
+reload_wait - [boolean] prompts the player to press SPACE/ENTER before resuming play after loading a saved game.
+
+nightmare_mode - [boolean] monsters can be generated in the first room of the first level of the first dungeon, and all monsters are "smart".
+
+inventory_colours - [boolean] enables colouring of item name text according to the internal "quality" rating of that type of item.
+
+run_delay - [integer] number of milliseconds to wait between steps when the player character is "running".
+
+projectile_delay - [integer] number of milliseconds to wait between steps when animating a projectile.
 
 .SH "SEE ALSO"
 

@@ -101,6 +101,7 @@ Bool_config_var bool_config_vars[] =
     { "save_on_stairs", &save_on_stairs, !WIZARD_MODE },
     { "reload_wait", &reload_wait, false },
     { "inventory_colours", &fruit_salad_inventory, false },
+    { "nightmare_mode", &nightmare_mode, false },
     { 0, 0, false }
 };
 

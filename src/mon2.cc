@@ -663,7 +663,8 @@ bool mon_acts(Mon_handle mon)
         {
             return false;
         }
-        if (pmon_is_smart(mptr->mon_id))
+        // Nightmare mode: all monsters are smart
+        if (nightmare_mode || pmon_is_smart(mptr->mon_id))
         {
             select_space(&pos, dir_data.delta, AI_STALK);
         }
@@ -683,7 +684,7 @@ bool mon_acts(Mon_handle mon)
     }
     if (mptr->ai_lastpos == mptr->pos)
     {
-        if (pmon_is_smart(mptr->mon_id) &&
+        if ((nightmare_mode || pmon_is_smart(mptr->mon_id)) &&
             (u.pos.distance(mptr->pos) < AI_GUESS_RANGE))
         {
             mptr->ai_lastpos = u.pos;

@@ -26,28 +26,66 @@
 
 #define S20PRNG_CC
 
-namespace libmrl
-{
-    void restore_s20prng(FILE *fp, S20prng *buf)
-    {
-        /* Read in a saved Salsa20 PRNG state */
-    }
+#include <stdint.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include "s20prng.hh"
 
-    void init_new_s20prng(S20prng *buf, FILE *keyfile)
+void libmrl::S20prng::restore(FILE *fp, S20prng *buf)
+{
+    /* Read in a saved state */
+    depth = deserialise_uint32(fp);
+    loop = deserialise_uint32(fp);
+    streampos = deserialise_uint64(fp);
+    deserialise(fp, nonce, 2);
+    deserialise(fp, key, 8);
+    refill_state();
+}
+
+int libmrl::S20prng::initialize(void const *keybuf, void const *noncebuf)
+{
+    if ((!keybuf) || (!noncebuf))
     {
-        /* words 0-7: The keyfile is a plaintext file holding a 256-bit key.
-         * How the keyfile is generated is yet to be decided. */
-        /* words 8-9: The stream position is stored in a 64-bit counter in the
-         * object. */
-        /* words 10-11: We generate the nonce from time(), getpid() */
-        struct timeval tv;
-        gettimeofday(&tv);
-        uint32_t nonce[2];
-        nonce[0] = tv.tv_sec;
-        nonce[1] = tv.tv_usec & 0xffff;
-        nonce[1] |= (getpid() & 0xffff) << 16;
-        /* words 12-15: We load these with a slice of pi. */
+        errno = EINVAL;
+        return -1;
     }
+    memcpy(key, keybuf, 32);
+    memcpy(nonce, noncebuf, 8);
+    streampos = 0;
+    loop = 0;
+    refill_state();
+    return 0;
+}
+
+void libmrl::S20prng::refill_state()
+{
+    /* ill the state array with the relevant numbers... */
+
+    /* Fixed words go one in each column, one in each row. */
+    state[0] = fixed0;
+    state[5] = fixed1;
+    state[10] = fixed2;
+    state[15] = fixed3;
+    /* first slice of key spans all four columns, and touches two rows. */
+    state[1] = key[0];
+    state[2] = key[1];
+    state[3] = key[2];
+    state[4] = key[3];
+    /* second slice of keye spans all four columns, and touches two rows. */
+    state[11] = key[4];
+    state[12] = key[5];
+    state[13] = key[6];
+    state[14] = key[7];
+    /* Streampos and nonce go in middle of array. We don't have to worry about
+     * Bernstein's caution regarding nonce renewal, since we cannot ever
+     * feasibly use all 2^68 32-bit outputs of the generator. */
+    state[6] = uint32_t(streampos);
+    state[7] = uint32_t(streampos >> 32);
+    state[8] = nonce[0];
+    state[9] = nonce[1];
+    /* ... and perform the requested number oof roundds of Salsa20 on them. */
+    slash(depth);
 }
 
 /* s20prng.cc */

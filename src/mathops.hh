@@ -27,8 +27,15 @@
 #ifndef LIBMRL_MATHOPS_HH
 #define LIBMRL_MATHOPS_HH
 
+#include <stdint.h>
+
 namespace libmrl
 {
+    inline uint32_t rotl(uint32_t a, uint32_t dist)
+    {
+        return (a << dist) | (a >> (32 - dist));
+    }
+
     template <typename T> inline T max(const T& left, const T& right)
     {
         return (left < right) ? right : left;

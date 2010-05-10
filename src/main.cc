@@ -134,6 +134,7 @@ static void main_loop(void);
 bool game_finished = false;
 uint32_t game_tick = 0;
 bool wizard_mode = WIZARD_MODE;
+bool nightmare_mode = false;
 
 unsigned int convert_range(int dy, int dx)
 {
@@ -208,13 +209,13 @@ void new_game(void)
     rng_init();
     u_init();
     flavours_init();
+    print_msg(0, "Welcome to Martin's Infinite Dungeon.");
+    print_msg(0, "Press '?' for help.");
     Level_tag startpoint = { Dungeon_main, 1 };
     go_to_level(startpoint, Leventry_stairs_dn_1);
     status_updated = 1;
     map_updated = 1;
     hard_redraw = 1;
-    print_msg(0, "Welcome to Martin's Infinite Dungeon.");
-    print_msg(0, "Press '?' for help.");
 }
 
 int resolve_dance(Game_cmd cmd)
