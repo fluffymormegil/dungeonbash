@@ -5,6 +5,9 @@ src/pmonid.hh
 src/permobj.cc
 src/pobjid.hh
 
+# Experimentation builds
+a.out
+
 # Build files
 src/*.o
 src/dungeonbash
