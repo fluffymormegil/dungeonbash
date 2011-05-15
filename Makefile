@@ -17,6 +17,9 @@ include os.mk
 include dirs.mk
 include permissions.mk
 include features.mk
+# Multiuser installations need the following paths defined
+PLAYGROUND=$(games_localstatedir)/$(GAME)
+GLOBALCFGDIR=$(syscfg_dir)/$(GAME)/v$(MAJVERS).$(MINVERS)
 
 all:
 	(cd src && make $(GAME)$(EXECUTABLE_SUFFIX) )

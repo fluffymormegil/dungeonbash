@@ -1,0 +1,122 @@
+#! /usr/bin/perl -w
+
+use strict;
+use Getopt::Long;
+use English;
+# Prefixes
+my $prefix='/usr/local';
+my $exec_prefix='$(prefix)';
+
+# Bin and lib dirs
+my $bindir='$(exec_prefix)/bin';
+my $sbindir='$(exec_prefix)/sbin';
+my $libdir='$(exec_prefix)/lib';
+my $libexecdir='$(exec_prefix)/libexec';
+
+my $datarootdir='$(prefix)/share';
+my $datadir='$(datarootdir)';
+my $sysconfdir='$(prefix)/etc';
+my $sharedstatedir='$(prefix)/com';
+my $localstatedir='$(prefix)/var';
+my $games_localstatedir='$(prefix)/var/games';
+
+my $includedir='$(prefix)/include';
+my $oldincludedir='/usr/include';
+
+my $docdir='$(datarootdir)/doc/libmormegil';
+my $htmldir='$(docdir)';
+my $dvidir='$(docdir)';
+my $pdfdir='$(docdir)';
+my $psdir='$(docdir)';
+
+my $localedir='$(datarootdir)/locale';
+
+my $infodir='$(datarootdir)/info';
+
+my $mandir='$(datarootdir)/man';
+my $man1dir='$(mandir)/man1';
+my $man3dir='$(mandir)/man3';
+my $man5dir='$(mandir)/man5';
+my $man6dir='$(mandir)/man6';
+my $man7dir='$(mandir)/man7';
+my $man1ext='.1';
+my $man3ext='.3';
+my $man5ext='.5';
+my $man6ext='.6';
+my $man7ext='.7';
+
+my $verbose=1;
+GetOptions(
+'prefix=s' => \$prefix, 'exec_prefix=s' => \$exec_prefix,
+'bindir=s' => \$bindir, 'libdir=s' => \$libdir,
+'includedir=s' => \$includedir, 'oldincludedir=s' => \$oldincludedir,
+'datarootdir=s' => \$datarootdir, 'datadir=s' => \$datadir,
+'sysconfdir=s' => \$sysconfdir, 'sharedstatedir=s' => \$sharedstatedir,
+'localstatedir=s' => \$localstatedir, 'localedir=s' => \$localedir,
+'games_localstatedir=s' => \$games_localstatedir, 'localedir=s' => \$localedir,
+'mandir=s' => \$mandir,
+'man1dir=s' => \$man1dir, 'man3dir=s' => \$man3dir,
+'man5dir=s' => \$man5dir, 'man6dir=s' => \$man6dir,
+'man7dir=s' => \$man7ext,
+'man1ext=s' => \$man1ext, 'man3ext=s' => \$man3ext,
+'man5ext=s' => \$man5ext, 'man6ext=s' => \$man6ext,
+'man7ext=s' => \$man7ext,
+'docdir=s' => \$docdir, 'htmldir=s' => \$htmldir,
+'dvidir=s' => \$dvidir, 'pdfdir=s' => \$pdfdir,
+'psdir=s' => \$psdir, 'infodir=s' => \$infodir,
+'verbose' => \$verbose,
+'quiet' => sub { $verbose = 0; } );
+
+print STDOUT "Configuring libmormegil build/install process...\n" if $verbose;
+
+my $cmdresults;
+
+print STDOUT "Testing 'mkdir -p' ...\n" if $verbose;
+rmdir "billy/bob";
+rmdir "billy";
+$cmdresults=`mkdir -p billy/bob 2>&1`;
+if ($CHILD_ERROR != 0) {
+    print STDERR "mkdir -p billy/bob failed\n";
+    rmdir "billy";
+    die "Please install a POSIX-compliant mkdir.\n";
+}
+rmdir "billy/bob";
+rmdir "billy";
+
+if ($includedir eq $oldincludedir) { $oldincludedir = ''; }
+
+print STDOUT "Writing dirs.mk...\n" if $verbose;
+open(DIRS_MK, '>', "dirs.mk") or die $!;
+print DIRS_MK "prefix=${prefix}\n";
+print DIRS_MK "exec_prefix=${exec_prefix}\n";
+print DIRS_MK "bindir=${bindir}\n";
+print DIRS_MK "sbindir=${sbindir}\n";
+print DIRS_MK "libdir=${libdir}\n";
+print DIRS_MK "libexecdir=${libexecdir}\n";
+print DIRS_MK "datarootdir=${datarootdir}\n";
+print DIRS_MK "datadir=${datadir}\n";
+print DIRS_MK "sysconfdir=${sysconfdir}\n";
+print DIRS_MK "sharedstatedir=${sharedstatedir}\n";
+print DIRS_MK "localstatedir=${localstatedir}\n";
+print DIRS_MK "games_localstatedir=${games_localstatedir}\n";
+print DIRS_MK "localedir=${localedir}\n";
+print DIRS_MK "includedir=${includedir}\n";
+print DIRS_MK "oldincludedir=${oldincludedir}\n";
+print DIRS_MK "mandir=${mandir}\n";
+print DIRS_MK "man1dir=${man1dir}\n";
+print DIRS_MK "man3dir=${man3dir}\n";
+print DIRS_MK "man5dir=${man5dir}\n";
+print DIRS_MK "man6dir=${man6dir}\n";
+print DIRS_MK "man7dir=${man7dir}\n";
+print DIRS_MK "man1ext=${man1ext}\n";
+print DIRS_MK "man3ext=${man3ext}\n";
+print DIRS_MK "man5ext=${man5ext}\n";
+print DIRS_MK "man6ext=${man6ext}\n";
+print DIRS_MK "man7ext=${man7ext}\n";
+print DIRS_MK "docdir=${docdir}\n";
+print DIRS_MK "htmldir=${htmldir}\n";
+print DIRS_MK "dvidir=${dvidir}\n";
+print DIRS_MK "pdfdir=${pdfdir}\n";
+print DIRS_MK "psdir=${psdir}\n";
+print DIRS_MK "infodir=${infodir}\n";
+close(DIRS_MK);
