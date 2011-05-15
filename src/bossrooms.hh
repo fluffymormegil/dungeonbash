@@ -54,7 +54,7 @@ struct Bossroom
     std::set<Mon_handle> add_mons;
     std::set<Obj_handle> decor_objs;
     virtual void excavate() = 0;
-    // base_rset deletes monsters and corpses.
+    // base_reset deletes monsters and corpses.
     void base_reset();
     // extended_reset 
     void (*extended_reset)();
@@ -71,13 +71,13 @@ struct Levext_rooms_boss : public Levext_rooms
     void mock_coward() const;
     bool cleared;
     Boss_spec const *spec;
-    libmrl::Coord num_posns[10];
+    libmormegil::Coord num_posns[10];
     Mon_handle boss;
     std::set<Mon_handle> guards;
     virtual void add_random_room(int yseg, int xseg);
     virtual void excavate_zoo_room(void);
-    virtual int leave_region(libmrl::Coord c);
-    virtual int enter_region(libmrl::Coord c);
+    virtual int leave_region(libmormegil::Coord c);
+    virtual int enter_region(libmormegil::Coord c);
     virtual void populate_zoo_room(void);
 };
 

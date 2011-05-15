@@ -1,28 +1,28 @@
-/* bmagic.cc - monster spellcasting code
- * 
- * Copyright 2005-2010 Martin Read
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// bmagic.cc - monster spellcasting code
+// 
+// Copyright 2005-2010 Martin Read
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #include "dunbash.hh"
 #include "bmagic.hh"
@@ -563,7 +563,7 @@ Monspell selector_lich(Mon const *mptr, bool cansee, const Direction_data& dir_d
         }
         else if (dir_data.oncardinal)
         {
-            if (int(dir_data.delta) < 3)
+            if (dir_data.delta.length_inf() < 3)
             {
                 switch (zero_die(6))
                 {
@@ -625,7 +625,7 @@ Monspell selector_master_lich(Mon const *mptr, bool cansee, const Direction_data
                 return zero_die(2) ? MS_CHILLING_TOUCH : MS_STRIKE_STAFF;
             }
         }
-        else if (int(dir_data.delta) < 3)
+        else if (dir_data.delta.length_inf() < 3)
         {
             switch (zero_die(10))
             {
@@ -650,7 +650,7 @@ Monspell selector_master_lich(Mon const *mptr, bool cansee, const Direction_data
                 return MS_NECRO_SMITE;
             }
         }
-        else if (int(dir_data.delta) < 8)
+        else if (dir_data.delta.length_inf() < 8)
         {
             switch (zero_die(7))
             {
@@ -731,8 +731,8 @@ Monspell selector_mundane(Mon const *mptr, bool cansee, const Direction_data& di
 int animate_dead(Mon const *mptr)
 {
     Obj *optr;
-    libmrl::Coord indices;
-    libmrl::Coord cell;
+    libmormegil::Coord indices;
+    libmormegil::Coord cell;
     int zombies = 0;
     int skeletons = 0;
     bool saw_zombie;
@@ -760,8 +760,8 @@ int animate_dead(Mon const *mptr)
             optr = oh.snapv();
             if (optr && (optr->obj_id == PO_CORPSE))
             {
-                libmrl::Coord pos = get_mon_scatter(cell);
-                if (pos != libmrl::NOWHERE)
+                libmormegil::Coord pos = get_mon_scatter(cell);
+                if (pos != dunbash::NOWHERE)
                 {
                     ++zombies;
                     if (pos_visible(cell) || pos_visible(pos))
@@ -907,7 +907,7 @@ void shackle_spell(Mon const *mptr)
     mptr->curses();
     if (u.test_mobility(false))
     {
-        int dur = libmrl::max(15 - zero_die((u.body + u.agility) / 5), 0);
+        int dur = std::max(15 - zero_die((u.body + u.agility) / 5), 0);
         if (dur > 0)
         {
             Perseff_data peff = {
@@ -930,4 +930,4 @@ void judgement_of_the_fallen(Mon const *mptr)
     mptr->curses(Cfluff_judge);
 }
 
-/* bmagic.cc */
+// bmagic.cc

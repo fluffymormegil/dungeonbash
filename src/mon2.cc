@@ -1,28 +1,28 @@
-/* mon2.c
- * 
- * Copyright 2005-2009 Martin Read
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// mon2.cc
+// 
+// Copyright 2005-2009 Martin Read
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 /* TODO: Convert missile AI to a new-style AI function. */
 #define MON2_C
@@ -34,18 +34,18 @@
 
 /* AI map cell descriptor. */
 struct Ai_cell {
-    libmrl::Coord pos;
-    libmrl::Coord delta;
+    libmormegil::Coord pos;
+    libmormegil::Offset delta;
     int score;
 };
 
 /* prototypes for AI preference functions. */
-static void get_naive_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coord *pref_pos);
-static void get_drunk_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coord *pref_pos);
-static void build_ai_cells(Ai_cell *cells, libmrl::Coord pos);
-static int ai_cell_compare(Ai_cell *cell, libmrl::Coord delta);
-static void get_dodger_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coord *pref_pos);
-static void get_chase_prefs(Mon_handle mon, libmrl::Coord *pref_pos);
+static void get_naive_prefs(libmormegil::Coord pos, libmormegil::Offset delta, libmormegil::Coord *pref_pos);
+static void get_drunk_prefs(libmormegil::Coord pos, libmormegil::Offset delta, libmormegil::Coord *pref_pos);
+static void build_ai_cells(Ai_cell *cells, libmormegil::Coord pos);
+static int ai_cell_compare(Ai_cell *cell, libmormegil::Offset delta);
+static void get_dodger_prefs(libmormegil::Coord pos, libmormegil::Offset delta, libmormegil::Coord *pref_pos);
+static void get_chase_prefs(Mon_handle mon, libmormegil::Coord *pref_pos);
 
 /* get_drunk_prefs()
  *
@@ -53,9 +53,9 @@ static void get_chase_prefs(Mon_handle mon, libmrl::Coord *pref_pos);
  * adjacent squares.
  */
 
-static void get_drunk_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coord *pref_pos)
+static void get_drunk_prefs(libmormegil::Coord pos, libmormegil::Offset delta, libmormegil::Coord *pref_pos)
 {
-    libmrl::Coord sgn;
+    libmormegil::Offset sgn;
     int tryct;
     int pref_idx;
     int idx2;
@@ -76,7 +76,7 @@ static void get_drunk_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coor
 	    }
 	    for (idx2 = 0; idx2 < pref_idx; idx2++)
 	    {
-		if (pref_pos[idx2].y == pos + sgn)
+		if (pref_pos[idx2] == pos + sgn)
 		{
 		    retry = true;
 		    break;
@@ -105,13 +105,13 @@ static void get_drunk_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coor
  * details.
  */
 
-static void get_chase_prefs(Mon_handle mon, libmrl::Coord *pref_pos)
+static void get_chase_prefs(Mon_handle mon, libmormegil::Coord *pref_pos)
 {
     Mon *mptr = mon.snapv();
-    libmrl::Coord pos = mptr->pos;
-    libmrl::Coord delta = mptr->ai_lastpos - pos;
-    libmrl::Coord sgn = libmrl::sign(delta);
-    libmrl::Coord adelta = libmrl::abs(delta);
+    libmormegil::Coord pos = mptr->pos;
+    libmormegil::Offset delta = mptr->ai_lastpos - pos;
+    libmormegil::Offset sgn = libmormegil::sign(delta);
+    libmormegil::Offset adelta = libmormegil::abs(delta);
 
     if (mptr->can_pass(pos + sgn))
     {
@@ -192,10 +192,10 @@ static void get_chase_prefs(Mon_handle mon, libmrl::Coord *pref_pos)
  * #3.
  */
 
-static void get_naive_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coord *pref_pos)
+static void get_naive_prefs(libmormegil::Coord pos, libmormegil::Offset delta, libmormegil::Coord *pref_pos)
 {
-    libmrl::Coord sgn = libmrl::sign(delta);
-    libmrl::Coord adelta = libmrl::abs(delta);
+    libmormegil::Offset sgn = libmormegil::sign(delta);
+    libmormegil::Offset adelta = libmormegil::abs(delta);
     pref_pos[0] = pos + sgn;
     if (!sgn.y)
     {
@@ -254,7 +254,7 @@ static void get_naive_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coor
  * Populate array of eight AI cell descriptors.
  */
 
-static void build_ai_cells(Ai_cell *cells, libmrl::Coord pos)
+static void build_ai_cells(Ai_cell *cells, libmormegil::Coord pos)
 {
     cells[0].score = 0;
     cells[1].score = 0;
@@ -264,25 +264,25 @@ static void build_ai_cells(Ai_cell *cells, libmrl::Coord pos)
     cells[5].score = 0;
     cells[6].score = 0;
     cells[7].score = 0;
-    cells[0].pos = pos + libmrl::NORTHWEST;
-    cells[1].pos = pos + libmrl::NORTH;
-    cells[2].pos = pos + libmrl::NORTHEAST;
-    cells[3].pos = pos + libmrl::WEST;
-    cells[4].pos = pos + libmrl::EAST;
-    cells[5].pos = pos + libmrl::SOUTHWEST;
-    cells[6].pos = pos + libmrl::SOUTH;
-    cells[7].pos = pos + libmrl::SOUTHEAST;
+    cells[0].pos = pos + dunbash::NORTHWEST;
+    cells[1].pos = pos + dunbash::NORTH;
+    cells[2].pos = pos + dunbash::NORTHEAST;
+    cells[3].pos = pos + dunbash::WEST;
+    cells[4].pos = pos + dunbash::EAST;
+    cells[5].pos = pos + dunbash::SOUTHWEST;
+    cells[6].pos = pos + dunbash::SOUTH;
+    cells[7].pos = pos + dunbash::SOUTHEAST;
 }
 
 /* XXX ai_cell_compare()
  *
  * Find relative range of cell compared to monster's current range.
  */
-static int ai_cell_compare(Ai_cell *cell, libmrl::Coord delta)
+static int ai_cell_compare(Ai_cell *cell, libmormegil::Offset delta)
 {
     /* returns -1 for closer, 0 for same range, +1 for further. */
-    int pointrange = int(delta);
-    int cellrange = int(cell->delta);
+    int pointrange = delta.length_inf();
+    int cellrange = cell->delta.length_inf();
     if (cellrange < pointrange)
     {
         return -1;
@@ -298,7 +298,7 @@ static int ai_cell_compare(Ai_cell *cell, libmrl::Coord delta)
  *
  * Get preferences for "smart" monsters without ranged attacks.
  */
-static void get_dodger_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coord *pref_pos)
+static void get_dodger_prefs(libmormegil::Coord pos, libmormegil::Offset delta, libmormegil::Coord *pref_pos)
 {
     /* "Dodgers" are smart melee-only monsters. They will try to avoid
      * the cardinals as they close, and will even flow around other
@@ -312,12 +312,12 @@ static void get_dodger_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coo
     Mon_handle mon = currlev->monster_at(pos);
     Mon *mptr = mon.snapv();
     int i;
-    libmrl::Coord adelta;
+    libmormegil::Offset adelta;
     int j;
     int highest_score = -10000;
     int tryct;
     *pref_pos = pos;
-    adelta = libmrl::abs(delta);
+    adelta = libmormegil::abs(delta);
     build_ai_cells(ai_cells, pos);
     /* Build the local delta.x/delta.y arrays. */
     for (i = 0; i < 8; i++)
@@ -350,7 +350,7 @@ static void get_dodger_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coo
         }
         j = ai_cell_compare(ai_cells + i, delta);
         /* Range */
-        if (libmrl::abs(int(ai_cells[i].delta)) < 2)
+        if (ai_cells[i].delta.length_inf() < 2)
         {
             /* Score upward a *lot* for being adjacent to player */
             ai_cells[i].score += 10;
@@ -385,12 +385,12 @@ static void get_dodger_prefs(libmrl::Coord pos, libmrl::Coord delta, libmrl::Coo
     return;
 }
 
-void select_space(libmrl::Coord *ppos, libmrl::Coord delta, int selection_mode)
+void select_space(libmormegil::Coord *ppos, libmormegil::Offset delta, int selection_mode)
 {
-    libmrl::Coord ai_pos[3];
-    libmrl::Coord sgn = libmrl::sign(delta);
-    libmrl::Coord adelta = libmrl::abs(delta);
-    libmrl::Coord pos2 = libmrl::NOWHERE;
+    libmormegil::Coord ai_pos[3];
+    libmormegil::Offset sgn = libmormegil::sign(delta);
+    libmormegil::Offset adelta = libmormegil::abs(delta);
+    libmormegil::Coord pos2 = dunbash::NOWHERE;
     Mon *mptr = currlev->monster_at(*ppos).snapv();
 
     switch (selection_mode)
@@ -528,7 +528,7 @@ void select_space(libmrl::Coord *ppos, libmrl::Coord delta, int selection_mode)
             // Path is known-good.
             pos2 = astar_advance(mptr);
         }
-        if (pos2 == libmrl::NOWHERE)
+        if (pos2 == dunbash::NOWHERE)
         {
             pos2 = mptr->pos;
         }
@@ -546,7 +546,7 @@ bool mon_acts(Mon_handle mon)
 {
     Mon *mptr = mon.snapv();
     Direction_data dir_data;
-    libmrl::Coord pos;
+    libmormegil::Coord pos;
     int special_used = 0;
     std::string name;
 
@@ -668,7 +668,7 @@ bool mon_acts(Mon_handle mon)
         {
             select_space(&pos, dir_data.delta, AI_STALK);
         }
-        else if (pmon_is_stupid(mptr->mon_id) || (mptr->ai_lastpos == libmrl::NOWHERE))
+        else if (pmon_is_stupid(mptr->mon_id) || (mptr->ai_lastpos == dunbash::NOWHERE))
         {
             select_space(&pos, dir_data.delta, AI_DRUNK);
         }
@@ -685,7 +685,7 @@ bool mon_acts(Mon_handle mon)
     if (mptr->ai_lastpos == mptr->pos)
     {
         if ((nightmare_mode || pmon_is_smart(mptr->mon_id)) &&
-            (u.pos.distance(mptr->pos) < AI_GUESS_RANGE))
+            (u.pos.dist_inf(mptr->pos) < AI_GUESS_RANGE))
         {
             mptr->ai_lastpos = u.pos;
         }
@@ -711,4 +711,4 @@ void Mon::notice_you(bool quiet)
     }
 }
 
-/* mon2.c */
+// mon2.cc

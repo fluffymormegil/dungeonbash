@@ -39,7 +39,7 @@ Square_radiance vismap = {
     block_vision
 };
 
-bool block_vision(libmrl::Coord pos)
+bool block_vision(libmormegil::Coord pos)
 {
     int terr = currlev->terrain_at(pos);
     if (pos == u.pos)
@@ -53,13 +53,13 @@ bool block_vision(libmrl::Coord pos)
     return terrain_data[terr].opaque;
 }
 
-bool pos_visible(libmrl::Coord pos)
+bool pos_visible(libmormegil::Coord pos)
 {
-    libmrl::Coord delta;
-    libmrl::Coord adelta;
+    libmormegil::Offset delta;
+    libmormegil::Offset adelta;
     bool vis;
     delta = pos - u.pos;
-    adelta = libmrl::abs(delta);
+    adelta = libmormegil::abs(delta);
     vis = (((adelta.y > 10) || (adelta.x > 10)) ? false : vismap.array[10 + delta.y][10 + delta.x]);
     return vis;
 }
@@ -77,8 +77,8 @@ bool Mon::in_fov(void) const
 
 void do_vision(void)
 {
-    libmrl::Coord indices;
-    libmrl::Coord cell;
+    libmormegil::Offset indices;
+    libmormegil::Coord cell;
     vismap.origin = u.pos;
     memset(vismap.array, 0, sizeof vismap.array);
     vismap.array[10][10] = 1;

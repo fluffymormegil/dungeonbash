@@ -1,28 +1,28 @@
-/* radiance.cc
- * 
- * Copyright 2009 Martin Read
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// radiance.cc
+// 
+// Copyright 2009 Martin Read
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #include "dunbash.hh"
 #include "radiance.hh"
@@ -195,7 +195,7 @@ for (i = 1; i <= square->radius; i++) \
 
 int irradiate_square(Square_radiance *square, bool hole_in_middle)
 {
-    libmrl::Coord c[5];
+    libmormegil::Coord c[5];
     int i;
     int j;
     unsigned long long cell_mask;
@@ -218,14 +218,14 @@ int spiral_square(Square_radiance *square, Square_eff_func fptr, void *data)
 {
     int i;
     bool rv = false;
-    libmrl::Coord c;
-    libmrl::Coord o = { 10, 10 };
+    libmormegil::Coord c;
+    libmormegil::Coord o = { 10, 10 };
     for (i = 0; i < 21 * 21; ++i)
     {
-        c = spiral_path[i] + o;
+        c = o + spiral_path[i];
         if (square->array[c.y][c.x])
         {
-            bool tmp = fptr(spiral_path[i] + square->origin, data);
+            bool tmp = fptr(square->origin + spiral_path[i], data);
             if (tmp)
             {
                 rv = true;
@@ -240,9 +240,9 @@ int spiral_square(Square_radiance *square, Square_eff_func fptr, void *data)
 int irradiate_beam(Beam_radiance *beam)
 {
     Direction_data dirdata;
-    libmrl::Coord adelta;
-    libmrl::Coord c1 = beam->origin;
-    libmrl::Coord c2;
+    libmormegil::Offset adelta;
+    libmormegil::Coord c1 = beam->origin;
+    libmormegil::Coord c2;
     int rtcap;
     int yrt = 0;
     int xrt = 0;
@@ -250,8 +250,8 @@ int irradiate_beam(Beam_radiance *beam)
 
     /* Extract the magic numbers. */
     compute_directions(beam->dest, beam->origin, &dirdata);
-    adelta = libmrl::abs(dirdata.delta);
-    rtcap = libmrl::max(adelta.y, adelta.x);
+    adelta = libmormegil::abs(dirdata.delta);
+    rtcap = std::max(adelta.y, adelta.x);
     c1 = beam->origin;
     beam->range_remaining = beam->range;
     beam->final_distance = 0;
@@ -284,7 +284,7 @@ int irradiate_beam(Beam_radiance *beam)
 	    beam->range_remaining = 0;
 	    break;
 	case OPTIC_REFLECTED:
-            adelta = libmrl::abs(dirdata.delta);
+            adelta = libmormegil::abs(dirdata.delta);
 	    xrt = 0;
 	    yrt = 0;
 	    rtcap = (adelta.y > adelta.x) ? adelta.y : adelta.x;
@@ -295,4 +295,4 @@ int irradiate_beam(Beam_radiance *beam)
     return 0;
 }
 
-/* radiance.cc */
+// radiance.cc

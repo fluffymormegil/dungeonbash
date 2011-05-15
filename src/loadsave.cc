@@ -56,11 +56,11 @@ bool save_wait;
 bool reload_wait;
 bool always_fsync;
 
-void serialise(FILE *fp, const Level_tag *ptag);
-void serialise(FILE *fp, Levext_rooms const *lerp);
-void serialise(FILE *fp, Levext_rooms_boss const *lerp);
-Levext_rooms *deserialise_levext_rooms(FILE *fp);
-Levext_rooms_boss *deserialise_levext_rooms_boss(FILE *fp);
+void serialize(FILE *fp, const Level_tag *ptag);
+void serialize(FILE *fp, Levext_rooms const *lerp);
+void serialize(FILE *fp, Levext_rooms_boss const *lerp);
+Levext_rooms *deserialize_levext_rooms(FILE *fp);
+Levext_rooms_boss *deserialize_levext_rooms_boss(FILE *fp);
 static void rebuild_mapmons(void);
 static void rebuild_mapobjs(void);
 
@@ -96,9 +96,10 @@ static void rebuild_mapobjs(void)
     }
 }
 
-static void deserialise_gamestate(FILE *fp)
+static void deserialize_gamestate(FILE *fp)
 {
-    uint32_t version_check = deserialise_uint32(fp);
+    uint32_t version_check;
+    deserialize(fp, &version_check);
     if ((version_check & 0xffff0000u) != ((MAJVERS << 24) | (MINVERS << 16)))
     {
         print_msg(0, "version mismatch in saved game");
@@ -111,160 +112,159 @@ static void deserialise_gamestate(FILE *fp)
         display_shutdown();
         exit(1);
     }
-    game_tick = deserialise_uint32(fp);
-    next_obj_handle = deserialise_uint64(fp);
-    next_mon_handle = deserialise_uint64(fp);
-    deserialise(fp, rng_state, 5);
+    deserialize(fp, &game_tick);
+    deserialize(fp, &next_obj_handle);
+    deserialize(fp, &next_mon_handle);
+    deserialize(fp, rng_state, 5);
 }
 
-static void deserialise(FILE *fp, Player *ptmp)
+static void deserialize(FILE *fp, Player *ptmp)
 {
+    uint32_t tmp;
     checked_fread(ptmp->name, 1, 16, fp);
     ptmp->name[16] = '\0';
-    deserialise(fp, &(ptmp->lev));
-    deserialise(fp, &(ptmp->pos));
-    ptmp->sex = Critter_sex(deserialise_uint32(fp));
-    ptmp->job = Player_profession(deserialise_uint32(fp));
-    ptmp->body = deserialise_uint32(fp);
-    ptmp->bdam = deserialise_uint32(fp);
-    ptmp->agility = deserialise_uint32(fp);
-    ptmp->adam = deserialise_uint32(fp);
-    ptmp->hpmax = deserialise_uint32(fp);
-    ptmp->hpcur = deserialise_uint32(fp);
-    ptmp->mpmax = deserialise_uint32(fp);
-    ptmp->mpcur = deserialise_uint32(fp);
-    ptmp->food = deserialise_uint32(fp);
-    ptmp->experience = deserialise_uint32(fp);
-    ptmp->speed = deserialise_uint32(fp);
-    deserialise(fp, ptmp->resistances, DT_COUNT);
-    deserialise(fp, ptmp->cooldowns, 10);
-    ptmp->combat_timer = deserialise_uint32(fp);
-    ptmp->next_cloud_tick = deserialise_uint32(fp);
-    ptmp->level = deserialise_uint32(fp);
-    ptmp->gold = deserialise_uint32(fp);
-    deserialise_ohandle_array(fp, ptmp->inventory, INVENTORY_SIZE);
+    deserialize(fp, &(ptmp->lev));
+    deserialize(fp, &(ptmp->pos));
+    deserialize(fp, &tmp); ptmp->sex = Critter_sex(tmp);
+    deserialize(fp, &tmp); ptmp->job = Player_profession(tmp);
+    deserialize(fp, &ptmp->body);
+    deserialize(fp, &ptmp->bdam);
+    deserialize(fp, &ptmp->agility);
+    deserialize(fp, &ptmp->adam);
+    deserialize(fp, &ptmp->hpmax);
+    deserialize(fp, &ptmp->hpcur);
+    deserialize(fp, &ptmp->mpmax);
+    deserialize(fp, &ptmp->mpcur);
+    deserialize(fp, &ptmp->food);
+    deserialize(fp, &ptmp->experience);
+    deserialize(fp, &ptmp->speed);
+    deserialize(fp, ptmp->resistances, DT_COUNT);
+    deserialize(fp, ptmp->cooldowns, 10);
+    deserialize(fp, &ptmp->combat_timer);
+    deserialize(fp, &ptmp->next_cloud_tick);
+    deserialize(fp, &ptmp->level);
+    deserialize(fp, &ptmp->gold);
+    deserialize_ohandle_array(fp, ptmp->inventory, INVENTORY_SIZE);
     // The following are stored as inventory offsets
-    deserialise_ohandle_array(fp, &(ptmp->weapon), 1);
-    deserialise_ohandle_array(fp, &(ptmp->armour), 1);
-    deserialise_ohandle_array(fp, &(ptmp->ring), 1);
-    uint32_t flav = deserialise_uint32(fp);
+    deserialize_ohandle_array(fp, &(ptmp->weapon), 1);
+    deserialize_ohandle_array(fp, &(ptmp->armour), 1);
+    deserialize_ohandle_array(fp, &(ptmp->ring), 1);
+    uint32_t flav;
+    deserialize(fp, &flav);
     while (flav != 0xffffffffu)
     {
         Perseff_data peff;
         uint64_t t64;
+        uint64_t t32;
         peff.flavour = Persistent_effect(flav);
-        peff.power = deserialise_uint32(fp);
-        peff.duration = deserialise_uint32(fp);
-        peff.by_you = deserialise_uint32(fp);
-        peff.on_you = deserialise_uint32(fp);
-        t64 = deserialise_uint64(fp);
-        peff.caster = Mon_handle(t64);
-        t64 = deserialise_uint64(fp);
-        peff.victim = Mon_handle(t64);
+        deserialize(fp, &peff.power);
+        deserialize(fp, &peff.duration);
+        deserialize(fp, &t32); peff.by_you = t32;
+        deserialize(fp, &t32); peff.on_you = t32;
+        deserialize(fp, &t64); peff.caster = Mon_handle(t64);
+        deserialize(fp, &t64); peff.victim = Mon_handle(t64);
         u.perseffs.push_back(peff);
         u.status.set_flag(peff.flavour);
-        flav = deserialise_uint32(fp);
+        deserialize(fp, &flav);
     }
 }
 
-void deserialise(FILE *fp, libmrl::Coord *c)
+void deserialize(FILE *fp, Level_tag *ptag)
 {
-    c->y = int(deserialise_uint32(fp));
-    c->x = int(deserialise_uint32(fp));
+    uint32_t tmp;
+    deserialize(fp, &tmp); ptag->dungeon = Dungeon_num(tmp);
+    deserialize(fp, &ptag->level);
 }
 
-void deserialise(FILE *fp, Level_tag *ptag)
-{
-    ptag->dungeon = Dungeon_num(deserialise_uint32(fp));
-    ptag->level = deserialise_uint32(fp);
-}
-
-void deserialise_objects(FILE *fp)
+void deserialize_objects(FILE *fp)
 {
     uint32_t count;
     uint32_t i;
     uint64_t oref;
-    count = deserialise_uint32(fp);
+    deserialize(fp, &count);
     for (i = 0; i < count; ++i)
     {
-        oref = deserialise_uint64(fp);
+        deserialize(fp, &oref);
         Obj *optr = new Obj;
         objects[oref] = optr;
-        deserialise(fp, optr);
+        deserialize(fp, optr);
         objects[oref]->self = Obj_handle(oref);
     }
 }
 
-void deserialise(FILE *fp, Obj *optr)
+void deserialize(FILE *fp, Obj *optr)
 {
-    optr->obj_id = int(deserialise_uint32(fp));
-    optr->quan = int(deserialise_uint32(fp));
-    optr->with_you = bool(deserialise_uint32(fp));
-    deserialise(fp, &(optr->lev));
-    deserialise(fp, &(optr->pos));
-    optr->durability = int(deserialise_uint32(fp));
-    deserialise(fp, optr->meta, 2);
-    //optr->meta = int(deserialise_uint32(fp));
+    deserialize(fp, &optr->obj_id);
+    deserialize(fp, &optr->quan);
+    deserialize(fp, &optr->with_you);
+    deserialize(fp, &optr->lev);
+    deserialize(fp, &optr->pos);
+    deserialize(fp, &optr->durability);
+    deserialize(fp, optr->meta, 2);
 #ifdef DEBUG_LOADSAVE
-    print_msg(0, "   deserialised object of type %d pos %d %d levtag %d %d withyou %d", optr->obj_id, optr->pos.y, optr->pos.x, optr->lev.dungeon, optr->lev.level, optr->with_you);
+    print_msg(0, "   deserialized object of type %d pos %d %d levtag %d %d withyou %d", optr->obj_id, optr->pos.y, optr->pos.x, optr->lev.dungeon, optr->lev.level, optr->with_you);
 #endif
 }
 
-void deserialise_ohandle_array(FILE *fp, Obj_handle *array, int count)
+void deserialize_ohandle_array(FILE *fp, Obj_handle *array, int count)
 {
     int i;
+    uint64_t t64;
     for (i = 0; i < count; ++i)
     {
-        array[i] = Obj_handle(deserialise_uint64(fp));
+        deserialize(fp, &t64);
+        array[i] = Obj_handle(t64);
     }
 }
 
-void deserialise_permobj_vars(FILE *fp)
+void deserialize_permobj_vars(FILE *fp)
 {
     int i;
     for (i = 0; i < PO_COUNT; ++i)
     {
-        permobjs[i].known = bool(deserialise_uint32(fp));
-        permobjs[i].power = int(deserialise_uint32(fp));
+        deserialize(fp, &permobjs[i].known);
+        deserialize(fp, &permobjs[i].power);
     }
 }
 
-void deserialise_monsters(FILE *fp)
+void deserialize_monsters(FILE *fp)
 {
-    uint32_t count = deserialise_uint32(fp);
+    uint32_t count;
     uint32_t i;
     uint64_t mref;
     Mon *mptr;
+    deserialize(fp, &count);
     for (i = 0; i < count; ++i)
     {
         mptr = new Mon;
-        mref = deserialise_uint64(fp);
+        deserialize(fp, &mref);
         monsters[mref] = mptr;
-        deserialise(fp, mptr);
+        deserialize(fp, mptr);
         monsters[mref]->self = Mon_handle(mref);
     }
 }
 
-void deserialise(FILE *fp, Mon *mptr)
+void deserialize(FILE *fp, Mon *mptr)
 {
-    libmrl::Coord c;
-    int k;
-    mptr->mon_id = deserialise_uint32(fp);
-    deserialise(fp, &(mptr->lev));
-    deserialise(fp, &(mptr->pos));
-    deserialise(fp, &(mptr->ai_lastpos));
-    mptr->hpmax = deserialise_uint32(fp);
-    mptr->hpcur = deserialise_uint32(fp);
-    mptr->mtohit = deserialise_uint32(fp);
-    mptr->rtohit = deserialise_uint32(fp);
-    mptr->defence = deserialise_uint32(fp);
-    mptr->mdam = deserialise_uint32(fp);
-    mptr->rdam = deserialise_uint32(fp);
-    mptr->awake = deserialise_uint32(fp);
-    mptr->meta = deserialise_uint32(fp);
-    mptr->no_exp = deserialise_uint32(fp);
-    mptr->sex = Critter_sex(deserialise_uint32(fp));
-    k = deserialise_uint32(fp);
+    libmormegil::Coord c;
+    uint32_t k;
+    uint32_t t32;
+    deserialize(fp, &mptr->mon_id);
+    deserialize(fp, &mptr->lev);
+    deserialize(fp, &mptr->pos);
+    deserialize(fp, &mptr->ai_lastpos);
+    deserialize(fp, &mptr->hpmax);
+    deserialize(fp, &mptr->hpcur);
+    deserialize(fp, &mptr->mtohit);
+    deserialize(fp, &mptr->rtohit);
+    deserialize(fp, &mptr->defence);
+    deserialize(fp, &mptr->mdam);
+    deserialize(fp, &mptr->rdam);
+    deserialize(fp, &mptr->awake);
+    deserialize(fp, &mptr->meta);
+    deserialize(fp, &mptr->no_exp);
+    deserialize(fp, &t32); mptr->sex = Critter_sex(t32);
+    deserialize(fp, &k);
     // check for reasonable length of name
     if ((k > 0) && (k < 256))
     {
@@ -275,54 +275,55 @@ void deserialise(FILE *fp, Mon *mptr)
     {
         mptr->name = 0;
     }
-    deserialise(fp, &c);
-    if (c != libmrl::NOWHERE)
+    deserialize(fp, &c);
+    if (c != dunbash::NOWHERE)
     {
         mptr->current_path = new Astar_path();
         do
         {
             mptr->current_path->push_back(c);
-            deserialise(fp, &c);
-        } while (c != libmrl::NOWHERE);
+            deserialize(fp, &c);
+        } while (c != dunbash::NOWHERE);
     }
     else
     {
         mptr->current_path = 0;
     }
-    uint32_t flav = deserialise_uint32(fp);
+    uint32_t flav;
+    deserialize(fp, &flav);
     while (flav != 0xffffffffu)
     {
         Perseff_data peff;
         uint64_t t64;
         peff.flavour = Persistent_effect(flav);
-        peff.power = deserialise_uint32(fp);
-        peff.duration = deserialise_uint32(fp);
-        peff.by_you = deserialise_uint32(fp);
-        peff.on_you = deserialise_uint32(fp);
-        t64 = deserialise_uint64(fp);
+        deserialize(fp, &peff.power);
+        deserialize(fp, &peff.duration);
+        deserialize(fp, &peff.by_you);
+        deserialize(fp, &peff.on_you);
+        deserialize(fp, &t64);
         peff.caster = Mon_handle(t64);
-        t64 = deserialise_uint64(fp);
+        deserialize(fp, &t64);
         peff.victim = Mon_handle(t64);
         mptr->perseffs.push_back(peff);
-        flav = deserialise_uint32(fp);
+        deserialize(fp, &flav);
     }
 }
 
-void deserialise_levels(FILE *fp)
+void deserialize_levels(FILE *fp)
 {
     Level_tag lt;
     int i = 0;
-    deserialise(fp, &lt);
+    deserialize(fp, &lt);
     while (lt != no_level)
     {
         Level * lptr;
-        lptr = deserialise_level(fp, lt);
-        deserialise(fp, &lt);
+        lptr = deserialize_level(fp, lt);
+        deserialize(fp, &lt);
         ++i;
     }
 }
 
-Level * deserialise_level(FILE *fp, Level_tag lt)
+Level * deserialize_level(FILE *fp, Level_tag lt)
 {
     int i;
     Level *lp;
@@ -330,10 +331,10 @@ Level * deserialise_level(FILE *fp, Level_tag lt)
     uint32_t wd;
     uint32_t tmp;
     Leventry_mode lem;
-    libmrl::Coord pos;
+    libmormegil::Coord pos;
     Level_tag dest;
-    ht = deserialise_uint32(fp);
-    wd = deserialise_uint32(fp);
+    deserialize(fp, &ht);
+    deserialize(fp, &wd);
     if ((ht > MAX_DUN_HEIGHT) ||
         (wd > MAX_DUN_WIDTH))
     {
@@ -342,296 +343,294 @@ Level * deserialise_level(FILE *fp, Level_tag lt)
     lp = new Level(lt, ht, wd);
     levels[lt] = lp;
     lp->self = lt;
-    lp->levtype = deserialise_uint32(fp);
-    deserialise(fp, &pos);
-    while (pos != libmrl::NOWHERE)
+    deserialize(fp, &tmp);
+    lp->levtype = tmp;
+    deserialize(fp, &pos);
+    while (pos != dunbash::NOWHERE)
     {
-        lem = Leventry_mode(deserialise_uint32(fp));
+        deserialize(fp, &tmp); lem = Leventry_mode(tmp);
         lp->exit_modes[pos] = lem;
-        deserialise(fp, &pos);
+        deserialize(fp, &pos);
     }
-    tmp = deserialise_uint32(fp);
+    deserialize(fp, &tmp);
     while (tmp != 0xffffffffu)
     {
         lem = Leventry_mode(tmp);
-        deserialise(fp, &dest);
+        deserialize(fp, &dest);
         lp->exit_dests[lem] = dest;
-        tmp = deserialise_uint32(fp);
+        deserialize(fp, &tmp);
     }
-    tmp = deserialise_uint32(fp);
+    deserialize(fp, &tmp);
     while (tmp != 0xffffffffu)
     {
         lem = Leventry_mode(tmp);
-        deserialise(fp, &pos);
+        deserialize(fp, &pos);
         lp->entries[lem] = pos;
-        tmp = deserialise_uint32(fp);
+        deserialize(fp, &tmp);
     }
     for (i = 0; i < lp->height; ++i)
     {
-        deserialise(fp, lp->mflags[i], lp->width);
+        deserialize(fp, lp->mflags[i], lp->width);
     }
     // save terrain
     for (i = 0; i < lp->height; ++i)
     {
-        deserialise(fp, (uint32_t *) lp->terrain[i], lp->width);
+        deserialize(fp, (uint32_t *) lp->terrain[i], lp->width);
     }
     // save regionnums
     for (i = 0; i < lp->height; ++i)
     {
-        deserialise(fp, (uint32_t *) lp->rnums[i], lp->width);
+        deserialize(fp, (uint32_t *) lp->rnums[i], lp->width);
     }
     switch (lp->levtype)
     {
     case LEVEL_ROOMS:
-        lp->levextra = deserialise_levext_rooms(fp);
+        lp->levextra = deserialize_levext_rooms(fp);
         lp->levextra->parent = lp;
         break;
     case LEVEL_ROOMS_BOSS:
-        lp->levextra = deserialise_levext_rooms_boss(fp);
+        lp->levextra = deserialize_levext_rooms_boss(fp);
         lp->levextra->parent = lp;
         break;
     }
     return lp;
 }
 
-Levext_rooms_boss *deserialise_levext_rooms_boss(FILE *fp)
+Levext_rooms_boss *deserialize_levext_rooms_boss(FILE *fp)
 {
 #ifdef DEBUG_LOADSAVE
     print_msg(0, "deserialising Levext_rooms");
 #endif
     Levext_rooms_boss *lerp = new Levext_rooms_boss;
-    lerp->overridden_monsel = deserialise_uint32(fp);
-    lerp->actual_rooms = deserialise_uint32(fp);
-    lerp->zoo_room = deserialise_uint32(fp);
-    lerp->zoo_style = Levext_rooms::Zoo_style(deserialise_uint32(fp));
-    lerp->dstairs_room = deserialise_uint32(fp);
-    lerp->ustairs_room = deserialise_uint32(fp);
-    deserialise(fp, &(lerp->dstairs_pos));
-    deserialise(fp, &(lerp->ustairs_pos));
+    uint32_t t32;
+    deserialize(fp, &lerp->overridden_monsel);
+    deserialize(fp, &lerp->actual_rooms);
+    deserialize(fp, &lerp->zoo_room);
+    deserialize(fp, &t32);
+    lerp->zoo_style = Levext_rooms::Zoo_style(t32);
+    deserialize(fp, &lerp->dstairs_room);
+    deserialize(fp, &lerp->ustairs_room);
+    deserialize(fp, &lerp->dstairs_pos);
+    deserialize(fp, &lerp->ustairs_pos);
     int i;
     for (i = 0; i < Levext_rooms::MAX_ROOMS; ++i)
     {
-        deserialise(fp, &(lerp->bounds[i][0]));
-        deserialise(fp, &(lerp->bounds[i][1]));
-        lerp->segsused[i] = deserialise_uint32(fp);
-        lerp->roomflav[i] = Room_flavour(deserialise_uint32(fp));
+        deserialize(fp, &(lerp->bounds[i][0]));
+        deserialize(fp, &(lerp->bounds[i][1]));
+        deserialize(fp, lerp->segsused + i);
+        deserialize(fp, &t32);
+        lerp->roomflav[i] = Room_flavour(t32);
     }
     int j;
     for (i = 0; i < Levext_rooms::MAX_ROOMS; ++i)
     {
         for (j = 0; j < Levext_rooms::MAX_ROOMS; ++j)
         {
-            lerp->linkage[i][j] = deserialise_uint32(fp);
+            deserialize(fp, &(lerp->linkage[i][j]));
         }
     }
     return lerp;
 }
 
-Levext_rooms *deserialise_levext_rooms(FILE *fp)
+Levext_rooms *deserialize_levext_rooms(FILE *fp)
 {
 #ifdef DEBUG_LOADSAVE
     print_msg(0, "deserialising Levext_rooms");
 #endif
     Levext_rooms *lerp = new Levext_rooms;
-    lerp->overridden_monsel = deserialise_uint32(fp);
-    lerp->actual_rooms = deserialise_uint32(fp);
-    lerp->zoo_room = deserialise_uint32(fp);
-    lerp->zoo_style = Levext_rooms::Zoo_style(deserialise_uint32(fp));
-    lerp->dstairs_room = deserialise_uint32(fp);
-    lerp->ustairs_room = deserialise_uint32(fp);
-    deserialise(fp, &(lerp->dstairs_pos));
-    deserialise(fp, &(lerp->ustairs_pos));
+    uint32_t t32;
+    deserialize(fp, &lerp->overridden_monsel);
+    deserialize(fp, &lerp->actual_rooms);
+    deserialize(fp, &lerp->zoo_room);
+    deserialize(fp, &t32); lerp->zoo_style = Levext_rooms::Zoo_style(t32);
+    deserialize(fp, &lerp->dstairs_room);
+    deserialize(fp, &lerp->ustairs_room);
+    deserialize(fp, &lerp->dstairs_pos);
+    deserialize(fp, &lerp->ustairs_pos);
     int i;
     for (i = 0; i < Levext_rooms::MAX_ROOMS; ++i)
     {
-        deserialise(fp, &(lerp->bounds[i][0]));
-        deserialise(fp, &(lerp->bounds[i][1]));
-        lerp->segsused[i] = deserialise_uint32(fp);
-        lerp->roomflav[i] = Room_flavour(deserialise_uint32(fp));
+        deserialize(fp, &(lerp->bounds[i][0]));
+        deserialize(fp, &(lerp->bounds[i][1]));
+        deserialize(fp, lerp->segsused + i);
+        deserialize(fp, &t32); lerp->roomflav[i] = Room_flavour(t32);
     }
     int j;
     for (i = 0; i < Levext_rooms::MAX_ROOMS; ++i)
     {
         for (j = 0; j < Levext_rooms::MAX_ROOMS; ++j)
         {
-            lerp->linkage[i][j] = deserialise_uint32(fp);
+            deserialize(fp, &(lerp->linkage[i][j]));
         }
     }
     return lerp;
 }
 
-static void serialise(FILE *fp, Player const *ptmp)
+static void serialize(FILE *fp, Player const *ptmp)
 {
 #ifdef DEBUG_LOADSAVE
     print_msg(0, "serialising player");
 #endif
     fwrite(ptmp->name, 1, 16, fp);
-    serialise(fp, uint32_t(ptmp->lev.dungeon));
-    serialise(fp, uint32_t(ptmp->lev.level));
-    serialise(fp, uint32_t(ptmp->pos.y));
-    serialise(fp, uint32_t(ptmp->pos.x));
-    serialise(fp, uint32_t(ptmp->sex));
-    serialise(fp, uint32_t(ptmp->job));
-    serialise(fp, uint32_t(ptmp->body));
-    serialise(fp, uint32_t(ptmp->bdam));
-    serialise(fp, uint32_t(ptmp->agility));
-    serialise(fp, uint32_t(ptmp->adam));
-    serialise(fp, uint32_t(ptmp->hpmax));
-    serialise(fp, uint32_t(ptmp->hpcur));
-    serialise(fp, uint32_t(ptmp->mpmax));
-    serialise(fp, uint32_t(ptmp->mpcur));
-    serialise(fp, uint32_t(ptmp->food));
-    serialise(fp, ptmp->experience);
-    serialise(fp, uint32_t(ptmp->speed));
-    serialise(fp, ptmp->resistances, DT_COUNT);
-    serialise(fp, ptmp->cooldowns, 10);
-    serialise(fp, uint32_t(ptmp->combat_timer));
-    serialise(fp, uint32_t(ptmp->next_cloud_tick));
-    serialise(fp, uint32_t(ptmp->level));
-    serialise(fp, uint32_t(ptmp->gold));
-    serialise_ohandle_array(fp, ptmp->inventory, INVENTORY_SIZE);
-    serialise_ohandle_array(fp, &(ptmp->weapon), 1);
-    serialise_ohandle_array(fp, &(ptmp->armour), 1);
-    serialise_ohandle_array(fp, &(ptmp->ring), 1);
+    serialize(fp, ptmp->lev.dungeon);
+    serialize(fp, ptmp->lev.level);
+    serialize(fp, ptmp->pos);
+    serialize(fp, uint32_t(ptmp->sex));
+    serialize(fp, uint32_t(ptmp->job));
+    serialize(fp, ptmp->body);
+    serialize(fp, ptmp->bdam);
+    serialize(fp, ptmp->agility);
+    serialize(fp, ptmp->adam);
+    serialize(fp, ptmp->hpmax);
+    serialize(fp, ptmp->hpcur);
+    serialize(fp, ptmp->mpmax);
+    serialize(fp, ptmp->mpcur);
+    serialize(fp, ptmp->food);
+    serialize(fp, ptmp->experience);
+    serialize(fp, ptmp->speed);
+    serialize(fp, ptmp->resistances, DT_COUNT);
+    serialize(fp, ptmp->cooldowns, 10);
+    serialize(fp, ptmp->combat_timer);
+    serialize(fp, ptmp->next_cloud_tick);
+    serialize(fp, ptmp->level);
+    serialize(fp, ptmp->gold);
+    serialize_ohandle_array(fp, ptmp->inventory, INVENTORY_SIZE);
+    serialize_ohandle_array(fp, &(ptmp->weapon), 1);
+    serialize_ohandle_array(fp, &(ptmp->armour), 1);
+    serialize_ohandle_array(fp, &(ptmp->ring), 1);
     std::list<Perseff_data>::const_iterator peffiter;
     for (peffiter = u.perseffs.begin(); peffiter != u.perseffs.end(); ++peffiter)
     {
-        serialise(fp, uint32_t(peffiter->flavour));
-        serialise(fp, uint32_t(peffiter->power));
-        serialise(fp, uint32_t(peffiter->duration));
-        serialise(fp, uint32_t(peffiter->by_you));
-        serialise(fp, uint32_t(peffiter->on_you));
-        serialise(fp, peffiter->caster.value);
-        serialise(fp, peffiter->victim.value);
+        serialize(fp, uint32_t(peffiter->flavour));
+        serialize(fp, peffiter->power);
+        serialize(fp, peffiter->duration);
+        serialize(fp, peffiter->by_you);
+        serialize(fp, peffiter->on_you);
+        serialize(fp, peffiter->caster.value);
+        serialize(fp, peffiter->victim.value);
     }
-    serialise(fp, 0xffffffffu);
+    serialize(fp, 0xffffffffu);
 }
 
-void serialise(FILE *fp, const Level_tag *ptag)
+void serialize(FILE *fp, const Level_tag *ptag)
 {
-    serialise(fp, uint32_t(ptag->dungeon));
-    serialise(fp, uint32_t(ptag->level));
+    serialize(fp, uint32_t(ptag->dungeon));
+    serialize(fp, ptag->level);
 }
 
-void serialise(FILE *fp, Obj const *optr)
+void serialize(FILE *fp, Obj const *optr)
 {
 #ifdef DEBUG_LOADSAVE
-    print_msg(0, "   serialised object of type %d pos %d %d levtag %d %d withyou %d", optr->obj_id, optr->pos.y, optr->pos.x, optr->lev.dungeon, optr->lev.level, optr->with_you);
+    print_msg(0, "   serialized object of type %d pos %d %d levtag %d %d withyou %d", optr->obj_id, optr->pos.y, optr->pos.x, optr->lev.dungeon, optr->lev.level, optr->with_you);
 #endif
-    serialise(fp, uint32_t(optr->obj_id));
-    serialise(fp, uint32_t(optr->quan));
-    serialise(fp, uint32_t(optr->with_you));
-    serialise(fp, &(optr->lev));
-    serialise(fp, optr->pos);
-    serialise(fp, uint32_t(optr->durability));
-    serialise(fp, optr->meta, 2);
+    serialize(fp, optr->obj_id);
+    serialize(fp, optr->quan);
+    serialize(fp, optr->with_you);
+    serialize(fp, &(optr->lev));
+    serialize(fp, optr->pos);
+    serialize(fp, optr->durability);
+    serialize(fp, optr->meta, 2);
 }
 
-void serialise_objects(FILE *fp)
+void serialize_objects(FILE *fp)
 {
-    int count;
+    int32_t count;
     std::map<uint64_t, Obj *>::iterator iter;
     count = objects.size();
-    serialise(fp, uint32_t(count));
+    serialize(fp, count);
     for (iter = objects.begin(); iter != objects.end(); ++iter)
     {
 #ifdef DEBUG_LOADSAVE
         print_msg(0, "serialising object ID %llx", iter->first);
 #endif
-        serialise(fp, iter->first);
-        serialise(fp, iter->second);
+        serialize(fp, iter->first);
+        serialize(fp, iter->second);
     }
 }
 
-void serialise_ohandle_array(FILE *fp, Obj_handle const *array, int count)
+void serialize_ohandle_array(FILE *fp, Obj_handle const *array, int count)
 {
     int i;
     for (i = 0; i < count; ++i)
     {
-        serialise(fp, array[i].value);
+        serialize(fp, array[i].value);
     }
 }
 
-static void serialise_gamestate(FILE *fp)
+static void serialize_gamestate(FILE *fp)
 {
-    serialise(fp, uint32_t((MAJVERS << 24) | (MINVERS << 16) | (PATCHVERS << 8)));
-    serialise(fp, game_tick);
-    serialise(fp, next_obj_handle);
-    serialise(fp, next_mon_handle);
-    serialise(fp, rng_state, 5);
+    serialize(fp, uint32_t((MAJVERS << 24) | (MINVERS << 16) | (PATCHVERS << 8)));
+    serialize(fp, game_tick);
+    serialize(fp, next_obj_handle);
+    serialize(fp, next_mon_handle);
+    serialize(fp, rng_state, 5);
 }
 
-void serialise(FILE *fp, libmrl::Coord c)
-{
-    serialise(fp, uint32_t(c.y));
-    serialise(fp, uint32_t(c.x));
-}
-
-void serialise_levels(FILE *fp)
+void serialize_levels(FILE *fp)
 {
     std::map<Level_tag, Level *>::iterator iter;
     int i = 0;
     for (iter = levels.begin(); iter != levels.end(); ++iter)
     {
-        serialise(fp, &(iter->first));
+        serialize(fp, &(iter->first));
         ++i;
-        serialise(fp, iter->second);
+        serialize(fp, iter->second);
     }
-    serialise(fp, &no_level);
+    serialize(fp, &no_level);
 }
 
-void serialise(FILE *fp, Level const *lp)
+void serialize(FILE *fp, Level const *lp)
 {
     int i;
     // parameters
-    serialise(fp, uint32_t(lp->height));
-    serialise(fp, uint32_t(lp->width));
-    serialise(fp, uint32_t(lp->levtype));
+    serialize(fp, lp->height);
+    serialize(fp, lp->width);
+    serialize(fp, lp->levtype);
     // connectivity
     Exitmode_citer exciter;
     for (exciter = lp->exit_modes.begin();
          exciter != lp->exit_modes.end();
          ++exciter)
     {
-        serialise(fp, exciter->first);
-        serialise(fp, uint32_t(exciter->second));
+        serialize(fp, exciter->first);
+        serialize(fp, uint32_t(exciter->second));
     }
-    serialise(fp, libmrl::NOWHERE);
+    serialize(fp, dunbash::NOWHERE);
     Exitdest_citer edciter;
     for (edciter = lp->exit_dests.begin();
          edciter != lp->exit_dests.end();
          ++edciter)
     {
-        serialise(fp, uint32_t(edciter->first));
-        serialise(fp, &(edciter->second));
+        serialize(fp, uint32_t(edciter->first));
+        serialize(fp, &(edciter->second));
     }
-    serialise(fp, 0xffffffffu);
+    serialize(fp, 0xffffffffu);
     Entry_citer enciter;
     for (enciter = lp->entries.begin();
          enciter != lp->entries.end();
          ++enciter)
     {
-        serialise(fp, uint32_t(enciter->first));
-        serialise(fp, enciter->second);
+        serialize(fp, uint32_t(enciter->first));
+        serialize(fp, enciter->second);
     }
-    serialise(fp, 0xffffffffu);
+    serialize(fp, 0xffffffffu);
     // skip mobjs
     // skip mmons
     // skip astar parameters
     // save flags
     for (i = 0; i < lp->height; ++i)
     {
-        serialise(fp, lp->mflags[i], lp->width);
+        serialize(fp, lp->mflags[i], lp->width);
     }
     // save terrain
     for (i = 0; i < lp->height; ++i)
     {
-        serialise(fp, (uint32_t *) lp->terrain[i], lp->width);
+        serialize(fp, (uint32_t *) lp->terrain[i], lp->width);
     }
     // save regionnums
     for (i = 0; i < lp->height; ++i)
     {
-        serialise(fp, (uint32_t *) lp->rnums[i], lp->width);
+        serialize(fp, (uint32_t *) lp->rnums[i], lp->width);
     }
     switch (lp->levtype)
     {
@@ -640,7 +639,7 @@ void serialise(FILE *fp, Level const *lp)
             Levext_rooms const *lerp = dynamic_cast<Levext_rooms const *>(lp->levextra);
             /* I could check for errors, or I could have the program segfault its
              * guts out. The latter is probably saner. */
-            serialise(fp, lerp);
+            serialize(fp, lerp);
         }
         break;
     case LEVEL_ROOMS_BOSS:
@@ -648,79 +647,79 @@ void serialise(FILE *fp, Level const *lp)
             Levext_rooms_boss const *lerp = dynamic_cast<Levext_rooms_boss const *>(lp->levextra);
             /* I could check for errors, or I could have the program segfault its
              * guts out. The latter is probably saner. */
-            serialise(fp, lerp);
+            serialize(fp, lerp);
         }
         break;
     }
 }
 
-void serialise(FILE *fp, Levext_rooms_boss const *lerp)
+void serialize(FILE *fp, Levext_rooms_boss const *lerp)
 {
 #ifdef DEBUG_LOADSAVE
     print_msg(0, "serialising Levext_rooms");
 #endif
-    serialise(fp, (Levext_rooms const *) lerp);
-    // then serialise the extra stuff
+    serialize(fp, (Levext_rooms const *) lerp);
+    // then serialize the extra stuff
 }
 
-void serialise(FILE *fp, Levext_rooms const *lerp)
+void serialize(FILE *fp, Levext_rooms const *lerp)
 {
 #ifdef DEBUG_LOADSAVE
     print_msg(0, "serialising Levext_rooms");
 #endif
-    serialise(fp, uint32_t(lerp->overridden_monsel));
-    serialise(fp, uint32_t(lerp->actual_rooms));
-    serialise(fp, uint32_t(lerp->zoo_room));
-    serialise(fp, uint32_t(lerp->zoo_style));
-    serialise(fp, uint32_t(lerp->dstairs_room));
-    serialise(fp, uint32_t(lerp->ustairs_room));
-    serialise(fp, lerp->ustairs_pos);
-    serialise(fp, lerp->dstairs_pos);
+    serialize(fp, lerp->overridden_monsel);
+    serialize(fp, lerp->actual_rooms);
+    serialize(fp, lerp->zoo_room);
+    serialize(fp, lerp->zoo_style);
+    serialize(fp, lerp->dstairs_room);
+    serialize(fp, lerp->ustairs_room);
+    serialize(fp, lerp->ustairs_pos);
+    serialize(fp, lerp->dstairs_pos);
     int i;
     for (i = 0; i < Levext_rooms::MAX_ROOMS; ++i)
     {
-        serialise(fp, lerp->bounds[i][0]);
-        serialise(fp, lerp->bounds[i][1]);
-        serialise(fp, uint32_t(lerp->segsused[i]));
-        serialise(fp, uint32_t(lerp->roomflav[i]));
+        serialize(fp, lerp->bounds[i][0]);
+        serialize(fp, lerp->bounds[i][1]);
+        serialize(fp, lerp->segsused[i]);
+        serialize(fp, uint32_t(lerp->roomflav[i]));
     }
     int j;
     for (i = 0; i < Levext_rooms::MAX_ROOMS; ++i)
     {
         for (j = 0; j < Levext_rooms::MAX_ROOMS; ++j)
         {
-            serialise(fp, uint32_t(lerp->linkage[i][j]));
+            serialize(fp, lerp->linkage[i][j]);
         }
     }
 }
 
-void serialise(FILE *fp, Mon const *mptr)
+void serialize(FILE *fp, Mon const *mptr)
 {
     Astar_path::iterator iter;
-    serialise(fp, uint32_t(mptr->mon_id));
-    serialise(fp, &(mptr->lev));
-    serialise(fp, mptr->pos);
-    serialise(fp, mptr->ai_lastpos);
-    serialise(fp, uint32_t(mptr->hpmax));
-    serialise(fp, uint32_t(mptr->hpcur));
-    serialise(fp, uint32_t(mptr->mtohit));
-    serialise(fp, uint32_t(mptr->rtohit));
-    serialise(fp, uint32_t(mptr->defence));
-    serialise(fp, uint32_t(mptr->mdam));
-    serialise(fp, uint32_t(mptr->rdam));
-    serialise(fp, uint32_t(mptr->awake));
-    serialise(fp, uint32_t(mptr->meta));
-    serialise(fp, uint32_t(mptr->no_exp));
-    serialise(fp, uint32_t(mptr->sex));
+    serialize(fp, mptr->mon_id);
+    serialize(fp, &(mptr->lev));
+    serialize(fp, mptr->pos);
+    serialize(fp, mptr->ai_lastpos);
+    serialize(fp, mptr->hpmax);
+    serialize(fp, mptr->hpcur);
+    serialize(fp, mptr->mtohit);
+    serialize(fp, mptr->rtohit);
+    serialize(fp, mptr->defence);
+    serialize(fp, mptr->mdam);
+    serialize(fp, mptr->rdam);
+    serialize(fp, mptr->awake);
+    serialize(fp, mptr->meta);
+    serialize(fp, mptr->no_exp);
+    serialize(fp, mptr->sex);
     if (mptr->name)
     {
-        int k = strlen(mptr->name) + 1;
-        serialise(fp, uint32_t(k));
+        uint32_t k = strlen(mptr->name) + 1;
+        serialize(fp, k);
         fwrite(mptr->name, k, 1, fp);
     }
     else
     {
-        serialise(fp, uint32_t(0));
+        serialize(fp, uint32_t(0));
     }
     if (mptr->current_path)
     {
@@ -728,43 +727,43 @@ void serialise(FILE *fp, Mon const *mptr)
              iter != mptr->current_path->end();
              ++iter)
         {
-            serialise(fp, *iter);
+            serialize(fp, *iter);
         }
     }
-    serialise(fp, libmrl::NOWHERE);
+    serialize(fp, dunbash::NOWHERE);
     std::list<Perseff_data>::const_iterator peffiter;
     for (peffiter = mptr->perseffs.begin(); peffiter != mptr->perseffs.end(); ++peffiter)
     {
-        serialise(fp, uint32_t(peffiter->flavour));
-        serialise(fp, uint32_t(peffiter->power));
-        serialise(fp, uint32_t(peffiter->duration));
-        serialise(fp, uint32_t(peffiter->by_you));
-        serialise(fp, uint32_t(peffiter->on_you));
-        serialise(fp, peffiter->caster.value);
-        serialise(fp, peffiter->victim.value);
+        serialize(fp, uint32_t(peffiter->flavour));
+        serialize(fp, peffiter->power);
+        serialize(fp, peffiter->duration);
+        serialize(fp, peffiter->by_you);
+        serialize(fp, peffiter->on_you);
+        serialize(fp, peffiter->caster.value);
+        serialize(fp, peffiter->victim.value);
     }
-    serialise(fp, 0xffffffffu);
+    serialize(fp, 0xffffffffu);
 }
 
-void serialise_monsters(FILE *fp)
+void serialize_monsters(FILE *fp)
 {
-    int count = monsters.size();
+    uint32_t count = monsters.size();
     std::map<uint64_t, Mon *>::const_iterator iter;
-    serialise(fp, uint32_t(count));
+    serialize(fp, count);
     for (iter = monsters.begin(); iter != monsters.end(); ++iter)
     {
-        serialise(fp, iter->first);
-        serialise(fp, iter->second);
+        serialize(fp, iter->first);
+        serialize(fp, iter->second);
     }
 }
 
-void serialise_permobj_vars(FILE *fp)
+void serialize_permobj_vars(FILE *fp)
 {
     int i;
     for (i = 0; i < PO_COUNT; ++i)
     {
-        serialise(fp, uint32_t(permobjs[i].known));
-        serialise(fp, uint32_t(permobjs[i].power));
+        serialize(fp, permobjs[i].known);
+        serialize(fp, permobjs[i].power);
     }
 }
 
@@ -794,12 +793,12 @@ int save_game(void)
         return -1;
     }
     fp = fdopen(fd, "wb");
-    serialise_gamestate(fp);
-    serialise(fp, &u);
-    serialise_levels(fp);
-    serialise_monsters(fp);
-    serialise_objects(fp);
-    serialise_permobj_vars(fp);
+    serialize_gamestate(fp);
+    serialize(fp, &u);
+    serialize_levels(fp);
+    serialize_monsters(fp);
+    serialize_objects(fp);
+    serialize_permobj_vars(fp);
     fflush(fp);
     if (always_fsync)
     {
@@ -871,9 +870,9 @@ int load_game(void)
         try
         {
             print_msg(0, "Loading saved game...");
-            deserialise_gamestate(fp);
-            deserialise(fp, &u);
-            deserialise_levels(fp);
+            deserialize_gamestate(fp);
+            deserialize(fp, &u);
+            deserialize_levels(fp);
             currlev = u.lev.snapv();
             if (!currlev)
             {
@@ -881,9 +880,9 @@ int load_game(void)
                 sleep(1);
                 abort();
             }
-            deserialise_monsters(fp);
-            deserialise_objects(fp);
-            deserialise_permobj_vars(fp);
+            deserialize_monsters(fp);
+            deserialize_objects(fp);
+            deserialize_permobj_vars(fp);
         }
         catch (...)
         {

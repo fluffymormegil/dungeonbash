@@ -32,8 +32,9 @@
 #include "pmonid.hh"
 #include "monsters.hh"
 #include <limits.h>
+#include <libmormegil/mathops.hh>
 
-int player_attack(libmrl::Coord dir)
+int player_attack(libmormegil::Offset dir)
 {
     u.renew_combat_timer();
     if (u.weapon.valid() && ((u.weapon.snapc()->obj_id == PO_BOW) || (u.weapon.snapc()->obj_id == PO_CROSSBOW)))
@@ -42,8 +43,8 @@ int player_attack(libmrl::Coord dir)
     }
     else
     {
-        dir += u.pos;
-        Mon_handle mh = currlev->monster_at(dir);
+        libmormegil::Coord c = u.pos + dir;
+        Mon_handle mh = currlev->monster_at(c);
         if (mh.valid())
         {
             uhitm(mh);
@@ -144,13 +145,13 @@ int uhitm(Mon_handle mon)
     return 1;	/* Hit. */
 }
 
-int ushootm(libmrl::Coord dir)
+int ushootm(libmormegil::Offset dir)
 {
     /* Propagate a missile in direction (sy,sx). Attack first target in
      * LOF. */
     int tohit;
     int range;
-    libmrl::Coord pos = u.pos;
+    libmormegil::Coord pos = u.pos;
     int done = 0;
     Mon *mptr;
     Obj *wep;
@@ -178,7 +179,7 @@ int ushootm(libmrl::Coord dir)
             if (range == 1)
             {
                 /* Shooting at point-blank is tricky */
-                tohit = libmrl::div_up(tohit, 2);
+                tohit = libmormegil::divup(tohit, 2);
             }
             if (tohit >= mptr->defence)
             {
@@ -389,7 +390,7 @@ int mshootu(Mon_handle mon, Damtyp dtyp)
 {
     Mon *mptr;
     Mon *bystander;
-    libmrl::Coord pos;
+    libmormegil::Coord pos;
     Direction_data dirdata;
     bool done;
     int unaffected = false;
@@ -626,8 +627,8 @@ bool ring_melee_proc(Mon_handle mon, Obj_handle obj)
                 poptr->known = 1;
             }
             print_msg(0, "Your ring drains %s!", victim_name.c_str());
-            damage = libmrl::min(dice(3, 4), mptr->hpcur);
-            heal = libmrl::div_up(damage, 2);
+            damage = std::min(dice(3, 4), mptr->hpcur);
+            heal = libmormegil::divup(damage, 2);
             killed = damage_mon(mon, damage, true);
             heal_u(heal, 0, 1);
         }
@@ -658,7 +659,7 @@ bool ring_prekill_proc(int pm, Obj_handle obj, int blow_hp)
         {
             poptr->known = true;
             print_msg(0, "Your ring draws on your victim's freshly-taken life.");
-            heal = libmrl::div_up(libmrl::min(dice(3, 4), blow_hp), 2);
+            heal = libmormegil::divup(std::min(dice(3, 4), blow_hp), 2);
             heal_u(heal, 0, 1);
             return true;
         }

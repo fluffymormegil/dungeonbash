@@ -278,7 +278,7 @@ namespace
             }
             if (i)
             {
-                tmpbuf[libmrl::min(i, 127)] = '\0';
+                tmpbuf[std::min(i, 127)] = '\0';
                 working_object.flag_string += " | ";
                 char *tmpstr = create_tag_from_name(tmpbuf, "POF_");
                 working_object.flag_string += tmpstr;

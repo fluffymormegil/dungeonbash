@@ -1,28 +1,28 @@
-/* u.cc
- * 
- * Copyright 2009 Martin Read
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// u.cc
+// 
+// Copyright 2009 Martin Read
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #include "dunbash.hh"
 #include "combat.hh"
@@ -114,9 +114,9 @@ void recalc_defence(void)
     display_update();
 }
 
-int farmove_player(libmrl::Coord direction)
+int farmove_player(libmormegil::Offset direction)
 {
-    libmrl::Coord c = u.pos;
+    libmormegil::Coord c = u.pos;
     c += direction;
     u.farmove_direction = direction;
     u.farmoving = true;
@@ -124,9 +124,9 @@ int farmove_player(libmrl::Coord direction)
     return i;
 }
 
-int move_player(libmrl::Coord step)
+int move_player(libmormegil::Offset step)
 {
-    libmrl::Coord c = u.pos;
+    libmormegil::Coord c = u.pos;
     c += step;
     if ((c.y < 0) || (c.y >= DUN_HEIGHT) ||
 	(c.x < 0) || (c.x >= DUN_WIDTH))
@@ -176,9 +176,9 @@ int move_player(libmrl::Coord step)
 
 void encounter_terrain(void);
 
-int reloc_player(libmrl::Coord c, bool override)
+int reloc_player(libmormegil::Coord c, bool override)
 {
-    libmrl::Coord old = u.pos;
+    libmormegil::Coord old = u.pos;
 
     if (!override)
     {
@@ -651,17 +651,17 @@ void u_init(void)
     u.experience = 0;
     u.level = 1;
     u.food = 2000;
-    u.inventory[0] = create_obj(PO_DAGGER, 1, 1, libmrl::NOWHERE);
+    u.inventory[0] = create_obj(PO_DAGGER, 1, 1, dunbash::NOWHERE);
     if (!u.inventory[0].valid())
     {
 	print_msg(MSGCHAN_INTERROR, "Couldn't create dagger!");
     }
-    u.inventory[1] = create_obj(PO_IRON_RATION, 1, 1, libmrl::NOWHERE);
+    u.inventory[1] = create_obj(PO_IRON_RATION, 1, 1, dunbash::NOWHERE);
     if (!u.inventory[1].valid())
     {
 	print_msg(MSGCHAN_INTERROR, "Couldn't create ration!");
     }
-    u.inventory[2] = create_obj(PO_PAIR_OF_PANTS, 1, 1, libmrl::NOWHERE);
+    u.inventory[2] = create_obj(PO_PAIR_OF_PANTS, 1, 1, dunbash::NOWHERE);
     if (!u.inventory[2].valid())
     {
 	print_msg(MSGCHAN_INTERROR, "Couldn't create pants!");
@@ -756,7 +756,7 @@ void gain_experience(int amount)
 int teleport_u(void)
 {
     int cell_try;
-    libmrl::Coord pos;
+    libmormegil::Coord pos;
     disturb_u();
     for (cell_try = 0; cell_try < 400; ++cell_try)
     {
@@ -989,17 +989,17 @@ int player_resists_dtype(Damtyp dtype)
 void disturb_u(void)
 {
     u.farmoving = false;
-    u.farmove_direction = libmrl::NOWHERE;
+    u.farmove_direction = dunbash::NODIR;
 }
 
 bool player_next_to_mon(void)
 {
-    libmrl::Coord c;
+    libmormegil::Offset c;
     for (c.y = -1; c.y <= 1; ++(c.y))
     {
         for (c.x = -1; c.x <= 1; ++(c.x))
         {
-            if (!int(c))
+            if (!c.length_inf())
             {
                 continue;
             }
@@ -1254,7 +1254,7 @@ int get_inventory_slot(Obj_handle oh)
 
 void Player::restore_mana(int howmuch)
 {
-    howmuch = libmrl::min(howmuch, mpmax - mpcur);
+    howmuch = std::min(howmuch, mpmax - mpcur);
     if (howmuch > 0)
     {
         mpcur += howmuch;
@@ -1414,7 +1414,7 @@ void Player::dispel_effects(Persistent_effect flavour, int how_many)
 void Player::dispel_noncom_only(void)
 {
     // wipe all effects that cannot remain in force during combat
-    dispel_effects(Perseff_death_song, INT_MAX);
+    dispel_effects(Perseff_assassin_soul, INT_MAX);
 }
 
 // As per policy, the English strings go in the executable.
@@ -1440,7 +1440,7 @@ bool Player::check_mana(int howmuch, bool noisy) const
     return false;
 }
 
-int Player::get_adjacent_monster(Mon_handle *mon, libmrl::Coord *step) const
+int Player::get_adjacent_monster(Mon_handle *mon, libmormegil::Offset *step) const
 {
     int i = select_dir(step);
     if (i == -1)
@@ -1451,4 +1451,4 @@ int Player::get_adjacent_monster(Mon_handle *mon, libmrl::Coord *step) const
     return 0;
 }
 
-/* u.cc */
+// u.cc

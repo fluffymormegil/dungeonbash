@@ -70,15 +70,15 @@ struct Room : public Region
 struct Rect_room : public Room
 {
     // A rectangular room which contains every cell within its bounds.
-    libmrl::Coord bounds[2];
-    bool contains(libmrl::Coord c) const
+    libmormegil::Coord bounds[2];
+    bool contains(libmormegil::Coord c) const
     {
         return ((c.y > bounds[0].y) && (c.x > bounds[0].x) &&
                 (c.y < bounds[1].y) && (c.x < bounds[1].x));
     }
-    virtual libmrl::Coord random_point() const 
+    virtual libmormegil::Coord random_point() const 
     {
-        libmrl::Coord tmp =
+        libmormegil::Coord tmp =
         {
             exclusive_flat(bounds[0].y, bounds[1].y),
             exclusive_flat(bounds[0].x, bounds[1].x)
@@ -107,22 +107,22 @@ struct Levext_rooms : public Levextra
         ZOO_SMITHY,
         TOTAL_ZOOS
     };
-    int actual_rooms;
-    int zoo_room;
+    int16_t actual_rooms;
+    int16_t zoo_room;
     Zoo_style zoo_style;
-    int dstairs_room;
-    int ustairs_room;
-    libmrl::Coord ustairs_pos;
-    libmrl::Coord dstairs_pos;
-    libmrl::Coord bounds[MAX_ROOMS][2];
-    int linkage[MAX_ROOMS][MAX_ROOMS];
+    int16_t dstairs_room;
+    int16_t ustairs_room;
+    libmormegil::Coord ustairs_pos;
+    libmormegil::Coord dstairs_pos;
+    libmormegil::Coord bounds[MAX_ROOMS][2];
+    int16_t linkage[MAX_ROOMS][MAX_ROOMS];
     bool segsused[MAX_ROOMS];
     Room_flavour roomflav[MAX_ROOMS];
 
     Levext_rooms();
     virtual void excavate(void);
     virtual void populate(void);
-    virtual libmrl::Coord get_injection_point(Leventry_mode mode) const;
+    virtual libmormegil::Coord get_injection_point(Leventry_mode mode) const;
     virtual void add_random_room(int yseg, int xseg);
     virtual void excavate_zoo_room(void);
     void excavate_room(int roomidx);
@@ -133,15 +133,15 @@ struct Levext_rooms : public Levextra
     void populate_smithy(void);
     void populate_shrine(void);
     void populate_morgue(void);
-    libmrl::Coord get_room_cell(int room) const;
-    int get_levgen_mon_spot(libmrl::Coord *ppos) const;
-    void excavate_corridor_segment(libmrl::Coord c1, libmrl::Coord c2, bool door1, bool door2);
+    libmormegil::Coord get_room_cell(int room) const;
+    int get_levgen_mon_spot(libmormegil::Coord *ppos) const;
+    void excavate_corridor_segment(libmormegil::Coord c1, libmormegil::Coord c2, bool door1, bool door2);
     void excavate_normal_room(int rnum);
     void excavate_shrine(int rnum);
     void excavate_morgue(int rnum);
     void excavate_smithy(int rnum);
-    virtual int leave_region(libmrl::Coord c);
-    virtual int enter_region(libmrl::Coord c);
+    virtual int leave_region(libmormegil::Coord c);
+    virtual int enter_region(libmormegil::Coord c);
 };
 
 #endif

@@ -237,7 +237,7 @@ known false
 depth 8
 
 obj ARMOUR "pair of pants" "pairs of pants"
-desc A pair of woolen barbarian leg coverings.
+desc A pair of woollen barbarian leg coverings.
 rarity 100
 symbol ARMOUR
 colour L_GREY
@@ -287,7 +287,7 @@ depth 12
 flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "mundane robe" "mundane robes"
-desc A simple woolen robe. It's better protection than your skin, but not by much.
+desc A simple woollen robe. It's better protection than your skin, but not by much.
 rarity 50 
 symbol ARMOUR
 colour GREEN
@@ -297,7 +297,7 @@ depth 1
 flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "robe of swiftness" "robes of swiftness"
-desc A simple woolen robe that bears a potent enchantment, protecting the wearer and making him unnaturally swift.
+desc A simple woollen robe that bears a potent enchantment, protecting the wearer and making him unnaturally swift.
 rarity 70
 symbol ARMOUR
 colour GREEN
@@ -308,7 +308,7 @@ depth 8
 flags WEAR_PANTS WEAR_SHIRT WEAR_SHOULDERS
 
 obj ARMOUR "robe of shadows" "robes of shadows"
-desc A simple woolen robe that bears an awesome enchantment, protecting the wearer better than steel plate.
+desc A simple woollen robe that bears an awesome enchantment, protecting the wearer better than steel plate.
 rarity 90
 symbol ARMOUR
 colour GREEN

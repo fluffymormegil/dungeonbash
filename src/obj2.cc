@@ -1,28 +1,28 @@
-/* obj2.cc
- * 
- * Copyright 2009 Martin Read
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// obj2.cc
+// 
+// Copyright 2009 Martin Read
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #define OBJ2_CC
 
@@ -34,7 +34,7 @@
 #include "radiance.hh"
 #include "vision.hh"
 
-int zapeff_frost(libmrl::Coord pos)
+int zapeff_frost(libmormegil::Coord pos)
 {
     // wallwalking mons are immune to frost zaps (the only current wallwalking
     // mon is immune to cold *anyway*, but whatever).
@@ -78,7 +78,7 @@ struct Corpseblast_data
     int max;
 };
 
-bool corpseblast_func(libmrl::Coord c, void *data)
+bool corpseblast_func(libmormegil::Coord c, void *data)
 {
     if (c == u.pos)
     {
@@ -104,7 +104,7 @@ bool corpseblast_func(libmrl::Coord c, void *data)
     return false;
 }
 
-int zapeff_corpse_explosion(libmrl::Coord pos)
+int zapeff_corpse_explosion(libmormegil::Coord pos)
 {
     Obj_handle obj = currlev->object_at(pos);
     Obj *optr = obj.snapv();
@@ -123,11 +123,11 @@ int zapeff_corpse_explosion(libmrl::Coord pos)
         print_msg(0, "Arcane energy erupts from %s!", m_namestr.c_str());
         if (mptr->mon_id == PM_ZOMBIE)
         {
-            data.max = libmrl::min(permons[mptr->meta].hp, 20);
+            data.max = std::min(permons[mptr->meta].hp, 20);
         }
         else
         {
-            data.max = libmrl::min(permons[mptr->mon_id].hp, 20);
+            data.max = std::min(permons[mptr->mon_id].hp, 20);
         }
         Square_radiance corpseblast =
         {
@@ -142,7 +142,7 @@ int zapeff_corpse_explosion(libmrl::Coord pos)
         std::string namestr;
         Corpseblast_data data;
         optr->get_name(&namestr);
-        data.max = libmrl::min(permons[optr->meta[0]].hp, 20);
+        data.max = std::min(permons[optr->meta[0]].hp, 20);
         print_msg(0, "Arcane energy detonates %s!", namestr.c_str());
         release_obj(obj);
         newsym(pos);
@@ -168,7 +168,7 @@ struct Shatter_data
     const char *name;
 };
 
-bool terrainblast_func(libmrl::Coord c, void *data)
+bool terrainblast_func(libmormegil::Coord c, void *data)
 {
     if (c == u.pos)
     {
@@ -194,7 +194,7 @@ bool terrainblast_func(libmrl::Coord c, void *data)
     return false;
 }
 
-int zapeff_shattering(libmrl::Coord pos)
+int zapeff_shattering(libmormegil::Coord pos)
 {
     int rv = 0;
     bool remove = false;
@@ -269,8 +269,8 @@ int zapeff_shattering(libmrl::Coord pos)
 int zap_wand(Obj_handle obj)
 {
     Obj *optr = obj.snapv();
-    libmrl::Coord pos;
-    libmrl::Coord dir;
+    libmormegil::Coord pos;
+    libmormegil::Offset dir;
     int i;
     int rv = 0;
     if (optr->durability)
@@ -285,7 +285,7 @@ int zap_wand(Obj_handle obj)
             else
             {
                 rv = 1;
-                for (pos = u.pos + dir; u.pos.distance(pos) < 10; pos += dir)
+                for (pos = u.pos + dir; u.pos.dist_inf(pos) < 10; pos += dir)
                 {
                     switch (optr->obj_id)
                     {

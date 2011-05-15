@@ -34,13 +34,13 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <string.h>
-#include "stlprintf.hh"
+#include <libmormegil/stlprintf.hh>
 #include "cfgfile.hh"
 
 bool fruit_salad_inventory;
 
-libmrl::Coord last_projectile_pos = libmrl::NOWHERE;
-libmrl::Coord curr_projectile_pos = libmrl::NOWHERE;
+libmormegil::Coord last_projectile_pos = dunbash::NOWHERE;
+libmormegil::Coord curr_projectile_pos = dunbash::NOWHERE;
 Dbash_colour projectile_colour = DBCLR_L_GREY;
 int projectile_delay = 40;
 
@@ -72,7 +72,7 @@ static int object_char(int object_id)
 
 void touch_back_buffer(void)
 {
-    libmrl::Coord c;
+    libmormegil::Coord c;
     for (c.y = 0; c.y < MAX_DUN_HEIGHT; c.y++)
     {
         for (c.x = 0; c.x < MAX_DUN_WIDTH; c.x++)
@@ -84,7 +84,7 @@ void touch_back_buffer(void)
     hard_redraw = 1;
 }
 
-void newsym(libmrl::Coord c)
+void newsym(libmormegil::Coord c)
 {
     int ch;
 
@@ -160,7 +160,7 @@ void print_msg(int channel, const char *fmt, ...)
     va_list ap;
 
     va_start(ap, fmt);
-    std::string msg = libmrl::vstlprintf(fmt, ap);
+    std::string msg = libmormegil::vstlprintf(fmt, ap);
     va_end(ap);
 
     message_line(!suppressions[channel], msg, 0);
@@ -303,7 +303,7 @@ int inv_select(Poclass_num filter, const char *action, int accept_blank)
     }
     print_msg(MSGCHAN_PROMPT, "[ESC/SPACE to cancel]");
 tryagain:
-    std::string prompt = libmrl::stlprintf("What do you want to %s? ", action);
+    std::string prompt = libmormegil::stlprintf("What do you want to %s? ", action);
     ch = (message_line(true, prompt, 1))[0];
     switch (ch)
     {
@@ -351,7 +351,7 @@ tryagain:
     }
 }
 
-int select_dir(libmrl::Coord *psign, bool silent)
+int select_dir(libmormegil::Offset *psign, bool silent)
 {
     int ch;
     int done = 0;
@@ -366,35 +366,35 @@ int select_dir(libmrl::Coord *psign, bool silent)
         switch (ch)
         {
         case 'h':
-            *psign = libmrl::WEST;
+            *psign = dunbash::WEST;
             done = 1;
             break;
         case 'j':
-            *psign = libmrl::SOUTH;
+            *psign = dunbash::SOUTH;
             done = 1;
             break;
         case 'k':
-            *psign = libmrl::NORTH;
+            *psign = dunbash::NORTH;
             done = 1;
             break;
         case 'l':
-            *psign = libmrl::EAST;
+            *psign = dunbash::EAST;
             done = 1;
             break;
         case 'y':
-            *psign = libmrl::NORTHWEST;
+            *psign = dunbash::NORTHWEST;
             done = 1;
             break;
         case 'u':
-            *psign = libmrl::NORTHEAST;
+            *psign = dunbash::NORTHEAST;
             done = 1;
             break;
         case 'b':
-            *psign = libmrl::SOUTHWEST;
+            *psign = dunbash::SOUTHWEST;
             done = 1;
             break;
         case 'n':
-            *psign = libmrl::SOUTHEAST;
+            *psign = dunbash::SOUTHEAST;
             done = 1;
             break;
         case '\n':
@@ -681,7 +681,7 @@ static void print_help_en_GB(void)
     print_msg(0, "This is all the help you get. Good luck!");
 }
 
-void animate_projectile(libmrl::Coord pos, Dbash_colour col)
+void animate_projectile(libmormegil::Coord pos, Dbash_colour col)
 {
     if (!pos_visible(pos))
     {
@@ -690,7 +690,7 @@ void animate_projectile(libmrl::Coord pos, Dbash_colour col)
     projectile_colour = col;
     last_projectile_pos = curr_projectile_pos;
     curr_projectile_pos = pos;
-    if (last_projectile_pos != libmrl::NOWHERE)
+    if (last_projectile_pos != dunbash::NOWHERE)
     {
         newsym(last_projectile_pos);
     }
@@ -702,16 +702,16 @@ void animate_projectile(libmrl::Coord pos, Dbash_colour col)
 void projectile_done(void)
 {
     last_projectile_pos = curr_projectile_pos;
-    curr_projectile_pos = libmrl::NOWHERE;
+    curr_projectile_pos = dunbash::NOWHERE;
     newsym(last_projectile_pos);
-    last_projectile_pos = libmrl::NOWHERE;
+    last_projectile_pos = dunbash::NOWHERE;
     display_update();
 }
 
 void farlook(void)
 {
-    libmrl::Coord mappos = u.pos;
-    libmrl::Coord step;
+    libmormegil::Coord mappos = u.pos;
+    libmormegil::Offset step;
     std::string name;
     bool done = false;
     int i;
@@ -780,10 +780,10 @@ void farlook(void)
     print_msg(MSGCHAN_PROMPT, "Done.");
 }
 
-int get_smite_target(libmrl::Coord *ppos, bool must_be_visible)
+int get_smite_target(libmormegil::Coord *ppos, bool must_be_visible)
 {
-    libmrl::Coord mappos = u.pos;
-    libmrl::Coord step;
+    libmormegil::Coord mappos = u.pos;
+    libmormegil::Offset step;
     std::string name;
     bool done = false;
     int i;

@@ -67,38 +67,38 @@ extern const Stat_handling stat_handling[Total_professions];
 /* XXX struct Player */
 struct Player {
     char name[17];	/* including '\0' the fencepost. */
-    libmrl::Coord pos;  /* position within the level. */
+    libmormegil::Coord pos;  /* position within the level. */
     Level_tag lev;
     Critter_sex sex;
     Player_profession job;
-    int body;		/* determines mace to-hit, melee damage, max 99 */
-    int bdam;		/* current level of temporary body drain. */
-    int agility;	/* determines sword, dagger, missile to-hit, max 99 */
-    int adam;		/* current level of temporary agility drain. */
-    int hpmax;		/* Max hit points; max of 999. */
-    int hpcur;		/* Current hit points; <= 0 is dead. */
-    int mpmax;          /* Max mana */
-    int mpcur;          /* Max mana */
+    int32_t body;		/* determines mace to-hit, melee damage, max 99 */
+    int32_t bdam;		/* current level of temporary body drain. */
+    int32_t agility;	/* determines sword, dagger, missile to-hit, max 99 */
+    int32_t adam;		/* current level of temporary agility drain. */
+    int32_t hpmax;		/* Max hit points; max of 999. */
+    int32_t hpcur;		/* Current hit points; <= 0 is dead. */
+    int32_t mpmax;          /* Max mana */
+    int32_t mpcur;          /* Max mana */
     int32_t food;		/* Current nutrition in body; < 0 is hungry. */
     uint32_t experience;	/* Experience points earned. */
     int defence;	/* To-hit target number for monsters */
     int evasion;	/* To-hit target number for armour-ignoring attacks */
-    int speed;
+    uint32_t speed;
     uint32_t resistances[DT_COUNT];	/* Resistances to damage types. */
-    int level;	/* Each level gets you +1 body, +1 agility, +1 random
+    uint16_t level;	/* Each level gets you +1 body, +1 agility, +1 random
                    point, and +(10+body/10) hit points */
-    int gold;
+    uint32_t gold;
     uint32_t next_cloud_tick;
     Obj_handle inventory[INVENTORY_SIZE];	/* 19 inventory slots, leaving room for a prompt */
     Obj_handle weapon;		/* For now, you can only wield one weapon. */
     Obj_handle armour;		/* For now, you can only wear one item of armour. */
     Obj_handle ring;		/* For now, you can only wear one magic ring. */
     bool farmoving;
-    libmrl::Coord farmove_direction;
-    int combat_timer;
+    libmormegil::Offset farmove_direction;
+    uint32_t combat_timer;
     uint32_t cooldowns[10];
     // Examining surroundings
-    int get_adjacent_monster(Mon_handle *mon, libmrl::Coord *step) const;
+    int get_adjacent_monster(Mon_handle *mon, libmormegil::Offset *step) const;
     // Persistent effect state
     std::list<Perseff_data> perseffs;
     Status_flags status;
@@ -140,9 +140,9 @@ extern int drain_body(int amount, const char *what, int permanent);
 extern int drain_agility(int amount, const char *what, int permanent);
 extern void gain_experience(int amount);
 extern unsigned int lev_threshold(int level);
-extern int farmove_player(libmrl::Coord direction);
-extern int move_player(libmrl::Coord step);
-extern int reloc_player(libmrl::Coord target, bool override = false);
+extern int farmove_player(libmormegil::Offset direction);
+extern int move_player(libmormegil::Offset step);
+extern int reloc_player(libmormegil::Coord target, bool override = false);
 extern void recalc_defence(void);
 extern int teleport_u(void);
 extern void update_player(void);
@@ -155,7 +155,7 @@ extern char const * const *mana_nouns;
 extern Player u;
 
 #define inyourroom(mpos) ((currlev->region_at(u.pos) != -1) && (currlev->region_at(u.pos) == currlev->region_at(mpos)))
-#define couldseemon(mpos) (inyourroom((mpos)) || (u.pos.distance((mpos)) < 2))
+#define couldseemon(mpos) (inyourroom((mpos)) || (u.pos.dist_inf((mpos)) < 2))
 
 #endif
 

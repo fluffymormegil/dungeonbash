@@ -1,28 +1,28 @@
-/* main.cc
- * 
- * Copyright 2005-2009 Martin Read
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// main.cc
+// 
+// Copyright 2005-2009 Martin Read
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #include "dunbash.hh"
 #include "objects.hh"
@@ -50,15 +50,16 @@ std::string configured_language;
 std::string configured_system_playground(PLAYGROUND);
 std::string preferred_display;
 
-const libmrl::Coord libmrl::NOWHERE = { INT_MIN, INT_MIN };
-const libmrl::Coord libmrl::NORTH = { -1, 0 };
-const libmrl::Coord libmrl::WEST = { 0, -1 };
-const libmrl::Coord libmrl::EAST = { 0, 1 };
-const libmrl::Coord libmrl::SOUTH = { 1, 0 };
-const libmrl::Coord libmrl::NORTHEAST = { -1, 1 };
-const libmrl::Coord libmrl::NORTHWEST = { -1, -1 };
-const libmrl::Coord libmrl::SOUTHEAST = { 1, 1 };
-const libmrl::Coord libmrl::SOUTHWEST = { 1, -1 };
+const libmormegil::Coord dunbash::NOWHERE = { INT_MIN, INT_MIN };
+const libmormegil::Offset dunbash::NODIR = { INT_MIN, INT_MIN };
+const libmormegil::Offset dunbash::NORTH = { -1, 0 };
+const libmormegil::Offset dunbash::WEST = { 0, -1 };
+const libmormegil::Offset dunbash::EAST = { 0, 1 };
+const libmormegil::Offset dunbash::SOUTH = { 1, 0 };
+const libmormegil::Offset dunbash::NORTHEAST = { -1, 1 };
+const libmormegil::Offset dunbash::NORTHWEST = { -1, -1 };
+const libmormegil::Offset dunbash::SOUTHEAST = { 1, 1 };
+const libmormegil::Offset dunbash::SOUTHWEST = { 1, -1 };
 
 int select_and_use_item(Poclass_num pocl, const char *verb, Itemuse_fptr func);
 
@@ -222,33 +223,33 @@ int resolve_dance(Game_cmd cmd)
 {
     int rv = 1;
     int i;
-    libmrl::Coord stepdir = { 0, 0 };
+    libmormegil::Offset stepdir = { 0, 0 };
     disturb_u();
     switch (cmd)
     {
     case MOVE_NORTH:
-        stepdir = libmrl::NORTH;
+        stepdir = dunbash::NORTH;
         break;
     case MOVE_NE:
-        stepdir = libmrl::NORTHEAST;
+        stepdir = dunbash::NORTHEAST;
         break;
     case MOVE_EAST:
-        stepdir = libmrl::EAST;
+        stepdir = dunbash::EAST;
         break;
     case MOVE_SE:
-        stepdir = libmrl::SOUTHEAST;
+        stepdir = dunbash::SOUTHEAST;
         break;
     case MOVE_SOUTH:
-        stepdir = libmrl::SOUTH;
+        stepdir = dunbash::SOUTH;
         break;
     case MOVE_SW:
-        stepdir = libmrl::SOUTHWEST;
+        stepdir = dunbash::SOUTHWEST;
         break;
     case MOVE_WEST:
-        stepdir = libmrl::WEST;
+        stepdir = dunbash::WEST;
         break;
     case MOVE_NW:
-        stepdir = libmrl::NORTHWEST;
+        stepdir = dunbash::NORTHWEST;
         break;
     case ATTACK:
 	i = select_dir(&stepdir);
@@ -266,7 +267,7 @@ int resolve_dance(Game_cmd cmd)
     default:
         break;
     }
-    if (int(stepdir) && currlev->monster_at(u.pos + stepdir).valid())
+    if (stepdir.length_inf() && currlev->monster_at(u.pos + stepdir).valid())
     {
         rv = player_attack(stepdir);
     }
@@ -281,45 +282,45 @@ int do_command(Game_cmd cmd)
 {
     int i;
     int j;
-    libmrl::Coord step;
+    libmormegil::Offset step;
     std::string namestr;
     switch (cmd)
     {
     case VOCALIZE_WORD:
         return 0;
     case FARMOVE_NORTH:
-	return farmove_player(libmrl::NORTH);
+	return farmove_player(dunbash::NORTH);
     case FARMOVE_SOUTH:
-	return farmove_player(libmrl::SOUTH);
+	return farmove_player(dunbash::SOUTH);
     case FARMOVE_EAST:
-	return farmove_player(libmrl::EAST);
+	return farmove_player(dunbash::EAST);
     case FARMOVE_WEST:
-	return farmove_player(libmrl::WEST);
+	return farmove_player(dunbash::WEST);
     case FARMOVE_NW:
-	return farmove_player(libmrl::NORTHWEST);
+	return farmove_player(dunbash::NORTHWEST);
     case FARMOVE_NE:
-	return farmove_player(libmrl::NORTHEAST);
+	return farmove_player(dunbash::NORTHEAST);
     case FARMOVE_SE:
-	return farmove_player(libmrl::SOUTHEAST);
+	return farmove_player(dunbash::SOUTHEAST);
     case FARMOVE_SW:
-	return farmove_player(libmrl::SOUTHWEST);
+	return farmove_player(dunbash::SOUTHWEST);
 
     case MOVE_NORTH:
-	return move_player(libmrl::NORTH);
+	return move_player(dunbash::NORTH);
     case MOVE_SOUTH:
-	return move_player(libmrl::SOUTH);
+	return move_player(dunbash::SOUTH);
     case MOVE_EAST:
-	return move_player(libmrl::EAST);
+	return move_player(dunbash::EAST);
     case MOVE_WEST:
-	return move_player(libmrl::WEST);
+	return move_player(dunbash::WEST);
     case MOVE_NW:
-	return move_player(libmrl::NORTHWEST);
+	return move_player(dunbash::NORTHWEST);
     case MOVE_NE:
-	return move_player(libmrl::NORTHEAST);
+	return move_player(dunbash::NORTHEAST);
     case MOVE_SE:
-	return move_player(libmrl::SOUTHEAST);
+	return move_player(dunbash::SOUTHEAST);
     case MOVE_SW:
-	return move_player(libmrl::SOUTHWEST);
+	return move_player(dunbash::SOUTHWEST);
 
     case ATTACK:
 	i = select_dir(&step);

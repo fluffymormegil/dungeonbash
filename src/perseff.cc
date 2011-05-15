@@ -145,7 +145,7 @@ int Perseff_data::conflicts(const Perseff_data& other) const
 void Perseff_data::extend_using(const Perseff_data& other)
 {
     int p, d;
-    p = libmrl::max(power, other.power);
+    p = std::max(power, other.power);
     d = power * duration + other.power * other.duration;
     if ( power < other.power)
     {
@@ -166,7 +166,7 @@ void Perseff_data::renew_using(const Perseff_data& other)
     {
         // Weak effects will not effectively renew strong ones that aren't on
         // the edge of expiry.
-        duration = libmrl::max((other.duration * other.power) / power, duration);
+        duration = std::max((other.duration * other.power) / power, duration);
     }
 }
 

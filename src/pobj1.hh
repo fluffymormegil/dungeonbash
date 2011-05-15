@@ -81,8 +81,8 @@ struct Permobj {
     int rarity;	/* Chance in 100 of being thrown away and regen'd. */
     int sym;
     int colour;
-    int power;	/* AC for armour; damage for weapons; colour/title for
-		 * scrolls and potions and rings and such. */
+    int32_t power;	/* AC for armour; damage for weapons; colour/title for
+                         * scrolls and potions and rings and such. */
     bool known;	/* Set to 1 for items recognised at startup. Updated
 		 * during play when items identified. */
     int depth;	/* If greater than 1, this item cannot be given out

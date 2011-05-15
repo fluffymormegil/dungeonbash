@@ -30,12 +30,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <libmormegil/Coord.hh>
 
 #include "dbashcfg.hh"
-
-#ifndef COORD_HH
-#include "coord.hh"
-#endif
 
 #ifndef INDIE_HH
 #include "indie.hh"
@@ -103,7 +100,7 @@ enum Leventry_mode
 struct Level_tag
 {
     Dungeon_num dungeon;
-    int level;
+    int32_t level;
     Level *snapv() const;
     Level const *snapc() const;
     bool operator < (const Level_tag& right) const
@@ -129,23 +126,23 @@ struct Levextra
 
     virtual void excavate(void) = 0;
     virtual void populate(void) = 0;
-    virtual libmrl::Coord get_injection_point(Leventry_mode mode = Leventry_stairs_dn_1) const = 0;
+    virtual libmormegil::Coord get_injection_point(Leventry_mode mode = Leventry_stairs_dn_1) const = 0;
     bool has_monsel_override(void) const { return overridden_monsel; }
     // Reaction functions 
-    virtual void react_to_profession(libmrl::Coord c, Player_profession prof, int prof_cmd)
+    virtual void react_to_profession(libmormegil::Coord c, Player_profession prof, int prof_cmd)
     {
     }
     // returning one signifies succes.
-    virtual int pre_leave_region(libmrl::Coord c) { return 1; }
-    virtual int leave_region(libmrl::Coord c) { return 1; }
-    virtual int enter_region(libmrl::Coord c) { return 1; }
+    virtual int pre_leave_region(libmormegil::Coord c) { return 1; }
+    virtual int leave_region(libmormegil::Coord c) { return 1; }
+    virtual int enter_region(libmormegil::Coord c) { return 1; }
 };
 
 struct Region
 {
-    virtual bool contains(libmrl::Coord c) const = 0;
+    virtual bool contains(libmormegil::Coord c) const = 0;
     virtual bool linked_to(int rnum) const = 0;
-    virtual libmrl::Coord random_point() const = 0;
+    virtual libmormegil::Coord random_point() const = 0;
     virtual ~Region() { }
 };
 
@@ -161,22 +158,22 @@ struct Level
     int levtype;
     Level_tag self;
     // This map tells us what mode we enter the destination level by...
-    std::map<libmrl::Coord, Leventry_mode> exit_modes;
+    std::map<libmormegil::Coord, Leventry_mode> exit_modes;
     // ... and this one tells us where the destination level *is*...
     std::map<Leventry_mode, Level_tag> exit_dests;
     // ... and this one tells us where we arrive when we enter *this* level by
     // a certain mode.
-    std::map<Leventry_mode, libmrl::Coord> entries;
+    std::map<Leventry_mode, libmormegil::Coord> entries;
     std::set<Mon_handle> denizens;
     std::set<Obj_handle> booty;
     Obj_handle **mobjs;
     Mon_handle **mmons;
     Terrain_num **terrain;
-    std::map<libmrl::Coord, Cloud> clouds;
+    std::map<libmormegil::Coord, Cloud> clouds;
     int32_t **rnums; /* region numbers */
     uint32_t **astar_invoc_num;
     uint32_t **astar_considered;
-    libmrl::Coord **came_from;
+    libmormegil::Coord **came_from;
     uint32_t **gscores;
     uint32_t **mflags;
     Levextra *levextra;
@@ -191,44 +188,44 @@ struct Level
     void leave(void);
     void release(void);
     // getters/setters
-    bool outofbounds(libmrl::Coord c) const { return (c.y < 0) || (c.x < 0) || (c.y >= height) || (c.x >= width); }
-    Terrain_num terrain_at(libmrl::Coord c) const { return terrain[c.y][c.x]; }
-    void set_terrain(libmrl::Coord c, Terrain_num t) const { terrain[c.y][c.x] = t; }
-    uint32_t flags_at(libmrl::Coord c) const { return mflags[c.y][c.x]; }
-    void set_flag_at(libmrl::Coord c, uint32_t f) const { mflags[c.y][c.x] |= f; }
-    void clear_flag_at(libmrl::Coord c, uint32_t f) const { mflags[c.y][c.x] &= ~f; }
-    Mon_handle monster_at(libmrl::Coord c) const { return mmons[c.y][c.x]; }
-    Obj_handle object_at(libmrl::Coord c) const { return mobjs[c.y][c.x]; }
-    void set_mon_at(libmrl::Coord c, Mon_handle m) { mmons[c.y][c.x] = m; }
-    void set_obj_at(libmrl::Coord c, Obj_handle o) { mobjs[c.y][c.x] = o; }
-    Cloud cloud_at(libmrl::Coord c) const { std::map<libmrl::Coord, Cloud>::const_iterator iter = clouds.find(c); if (iter != clouds.end()) { return iter->second; } return no_cloud; }
-    void set_cloud_at(libmrl::Coord c, Cloud const& cld) { clouds[c] = cld; }
-    void clear_cloud_at(libmrl::Coord c) { std::map<libmrl::Coord, Cloud>::iterator iter = clouds.find(c); if (iter != clouds.end()) { clouds.erase(iter); } }
-    int region_at(libmrl::Coord c) const { return rnums[c.y][c.x]; }
-    void set_region(libmrl::Coord c, int r) const { rnums[c.y][c.x] = r; }
-    int as_gscore(libmrl::Coord c) const { return gscores[c.y][c.x]; }
-    int as_invoc(libmrl::Coord c) const { return astar_invoc_num[c.y][c.x]; }
-    libmrl::Coord as_came_from(libmrl::Coord c) const { return came_from[c.y][c.x]; }
-    int as_considered(libmrl::Coord c) const { return astar_considered[c.y][c.x]; }
-    void as_considered(libmrl::Coord c, int val) { astar_considered[c.y][c.x] = val; }
-    void set_as_gscore(libmrl::Coord c, int val) { gscores[c.y][c.x] = val; }
-    void set_as_invoc(libmrl::Coord c, int val) { astar_invoc_num[c.y][c.x] = val; }
-    void set_as_came_from(libmrl::Coord c, libmrl::Coord val) { came_from[c.y][c.x] = val; }
-    void set_as_considered(libmrl::Coord c, Astar_states val) { astar_considered[c.y][c.x] = val; }
+    bool outofbounds(libmormegil::Coord c) const { return (c.y < 0) || (c.x < 0) || (c.y >= height) || (c.x >= width); }
+    Terrain_num terrain_at(libmormegil::Coord c) const { return terrain[c.y][c.x]; }
+    void set_terrain(libmormegil::Coord c, Terrain_num t) const { terrain[c.y][c.x] = t; }
+    uint32_t flags_at(libmormegil::Coord c) const { return mflags[c.y][c.x]; }
+    void set_flag_at(libmormegil::Coord c, uint32_t f) const { mflags[c.y][c.x] |= f; }
+    void clear_flag_at(libmormegil::Coord c, uint32_t f) const { mflags[c.y][c.x] &= ~f; }
+    Mon_handle monster_at(libmormegil::Coord c) const { return mmons[c.y][c.x]; }
+    Obj_handle object_at(libmormegil::Coord c) const { return mobjs[c.y][c.x]; }
+    void set_mon_at(libmormegil::Coord c, Mon_handle m) { mmons[c.y][c.x] = m; }
+    void set_obj_at(libmormegil::Coord c, Obj_handle o) { mobjs[c.y][c.x] = o; }
+    Cloud cloud_at(libmormegil::Coord c) const { std::map<libmormegil::Coord, Cloud>::const_iterator iter = clouds.find(c); if (iter != clouds.end()) { return iter->second; } return no_cloud; }
+    void set_cloud_at(libmormegil::Coord c, Cloud const& cld) { clouds[c] = cld; }
+    void clear_cloud_at(libmormegil::Coord c) { std::map<libmormegil::Coord, Cloud>::iterator iter = clouds.find(c); if (iter != clouds.end()) { clouds.erase(iter); } }
+    int region_at(libmormegil::Coord c) const { return rnums[c.y][c.x]; }
+    void set_region(libmormegil::Coord c, int r) const { rnums[c.y][c.x] = r; }
+    int as_gscore(libmormegil::Coord c) const { return gscores[c.y][c.x]; }
+    int as_invoc(libmormegil::Coord c) const { return astar_invoc_num[c.y][c.x]; }
+    libmormegil::Coord as_came_from(libmormegil::Coord c) const { return came_from[c.y][c.x]; }
+    int as_considered(libmormegil::Coord c) const { return astar_considered[c.y][c.x]; }
+    void as_considered(libmormegil::Coord c, int val) { astar_considered[c.y][c.x] = val; }
+    void set_as_gscore(libmormegil::Coord c, int val) { gscores[c.y][c.x] = val; }
+    void set_as_invoc(libmormegil::Coord c, int val) { astar_invoc_num[c.y][c.x] = val; }
+    void set_as_came_from(libmormegil::Coord c, libmormegil::Coord val) { came_from[c.y][c.x] = val; }
+    void set_as_considered(libmormegil::Coord c, Astar_states val) { astar_considered[c.y][c.x] = val; }
     Terrain_num base_floor(void) const { return FLOOR; }
     Terrain_num base_wall(void) const { return WALL; }
     // event reactions
-    int pre_leave_region(libmrl::Coord c) { return (levextra ? levextra->pre_leave_region(c) : 1); }
-    int leave_region(libmrl::Coord c) { return (levextra ? levextra->leave_region(c) : 1); }
-    int enter_region(libmrl::Coord c) { return (levextra ? levextra->enter_region(c) : 1); }
+    int pre_leave_region(libmormegil::Coord c) { return (levextra ? levextra->pre_leave_region(c) : 1); }
+    int leave_region(libmormegil::Coord c) { return (levextra ? levextra->leave_region(c) : 1); }
+    int enter_region(libmormegil::Coord c) { return (levextra ? levextra->enter_region(c) : 1); }
 };
 
-typedef std::map<libmrl::Coord, Leventry_mode>::iterator Exitmode_iter;
-typedef std::map<libmrl::Coord, Leventry_mode>::const_iterator Exitmode_citer;
+typedef std::map<libmormegil::Coord, Leventry_mode>::iterator Exitmode_iter;
+typedef std::map<libmormegil::Coord, Leventry_mode>::const_iterator Exitmode_citer;
 typedef std::map<Leventry_mode, Level_tag>::iterator Exitdest_iter;
 typedef std::map<Leventry_mode, Level_tag>::const_iterator Exitdest_citer;
-typedef std::map<Leventry_mode, libmrl::Coord>::iterator Entry_iter;
-typedef std::map<Leventry_mode, libmrl::Coord>::const_iterator Entry_citer;
+typedef std::map<Leventry_mode, libmormegil::Coord>::iterator Entry_iter;
+typedef std::map<Leventry_mode, libmormegil::Coord>::const_iterator Entry_citer;
 
 extern std::map<Level_tag, Level *> levels;
 typedef std::map<Level_tag, Level *>::const_iterator Level_citer;
@@ -295,9 +292,9 @@ extern uint32_t rng(void);
 extern void rng_init(void);
 
 /* XXX vector.c data and funcs */
-extern void compute_directions(libmrl::Coord c1, libmrl::Coord c2, Direction_data *dir_data);
+extern void compute_directions(libmormegil::Coord c1, libmormegil::Coord c2, Direction_data *dir_data);
 
-extern bool pos_visible(libmrl::Coord pos);
+extern bool pos_visible(libmormegil::Coord pos);
 
 extern void ptac_init(void);
 extern char *demon_get_name(void);

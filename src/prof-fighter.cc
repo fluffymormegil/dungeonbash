@@ -61,7 +61,7 @@ int do_fighter_slam(Player *ptmp)
         return 0;
     }
     // get an adjacent monster.
-    libmrl::Coord step;
+    libmormegil::Offset step;
     int i;
     Mon_handle mon;
     i = ptmp->get_adjacent_monster(&mon, &step);
@@ -79,7 +79,7 @@ int do_fighter_slam(Player *ptmp)
         case 0: // You bounced off.
             print_msg(0, "You bounce uselessly off your foe. Your shoulder hurts now.");
             // take 1d10 damage, non-lethal.
-            damage_u(libmrl::min(ptmp->hpcur - 1, one_die(10)), DEATH_KILLED, "program bug");
+            damage_u(std::min(ptmp->hpcur - 1, one_die(10)), DEATH_KILLED, "program bug");
             cooldown_multiplier = 2;
             break;
         case 1: // Successful slam.
@@ -148,7 +148,7 @@ int do_fighter_smash(Player *ptmp)
         return 0;
     }
     // Get a target.
-    libmrl::Coord step;
+    libmormegil::Offset step;
     int i;
     Mon_handle mon;
     i = select_dir(&step);

@@ -2,7 +2,8 @@
 
 MON_OBJS=mon1.o mon2.o mon3.o permons.o perseff.o pmon2.o
 OBJ_OBJS=obj1.o obj2.o permobj.o
-ALG_OBJS=astar.o hexpi.o misc.o radiance.o rng.o spiralpath.o stlprintf.o vector.o vision.o
+ALG_OBJS=astar.o hexpi.o misc.o radiance.o rng.o spiralpath.o vector.o vision.o
+#ALG_OBJS=astar.o hexpi.o misc.o radiance.o rng.o spiralpath.o stlprintf.o vector.o vision.o
 OS_OBJS=cfgfile.o loadsave.o main.o
 CMBT_OBJS=bmagic.o combat.o
 PLYR_OBJS=prof-fighter.o prof-preacher.o prof-thanato.o u.o
@@ -33,8 +34,8 @@ include ../features.mk
 CXXFLAGS=-c -O -g -pipe -Wall -Wwrite-strings -Wredundant-decls \
 	-DMAJVERS=$(MAJVERS) -DMINVERS=$(MINVERS) -DPATCHVERS=$(PATCHVERS) \
 	-D_POSIX_SOURCE -DEXPERIMENTAL -DPLAYGROUND=\"$(PLAYGROUND)\" \
-	-DGLOBALCFGDIR=\"$(GLOBALCFGDIR)\" $(DEF_MULTIUSER)
-LINKFLAGS=-lpanel -lncurses -g
+	-DGLOBALCFGDIR=\"$(GLOBALCFGDIR)\" $(DEF_MULTIUSER) -D_POSIX_C_SOURCE=200112L
+LINKFLAGS=-lpanel -lncurses -lmormegil -g
 # Following line is here for heap-corruption investigations
 #LINKFLAGS=-lpanel -lncurses -lefence -g
 
@@ -43,8 +44,8 @@ all: $(GAME)$(EXECUTABLE_SUFFIX)
 $(GAME)$(EXECUTABLE_SUFFIX): $(OBJS)
 	$(CXX) $(OBJS) $(LINKFLAGS) -o $(GAME)$(EXECUTABLE_SUFFIX)
 
-$(SRCGEN)$(EXECUTABLE_SUFFIX): srcgen.o pmparse.o poparse.o stlprintf.o
-	$(CXX) $^ -o $(SRCGEN)$(EXECUTABLE_SUFFIX)
+$(SRCGEN)$(EXECUTABLE_SUFFIX): srcgen.o pmparse.o poparse.o
+	$(CXX) $^ -lmormegil -o $(SRCGEN)$(EXECUTABLE_SUFFIX)
 
 distclean: clean
 	-rm -f dunbash.log msglog.txt

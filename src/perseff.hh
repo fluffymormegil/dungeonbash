@@ -87,8 +87,8 @@ extern Perseff_metadata perseff_meta[Total_perseffs];
 struct Perseff_data
 {
     Persistent_effect flavour;
-    int power;
-    int duration;
+    int32_t power;
+    int32_t duration;
     bool by_you; // if true, ignore the caster field
     bool on_you; // if true, ignore the victim field
     Mon_handle caster;

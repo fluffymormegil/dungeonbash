@@ -38,7 +38,7 @@
 
 /* Prototypes for static funcs */
 
-void newsym(libmrl::Coord c)
+void newsym(libmormegil::Coord c)
 {
     /* TODO write SDL newsym() */
 }
@@ -65,7 +65,7 @@ int inv_select(Poclass_num filter, const char *action, int accept_blank)
     /* TODO write SDL inv_select() */
 }
 
-int select_dir(libmrl::Coord *psign, bool silent)
+int select_dir(libmormegil::Coord *psign, bool silent)
 {
     /* TODO write SDL select_dir() */
     return 0;
@@ -93,7 +93,7 @@ int getyn(const char *msg)
     /* TODO write SDL getyn() ? */
 }
 
-void animate_projectile(libmrl::Coord pos, Dbash_colour col)
+void animate_projectile(libmormegil::Coord pos, Dbash_colour col)
 {
     /* TODO write SDL projectile animation */
 }
@@ -108,7 +108,7 @@ void farlook(void)
     /* TODO write SDL farlook interface */
 }
 
-int get_smite_target(libmrl::Coord *ppos, bool must_be_visible)
+int get_smite_target(libmormegil::Coord *ppos, bool must_be_visible)
 {
     /* TODO write SDL smite targeter */
 }

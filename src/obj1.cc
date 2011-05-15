@@ -1,28 +1,28 @@
-/* objects.cc
- * 
- * Copyright 2005-2009 Martin Read
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// objects.cc
+// 
+// Copyright 2005-2009 Martin Read
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #define OBJECTS_CC
 
@@ -373,7 +373,7 @@ Obj_handle get_free_object_handle(void)
     return otmp;
 }
 
-Obj_handle create_obj_class(Poclass_num po_class, int quantity, bool with_you, libmrl::Coord pos, Level *lptr)
+Obj_handle create_obj_class(Poclass_num po_class, int quantity, bool with_you, libmormegil::Coord pos, Level *lptr)
 {
     int po_idx;
     int tryct;
@@ -428,7 +428,7 @@ int get_random_pobj(int depth)
     return po_idx;
 }
 
-Obj_handle create_obj(int po_idx, int quantity, bool with_you, libmrl::Coord pos, Level *lptr)
+Obj_handle create_obj(int po_idx, int quantity, bool with_you, libmormegil::Coord pos, Level *lptr)
 {
     Obj_handle oh = get_free_object_handle();
     Obj *optr = new Obj();
@@ -610,11 +610,11 @@ void Obj::get_name(std::string *s) const
 int drop_obj(int inv_idx)
 {
     Obj *optr;
-    libmrl::Coord pos;
+    libmormegil::Coord pos;
     std::string namestr;
     optr = u.inventory[inv_idx].snapv();
     pos = get_obj_scatter(u.pos);
-    if (pos != libmrl::NOWHERE)
+    if (pos != dunbash::NOWHERE)
     {
         optr->pos = pos;
         currlev->set_obj_at(pos, u.inventory[inv_idx]);
@@ -703,7 +703,7 @@ void attempt_pickup(void)
 common:
     currlev->set_obj_at(u.pos, NO_OBJECT);
     invobj->with_you = 1;
-    invobj->pos = libmrl::NOWHERE;
+    invobj->pos = dunbash::NOWHERE;
     invobj->get_name(&namebuf);
     print_msg(0, "You now have");
     print_msg(0, "%c) %s", 'a' + i, namebuf.c_str());
@@ -837,9 +837,9 @@ int evasion_penalty(Obj_handle obj)
     }
 }
 
-libmrl::Coord get_obj_scatter(libmrl::Coord pos, Level *lptr)
+libmormegil::Coord get_obj_scatter(libmormegil::Coord pos, Level *lptr)
 {
-    libmrl::Coord delta;
+    libmormegil::Offset delta;
     int tryct = 0;
     if (!lptr)
     {
@@ -850,10 +850,14 @@ libmrl::Coord get_obj_scatter(libmrl::Coord pos, Level *lptr)
             terrain_data[lptr->terrain_at(pos)].feature) &&
            tryct < 100)
     {
-	delta.y = zero_die(3) - 1;
-	delta.x = zero_die(3) - 1;
-        // Don't try to scatter through a wall.
-        if (int(delta) && !(terrain_data[lptr->terrain_at(pos + delta)].impassable))
+        do
+        {
+            delta.y = zero_die(3) - 1;
+            delta.x = zero_die(3) - 1;
+        } while (!delta.length_inf());
+        // Don't try to scatter through a wall. but scattering through
+        // a feature is ok.
+        if (!(terrain_data[lptr->terrain_at(pos + delta)].impassable))
         {
             ++tryct;
             pos += delta;
@@ -861,12 +865,12 @@ libmrl::Coord get_obj_scatter(libmrl::Coord pos, Level *lptr)
     }
     if (tryct >= 100)
     {
-	return libmrl::NOWHERE;
+	return dunbash::NOWHERE;
     }
     return pos;
 }
 
-Obj_handle create_corpse(int pm_idx, libmrl::Coord pos, Level *lptr)
+Obj_handle create_corpse(int pm_idx, libmormegil::Coord pos, Level *lptr)
 {
     Obj_handle obj = create_obj(PO_CORPSE, 1, false, pos, lptr);
     if (obj.valid())
@@ -893,4 +897,4 @@ Item_quality Obj::quality() const
     }
 }
 
-/* objects.c */
+// objects.c

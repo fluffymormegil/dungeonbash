@@ -47,9 +47,9 @@ char const * const room_flavour_strings[] =
 
 void Levext_rooms::excavate_normal_room(int rnum)
 {
-    libmrl::Coord topleft = bounds[rnum][0];
-    libmrl::Coord botright = bounds[rnum][1];
-    libmrl::Coord c;
+    libmormegil::Coord topleft = bounds[rnum][0];
+    libmormegil::Coord botright = bounds[rnum][1];
+    libmormegil::Coord c;
     for (c.y = topleft.y + 1; c.y < botright.y; c.y++)
     {
         for (c.x = topleft.x + 1; c.x < botright.x; c.x++)
@@ -76,59 +76,59 @@ void Levext_rooms::excavate_normal_room(int rnum)
 
 void Levext_rooms::excavate_shrine(int rnum)
 {
-    libmrl::Coord topleft = bounds[rnum][0];
-    libmrl::Coord botright = bounds[rnum][1];
-    libmrl::Coord c = { (topleft.y + botright.y) / 2, (topleft.x + botright.x) / 2 };
+    libmormegil::Coord topleft = bounds[rnum][0];
+    libmormegil::Coord botright = bounds[rnum][1];
+    libmormegil::Coord c = { (topleft.y + botright.y) / 2, (topleft.x + botright.x) / 2 };
     excavate_normal_room(rnum);
     switch (zoo_style)
     {
     case ZOO_SHRINE_FIRE:
-        parent->set_terrain(c + libmrl::NORTHWEST, LAVA_POOL);
-        parent->set_terrain(c + libmrl::NORTHEAST, LAVA_POOL);
-        parent->set_terrain(c + libmrl::SOUTHWEST, LAVA_POOL);
-        parent->set_terrain(c + libmrl::SOUTHEAST, LAVA_POOL);
-        parent->set_terrain(c + libmrl::NORTH, RED_FLOOR);
-        parent->set_terrain(c + libmrl::EAST, RED_FLOOR);
-        parent->set_terrain(c + libmrl::WEST, RED_FLOOR);
-        parent->set_terrain(c + libmrl::SOUTH, RED_FLOOR);
+        parent->set_terrain(c + dunbash::NORTHWEST, LAVA_POOL);
+        parent->set_terrain(c + dunbash::NORTHEAST, LAVA_POOL);
+        parent->set_terrain(c + dunbash::SOUTHWEST, LAVA_POOL);
+        parent->set_terrain(c + dunbash::SOUTHEAST, LAVA_POOL);
+        parent->set_terrain(c + dunbash::NORTH, RED_FLOOR);
+        parent->set_terrain(c + dunbash::EAST, RED_FLOOR);
+        parent->set_terrain(c + dunbash::WEST, RED_FLOOR);
+        parent->set_terrain(c + dunbash::SOUTH, RED_FLOOR);
         break;
     case ZOO_SHRINE_IRON:
-        parent->set_terrain(c + libmrl::NORTHWEST, IRON_WALL);
-        parent->set_terrain(c + libmrl::NORTHEAST, IRON_WALL);
-        parent->set_terrain(c + libmrl::SOUTHWEST, IRON_WALL);
-        parent->set_terrain(c + libmrl::SOUTHEAST, IRON_WALL);
-        parent->set_terrain(c + libmrl::NORTH, IRON_FLOOR);
-        parent->set_terrain(c + libmrl::EAST, IRON_FLOOR);
-        parent->set_terrain(c + libmrl::WEST, IRON_FLOOR);
-        parent->set_terrain(c + libmrl::SOUTH, IRON_FLOOR);
+        parent->set_terrain(c + dunbash::NORTHWEST, IRON_WALL);
+        parent->set_terrain(c + dunbash::NORTHEAST, IRON_WALL);
+        parent->set_terrain(c + dunbash::SOUTHWEST, IRON_WALL);
+        parent->set_terrain(c + dunbash::SOUTHEAST, IRON_WALL);
+        parent->set_terrain(c + dunbash::NORTH, IRON_FLOOR);
+        parent->set_terrain(c + dunbash::EAST, IRON_FLOOR);
+        parent->set_terrain(c + dunbash::WEST, IRON_FLOOR);
+        parent->set_terrain(c + dunbash::SOUTH, IRON_FLOOR);
         break;
     case ZOO_SHRINE_BONE:
-        parent->set_terrain(c + libmrl::NORTHWEST, BONE_WALL);
-        parent->set_terrain(c + libmrl::NORTHEAST, BONE_WALL);
-        parent->set_terrain(c + libmrl::SOUTHWEST, BONE_WALL);
-        parent->set_terrain(c + libmrl::SOUTHEAST, BONE_WALL);
-        parent->set_terrain(c + libmrl::NORTH, BONE_FLOOR);
-        parent->set_terrain(c + libmrl::EAST, BONE_FLOOR);
-        parent->set_terrain(c + libmrl::WEST, BONE_FLOOR);
-        parent->set_terrain(c + libmrl::SOUTH, BONE_FLOOR);
+        parent->set_terrain(c + dunbash::NORTHWEST, BONE_WALL);
+        parent->set_terrain(c + dunbash::NORTHEAST, BONE_WALL);
+        parent->set_terrain(c + dunbash::SOUTHWEST, BONE_WALL);
+        parent->set_terrain(c + dunbash::SOUTHEAST, BONE_WALL);
+        parent->set_terrain(c + dunbash::NORTH, BONE_FLOOR);
+        parent->set_terrain(c + dunbash::EAST, BONE_FLOOR);
+        parent->set_terrain(c + dunbash::WEST, BONE_FLOOR);
+        parent->set_terrain(c + dunbash::SOUTH, BONE_FLOOR);
         break;
     case ZOO_SHRINE_DECAY:
         // putresecent slime implemented as acid
-        parent->set_terrain(c + libmrl::NORTHWEST, ACID_POOL);
-        parent->set_terrain(c + libmrl::NORTHEAST, ACID_POOL);
-        parent->set_terrain(c + libmrl::SOUTHWEST, ACID_POOL);
-        parent->set_terrain(c + libmrl::SOUTHEAST, ACID_POOL);
+        parent->set_terrain(c + dunbash::NORTHWEST, ACID_POOL);
+        parent->set_terrain(c + dunbash::NORTHEAST, ACID_POOL);
+        parent->set_terrain(c + dunbash::SOUTHWEST, ACID_POOL);
+        parent->set_terrain(c + dunbash::SOUTHEAST, ACID_POOL);
         break;
     case ZOO_SHRINE_FLESH:
         // bathing-pools
-        parent->set_terrain(c + libmrl::NORTHWEST, WATER_POOL);
-        parent->set_terrain(c + libmrl::NORTHEAST, WATER_POOL);
-        parent->set_terrain(c + libmrl::SOUTHWEST, WATER_POOL);
-        parent->set_terrain(c + libmrl::SOUTHEAST, WATER_POOL);
-        parent->set_terrain(c + libmrl::NORTH, SKIN_FLOOR);
-        parent->set_terrain(c + libmrl::EAST, SKIN_FLOOR);
-        parent->set_terrain(c + libmrl::WEST, SKIN_FLOOR);
-        parent->set_terrain(c + libmrl::SOUTH, SKIN_FLOOR);
+        parent->set_terrain(c + dunbash::NORTHWEST, WATER_POOL);
+        parent->set_terrain(c + dunbash::NORTHEAST, WATER_POOL);
+        parent->set_terrain(c + dunbash::SOUTHWEST, WATER_POOL);
+        parent->set_terrain(c + dunbash::SOUTHEAST, WATER_POOL);
+        parent->set_terrain(c + dunbash::NORTH, SKIN_FLOOR);
+        parent->set_terrain(c + dunbash::EAST, SKIN_FLOOR);
+        parent->set_terrain(c + dunbash::WEST, SKIN_FLOOR);
+        parent->set_terrain(c + dunbash::SOUTH, SKIN_FLOOR);
         break;
     default:
         print_msg(MSGCHAN_INTERROR, "excavate_shrine() called on level with non-shrine zoo_style");
@@ -139,9 +139,9 @@ void Levext_rooms::excavate_shrine(int rnum)
 
 void Levext_rooms::excavate_morgue(int rnum)
 {
-    libmrl::Coord topleft = bounds[rnum][0];
-    libmrl::Coord botright = bounds[rnum][1];
-    libmrl::Coord c;
+    libmormegil::Coord topleft = bounds[rnum][0];
+    libmormegil::Coord botright = bounds[rnum][1];
+    libmormegil::Coord c;
     excavate_normal_room(rnum);
     for (c.y = topleft.y + 2; c.y < botright.y - 2; ++(c.y))
     {
@@ -154,15 +154,15 @@ void Levext_rooms::excavate_morgue(int rnum)
 
 void Levext_rooms::excavate_smithy(int rnum)
 {
-    libmrl::Coord topleft = bounds[rnum][0];
-    libmrl::Coord botright = bounds[rnum][1];
-    libmrl::Coord c = { (topleft.y + botright.y) / 2, (topleft.x + botright.x) / 2 };
-    libmrl::Coord c2;
+    libmormegil::Coord topleft = bounds[rnum][0];
+    libmormegil::Coord botright = bounds[rnum][1];
+    libmormegil::Coord c = { (topleft.y + botright.y) / 2, (topleft.x + botright.x) / 2 };
+    libmormegil::Coord c2;
     excavate_normal_room(rnum);
     parent->set_terrain(c, ANVIL);
     do
     {
-        c2 = get_obj_scatter(c + libmrl::SOUTHEAST, parent);
+        c2 = get_obj_scatter(c + dunbash::SOUTHEAST, parent);
     } while ((c.y <= topleft.y) || (c.y >= botright.y) ||
              (c.x <= topleft.x) || (c.x >= botright.x));
     parent->set_terrain(c2, FURNACE);
@@ -171,15 +171,15 @@ void Levext_rooms::excavate_smithy(int rnum)
 void Levext_rooms::add_random_room(int yseg, int xseg)
 {
     int roomidx = (yseg * 3) + xseg;
-    libmrl::Coord centre;
-    libmrl::Coord topleft;
-    libmrl::Coord botright;
+    libmormegil::Coord centre;
+    libmormegil::Coord topleft;
+    libmormegil::Coord botright;
     int ht;
     int wd;
     centre.y = (parent->height - 2) / 6 + yseg * ((parent->height - 2) / 3);
     centre.x = (parent->width - 2) / 6 + xseg * ((parent->width - 2) / 3);
-    ht = libmrl::max(6, 2 + dice(2, ROOM_HT_DELTA));
-    wd = libmrl::max(5, 2 + dice(2, ROOM_WD_DELTA));
+    ht = std::max(6, 2 + dice(2, ROOM_HT_DELTA));
+    wd = std::max(5, 2 + dice(2, ROOM_WD_DELTA));
     topleft.y = centre.y - ROOM_HT_DELTA - 1 + zero_die(((ROOM_HT_DELTA + 1) * 2) - ht);
     topleft.x = centre.x - ROOM_WD_DELTA - 1 + zero_die(((ROOM_WD_DELTA + 1) * 2) - wd);
     botright.y = topleft.y + ht;
@@ -238,13 +238,13 @@ void Levext_rooms::excavate_zoo_room()
 }
 void Levext_rooms::link_rooms(int r1, int r2)
 {
-    libmrl::Coord pos[4];
+    libmormegil::Coord pos[4];
     int i;
-    libmrl::Coord end1;
-    libmrl::Coord posts[4];
-    libmrl::Coord end2;
-    libmrl::Coord mid1;
-    libmrl::Coord mid2;
+    libmormegil::Coord end1;
+    libmormegil::Coord posts[4];
+    libmormegil::Coord end2;
+    libmormegil::Coord mid1;
+    libmormegil::Coord mid2;
     /* Update the linkage matrix. */
     linkage[r1][r2] = 1;
     linkage[r2][r1] = 1;
@@ -296,10 +296,10 @@ void Levext_rooms::link_rooms(int r1, int r2)
         mid1.x = end1.x;
         mid2.y = mid1.y;
         mid2.x = end2.x;
-        posts[0] = end1 + libmrl::EAST;
-        posts[1] = end1 + libmrl::WEST;
-        posts[2] = end2 + libmrl::EAST;
-        posts[3] = end2 + libmrl::WEST;
+        posts[0] = end1 + dunbash::EAST;
+        posts[1] = end1 + dunbash::WEST;
+        posts[2] = end2 + dunbash::EAST;
+        posts[3] = end2 + dunbash::WEST;
     }
     else
     {
@@ -325,10 +325,10 @@ void Levext_rooms::link_rooms(int r1, int r2)
         mid1.y = end1.y;
         mid2.x = mid1.x;
         mid2.y = end2.y;
-        posts[0] = end1 + libmrl::SOUTH;
-        posts[1] = end1 + libmrl::NORTH;
-        posts[2] = end2 + libmrl::SOUTH;
-        posts[3] = end2 + libmrl::NORTH;
+        posts[0] = end1 + dunbash::SOUTH;
+        posts[1] = end1 + dunbash::NORTH;
+        posts[2] = end2 + dunbash::SOUTH;
+        posts[3] = end2 + dunbash::NORTH;
     }
     parent->set_flag_at(end1, MAPFLAG_NOPIERCE);
     parent->set_flag_at(end2, MAPFLAG_NOPIERCE);
@@ -508,7 +508,7 @@ void Levext_rooms::populate_treasure_zoo()
     int tries;
     Mon_handle mon;
     Obj_handle obj;
-    libmrl::Coord pos;
+    libmormegil::Coord pos;
     /* A treasure zoo should get nine monsters and nine items. */
     for (mons = 0; mons < 9; mons++)
     {
@@ -546,9 +546,9 @@ void Levext_rooms::populate_treasure_zoo()
 
 void Levext_rooms::populate_shrine()
 {
-    libmrl::Coord topleft = bounds[zoo_room][0];
-    libmrl::Coord botright = bounds[zoo_room][1];
-    libmrl::Coord c = { (topleft.y + botright.y) / 2, (topleft.x + botright.x) / 2 };
+    libmormegil::Coord topleft = bounds[zoo_room][0];
+    libmormegil::Coord botright = bounds[zoo_room][1];
+    libmormegil::Coord c = { (topleft.y + botright.y) / 2, (topleft.x + botright.x) / 2 };
     switch (zoo_style)
     {
     case ZOO_SHRINE_FIRE:
@@ -580,29 +580,29 @@ void Levext_rooms::populate_morgue()
 
 void Levext_rooms::populate_smithy()
 {
-    libmrl::Coord topleft = bounds[zoo_room][0];
-    libmrl::Coord botright = bounds[zoo_room][1];
-    libmrl::Coord c = { (topleft.y + botright.y) / 2, (topleft.x + botright.x) / 2 };
+    libmormegil::Coord topleft = bounds[zoo_room][0];
+    libmormegil::Coord botright = bounds[zoo_room][1];
+    libmormegil::Coord c = { (topleft.y + botright.y) / 2, (topleft.x + botright.x) / 2 };
     if (zero_die(parent->self.level) > 3)
     {
         create_mon(PM_SMITH, c, parent);
     }
 }
 
-libmrl::Coord Levext_rooms::get_room_cell(int room) const
+libmormegil::Coord Levext_rooms::get_room_cell(int room) const
 {
-    libmrl::Coord tmp;
+    libmormegil::Coord tmp;
     tmp.y = exclusive_flat(bounds[room][0].y, bounds[room][1].y);
     tmp.x = exclusive_flat(bounds[room][0].x, bounds[room][1].x);
     return tmp;
 }
 
-int Levext_rooms::get_levgen_mon_spot(libmrl::Coord *ppos) const
+int Levext_rooms::get_levgen_mon_spot(libmormegil::Coord *ppos) const
 {
     /* Get a vacant floor cell that isn't in the treasure zoo. */
     int room_try;
     int cell_try;
-    libmrl::Coord trypos = libmrl::NOWHERE;
+    libmormegil::Coord trypos = dunbash::NOWHERE;
     int room;
     for (room_try = 0; room_try < (MAX_ROOMS * 2); room_try++)
     {
@@ -625,14 +625,14 @@ int Levext_rooms::get_levgen_mon_spot(libmrl::Coord *ppos) const
                 terrain_data[t].impassable ||
                 terrain_data[t].feature)
 	    {
-                trypos = libmrl::NOWHERE;
+                trypos = dunbash::NOWHERE;
 		continue;
 	    }
 	    break;
 	}
 	break;
     }
-    if (trypos == libmrl::NOWHERE)
+    if (trypos == dunbash::NOWHERE)
     {
 	return -1;
     }
@@ -669,7 +669,7 @@ void Levext_rooms::populate(void)
 {
     int i;
     int j;
-    libmrl::Coord pos;
+    libmormegil::Coord pos;
     int ic;
     /* Check for a "treasure zoo" */
     populate_zoo_room();
@@ -701,7 +701,7 @@ void Levext_rooms::populate(void)
     }
 }
 
-libmrl::Coord Levext_rooms::get_injection_point(Leventry_mode mode) const
+libmormegil::Coord Levext_rooms::get_injection_point(Leventry_mode mode) const
 {
     return ustairs_pos;
 }
@@ -721,8 +721,8 @@ Levext_rooms::Levext_rooms() : Levextra(),
             linkage[i][j] = 0;
         }
         segsused[i] = false;
-        bounds[i][0] = libmrl::NOWHERE;
-        bounds[i][1] = libmrl::NOWHERE;
+        bounds[i][0] = dunbash::NOWHERE;
+        bounds[i][1] = dunbash::NOWHERE;
     }
 }
 
@@ -731,11 +731,11 @@ Levext_rooms::Levext_rooms() : Levextra(),
  * NOPIERCE flags adjacent to the ends of the segments. As such, it is the
  * caller's responsibility to perform any "survey" work required before
  * deciding where to excavate a corridor segment. */
-void Levext_rooms::excavate_corridor_segment(libmrl::Coord c1, libmrl::Coord c2, bool door1, bool door2)
+void Levext_rooms::excavate_corridor_segment(libmormegil::Coord c1, libmormegil::Coord c2, bool door1, bool door2)
 {
-    libmrl::Coord sgn = libmrl::sign(c2 - c1);
-    libmrl::Coord pos;
-    libmrl::Coord side1, side2;
+    libmormegil::Offset sgn = libmormegil::sign(c2 - c1);
+    libmormegil::Coord pos;
+    libmormegil::Offset side1, side2;
     int sideflags;
     if (sgn.y)
     {
@@ -763,7 +763,7 @@ void Levext_rooms::excavate_corridor_segment(libmrl::Coord c1, libmrl::Coord c2,
     }
 }
 
-int Levext_rooms::enter_region(libmrl::Coord c)
+int Levext_rooms::enter_region(libmormegil::Coord c)
 {
     if (parent->region_at(c) != -1)
     {
@@ -775,7 +775,7 @@ int Levext_rooms::enter_region(libmrl::Coord c)
     return 1;
 }
 
-int Levext_rooms::leave_region(libmrl::Coord c)
+int Levext_rooms::leave_region(libmormegil::Coord c)
 {
     if (parent->region_at(c) != -1)
     {

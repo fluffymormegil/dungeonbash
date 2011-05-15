@@ -63,14 +63,13 @@ struct Obj_handle
 };
 /* XXX struct Obj */
 struct Obj {
-    int obj_id;
+    int32_t obj_id;
     Obj_handle self;
     Level_tag lev;
-    int quan;
+    int32_t quan;
     bool with_you;      /* Preserved when item DB is reaped on level change. */
-    libmrl::Coord pos;
-    int used;   /* Entry is occupied. */
-    int durability;     /* Weapons and armour degrade with use. */
+    libmormegil::Coord pos;
+    int32_t durability;     /* Weapons and armour degrade with use. */
     uint32_t meta[2]; /* some metadata */
     void get_name(std::string *strptr) const;
     bool is_ranged() const;
@@ -118,11 +117,11 @@ extern int release_obj(Obj_handle obj);
 extern void fprint_obj_name(FILE *fp, Obj_handle obj);
 extern void print_obj_name(Obj_handle obj);
 extern void describe_object(Obj_handle obj);
-extern Obj_handle create_obj(int po_idx, int quantity, bool with_you, libmrl::Coord pos, Level *lptr = 0);
-extern Obj_handle create_corpse(int pm_idx, libmrl::Coord pos, Level *lptr = 0);
+extern Obj_handle create_obj(int po_idx, int quantity, bool with_you, libmormegil::Coord pos, Level *lptr = 0);
+extern Obj_handle create_corpse(int pm_idx, libmormegil::Coord pos, Level *lptr = 0);
 extern int drop_obj(int inv_idx);
-extern Obj_handle create_obj_class(Poclass_num pocl, int quantity, bool with_you, libmrl::Coord pos, Level *lptr = 0);
-extern libmrl::Coord get_obj_scatter(libmrl::Coord pos, Level *lptr = 0);
+extern Obj_handle create_obj_class(Poclass_num pocl, int quantity, bool with_you, libmormegil::Coord pos, Level *lptr = 0);
+extern libmormegil::Coord get_obj_scatter(libmormegil::Coord pos, Level *lptr = 0);
 
 typedef int (*Itemuse_fptr)(Obj_handle);
 extern int zap_wand(Obj_handle obj);

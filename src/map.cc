@@ -129,7 +129,7 @@ void Level::build(void)
     astar_considered = (uint32_t **) calloc(height, sizeof (uint32_t *));
     gscores = (uint32_t **) calloc(height, sizeof (uint32_t *));
     mflags = (uint32_t **) calloc(height, sizeof (uint32_t *));
-    came_from = (libmrl::Coord **) calloc(height, sizeof (libmrl::Coord *));
+    came_from = (libmormegil::Coord **) calloc(height, sizeof (libmormegil::Coord *));
     for (i = 0; i < height; ++i)
     {
         mobjs[i] = (Obj_handle *) calloc(width, sizeof (Obj_handle ));
@@ -140,7 +140,7 @@ void Level::build(void)
         astar_considered[i] = (uint32_t *) calloc(width, sizeof (uint32_t ));
         gscores[i] = (uint32_t *) calloc(width, sizeof (uint32_t ));
         mflags[i] = (uint32_t *) calloc(width, sizeof (uint32_t ));
-        came_from[i] = (libmrl::Coord *) calloc(width, sizeof (libmrl::Coord ));
+        came_from[i] = (libmormegil::Coord *) calloc(width, sizeof (libmormegil::Coord ));
         for (j = 0; j < width; ++j)
         {
             mobjs[i][j] = NO_OBJECT;

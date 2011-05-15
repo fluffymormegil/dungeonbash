@@ -1,28 +1,28 @@
-/* monsters.hh
- * 
- * Copyright 2005-2010 Martin Read
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// monsters.hh
+// 
+// Copyright 2005-2010 Martin Read
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #ifndef MONSTERS_HH
 #define MONSTERS_HH
@@ -87,21 +87,21 @@ struct Mon_handle
 /* XXX struct Mon */
 struct Mon
 {
-    int mon_id;
+    int32_t mon_id;
     Mon_handle self;
     Level_tag lev;
     uint32_t last_update;
-    libmrl::Coord pos;
-    libmrl::Coord ai_lastpos;
-    int hpmax;	/* Improved by OOD rating at 1:1. */
-    int hpcur;	/* <= 0 is dead. */
-    int mtohit;	/* Improved by OOD rating at 1:3. */
-    int rtohit;	/* Improved by OOD rating at 1:3. */
-    int defence;	/* Improved by OOD rating at 1:3. */
-    int mdam;	/* Improved by OOD rating at 1:5. */
-    int rdam;	/* Improved by OOD rating at 1:5. */
-    int awake;
-    int meta;
+    libmormegil::Coord pos;
+    libmormegil::Coord ai_lastpos;
+    int32_t hpmax;	/* Improved by OOD rating at 1:1. */
+    int32_t hpcur;	/* <= 0 is dead. */
+    int32_t mtohit;	/* Improved by OOD rating at 1:3. */
+    int32_t rtohit;	/* Improved by OOD rating at 1:3. */
+    int32_t defence;	/* Improved by OOD rating at 1:3. */
+    int32_t mdam;	/* Improved by OOD rating at 1:5. */
+    int32_t rdam;	/* Improved by OOD rating at 1:5. */
+    bool awake;
+    int32_t meta;
     bool no_exp; /* Monster is worth zero XP */
     Critter_sex sex;
 
@@ -115,11 +115,11 @@ struct Mon
     Mon() : name(0), current_path(0) { }
     ~Mon() { if (name) delete[] name; if (current_path) delete current_path; }
 
-    void find_astar_path(libmrl::Coord c);
+    void find_astar_path(libmormegil::Coord c);
     void discard_path();
 
-    bool can_pass(libmrl::Coord c) const;
-    bool will_pass(libmrl::Coord c) const
+    bool can_pass(libmormegil::Coord c) const;
+    bool will_pass(libmormegil::Coord c) const
     {
         /* for now, the two are equivalent. */
         return can_pass(c);
@@ -161,20 +161,20 @@ extern void print_mon_name(Mon_handle mon, int article, bool shortname = false);
 
 /* a null Level pointer passed to monster creation functions is translated to
  * mean currlev */
-extern void summon_mon_near(int pm_idx, libmrl::Coord pos, Level *lptr = 0);
-extern Mon_handle create_mon(int pm_idx, libmrl::Coord pos, Level *lptr = 0);
-extern Mon_handle create_zombie(int corpse_mon, libmrl::Coord pos, Level *lptr = 0);
-extern int summoning(libmrl::Coord c, int how_many, Level *lptr = 0);
+extern void summon_mon_near(int pm_idx, libmormegil::Coord pos, Level *lptr = 0);
+extern Mon_handle create_mon(int pm_idx, libmormegil::Coord pos, Level *lptr = 0);
+extern Mon_handle create_zombie(int corpse_mon, libmormegil::Coord pos, Level *lptr = 0);
+extern int summoning(libmormegil::Coord c, int how_many, Level *lptr = 0);
 extern int ood(int power, int ratio);
 extern int get_random_pmon(int depth);
 extern bool damage_mon(Mon_handle mon, int amount, bool by_you, int *real_dmg = 0, bool noisy = true);
-extern int knock_mon(Mon_handle mon, libmrl::Coord step, int force, bool by_you);
+extern int knock_mon(Mon_handle mon, libmormegil::Offset step, int force, bool by_you);
 extern bool mon_visible(Mon_handle mon);
-extern void move_mon(Mon_handle mon, libmrl::Coord pos, Level *lptr = 0);
+extern void move_mon(Mon_handle mon, libmormegil::Coord pos, Level *lptr = 0);
 extern int teleport_mon(Mon_handle mon);	/* Randomly relocate monster. */
 extern int teleport_mon_to_you(Mon_handle mon);	/* Relocate monster to your vicinity. */
 extern void heal_mon(Mon_handle mon, int amount, int cansee);
-extern libmrl::Coord get_mon_scatter(libmrl::Coord pos, Level *lptr = 0);
+extern libmormegil::Coord get_mon_scatter(libmormegil::Coord pos, Level *lptr = 0);
 extern void release_monster(Mon_handle mon);
 extern void aggravate_monsters(Level *lptr = 0);
 
@@ -185,8 +185,8 @@ extern void select_space(int *py, int *px, int dy, int dx, int selection_mode);
 extern int weaker_demon(int pm_num);
 
 /* XXX astar.cc funcs that explicitly depend on Mon */
-Astar_path *find_astar_path(Mon *mptr, libmrl::Coord goal);
-libmrl::Coord astar_advance(Mon *mptr);
+Astar_path *find_astar_path(Mon *mptr, libmormegil::Coord goal);
+libmormegil::Coord astar_advance(Mon *mptr);
 
 #endif
 

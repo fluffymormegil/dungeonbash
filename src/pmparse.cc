@@ -341,7 +341,7 @@ namespace
             }
             if (i)
             {
-                tmpbuf[libmrl::min(i, 127)] = '\0';
+                tmpbuf[std::min(i, 127)] = '\0';
                 working_monster.anatomy_string += " | (1 << Anat_";
                 working_monster.anatomy_string += tmpbuf;
                 working_monster.anatomy_string += ")";
@@ -386,7 +386,7 @@ namespace
             }
             if (i)
             {
-                tmpbuf[libmrl::min(i, 127)] = '\0';
+                tmpbuf[std::min(i, 127)] = '\0';
                 working_monster.flag_string += " | ";
                 char *tmpstr = create_tag_from_name(tmpbuf, "PMF_");
                 working_monster.flag_string += tmpstr;

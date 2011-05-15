@@ -1,28 +1,28 @@
-/* prof-thanato.cc - thanatophile profession for Martin's Dungeon Bash
- * 
- * Copyright 2009 Martin Read
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// prof-thanato.cc - thanatophile profession for Martin's Dungeon Bash
+// 
+// Copyright 2009 Martin Read
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #define PROF_THANATO_CC
 #include "dunbash.hh"
@@ -51,7 +51,7 @@ const int thanato_costs[] =
     20 // high constant cost for corpse explosion
 };
 
-static bool thanato_corpseblast_func(libmrl::Coord c, void *data)
+static bool thanato_corpseblast_func(libmormegil::Coord c, void *data)
 {
     // Class-ability corpse blasts never hurt the caster.
     Mon_handle mon = currlev->monster_at(c);
@@ -154,7 +154,7 @@ int do_life_leech(Player *ptmp)
     //
     // There will be _consequences_ for leeching demons and undeads in future.
     // Whether they're worth enduring is a question for the player to answer.
-    libmrl::Coord step;
+    libmormegil::Offset step;
     Mon_handle mon;
     Mon *mptr;
     int i;
@@ -169,7 +169,7 @@ int do_life_leech(Player *ptmp)
     {
         // Life leech is autohit.
         int maxdam = mptr->hpcur;
-        int dmg = libmrl::min(ptmp->level + dice(2, 10), maxdam);
+        int dmg = std::min(ptmp->level + dice(2, 10), maxdam);
         print_msg(0, "You drain life from your foe.");
         damage_mon(mon, dmg, true);
         heal_u(dmg, false, true);
@@ -193,8 +193,8 @@ int do_thanato_explosion(Player *ptmp)
     // TODO Implement thanatophile corpse explosion
     // XXX This should be a smite-targeted effect.
     // XXX Incomplete remains generate smaller blasts.
-    libmrl::Coord tgt;
-    libmrl::Coord c;
+    libmormegil::Coord tgt;
+    libmormegil::Coord c;
     Obj_handle obj;
     Mon_handle mon;
     int i;
@@ -220,17 +220,17 @@ int do_thanato_explosion(Player *ptmp)
         if (mon.valid() && pmon_is_undead(mon.snapc()->mon_id) && !pmon_is_ethereal(mon.snapc()->mon_id))
         {
             undeads.push_back(mon);
-            if (undead_range > int(spiral_path[i]))
+            if (undead_range > spiral_path[i].length_inf())
             {
-                undead_range = int(spiral_path[i]);
+                undead_range = spiral_path[i].length_inf();
             }
         }
         if (obj.valid() && (obj.snapc()->obj_id == PO_CORPSE))
         {
             corpses.push_back(obj);
-            if (corpse_range > int(spiral_path[i]))
+            if (corpse_range > spiral_path[i].length_inf())
             {
-                corpse_range = int(spiral_path[i]);
+                corpse_range = spiral_path[i].length_inf();
             }
         }
     }
@@ -242,11 +242,11 @@ int do_thanato_explosion(Player *ptmp)
         int max_dmg;
         if (mptr->mon_id == PM_ZOMBIE)
         {
-            max_dmg = libmrl::min(permons[mptr->meta].hp, 20);
+            max_dmg = std::min(permons[mptr->meta].hp, 20);
         }
         else
         {
-            max_dmg = libmrl::min(permons[mptr->mon_id].hp, 20);
+            max_dmg = std::min(permons[mptr->mon_id].hp, 20);
         }
         Square_radiance t_corpseblast = 
         {
@@ -260,7 +260,7 @@ int do_thanato_explosion(Player *ptmp)
         print_msg(0, "The power of death explodes from a corpse!");
         obj = *corpses.begin();
         Obj *optr = obj.snapv();
-        int max_dmg = libmrl::min(permons[optr->obj_id].hp, 20);
+        int max_dmg = std::min(permons[optr->obj_id].hp, 20);
         Square_radiance t_corpseblast = 
         {
             { { 0 } }, optr->pos, 2, block_vision
@@ -282,4 +282,4 @@ int do_thanato_explosion(Player *ptmp)
     return 0;
 }
 
-/* prof-thanato.cc */
+// prof-thanato.cc

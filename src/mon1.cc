@@ -1,28 +1,28 @@
-/* mon1.cc
- * 
- * Copyright 2005-2010 Martin Read
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// mon1.cc
+// 
+// Copyright 2005-2010 Martin Read
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #define MON1_CC
 
@@ -41,11 +41,11 @@ void monsters_init(void)
 {
 }
 
-int summoning(libmrl::Coord c, int how_many, Level *lptr)
+int summoning(libmormegil::Coord c, int how_many, Level *lptr)
 {
     int i;
-    libmrl::Coord delta;
-    libmrl::Coord testpos;
+    libmormegil::Offset delta;
+    libmormegil::Coord testpos;
     int tryct;
     Mon_handle mon;
     int created = 0;
@@ -60,7 +60,7 @@ int summoning(libmrl::Coord c, int how_many, Level *lptr)
 	{
 	    delta.y = zero_die(3) - 1;
 	    delta.x = zero_die(3) - 1;
-            testpos = delta + c;
+            testpos = c + delta;
 	    if ((!terrain_data[lptr->terrain_at(testpos)].impassable) &&
 		(lptr->monster_at(testpos) == NO_MONSTER) &&
 		(testpos != u.pos))
@@ -110,7 +110,7 @@ int get_random_pmon(int depth)
     return pm;
 }
 
-Mon_handle create_zombie(int corpse_mon, libmrl::Coord c, Level *lptr)
+Mon_handle create_zombie(int corpse_mon, libmormegil::Coord c, Level *lptr)
 {
     Mon_handle mon = create_mon(PM_ZOMBIE, c, lptr);
     Mon *mptr = mon.snapv();
@@ -128,7 +128,7 @@ Mon_handle get_free_mon(void)
     return tmp;
 }
 
-Mon_handle create_mon(int pm_idx, libmrl::Coord c, Level *lptr)
+Mon_handle create_mon(int pm_idx, libmormegil::Coord c, Level *lptr)
 {
     Mon_handle mon;
     Mon *mptr;
@@ -156,7 +156,7 @@ Mon_handle create_mon(int pm_idx, libmrl::Coord c, Level *lptr)
     mptr->lev = lptr->self;
     mptr->mon_id = pm_idx;
     mptr->pos = c;
-    mptr->ai_lastpos = libmrl::NOWHERE;
+    mptr->ai_lastpos = dunbash::NOWHERE;
     mptr->hpmax = permons[pm_idx].hp + ood(mptr->lev.level, permons[pm_idx].power, 1);
     mptr->hpcur = mptr->hpmax;
     mptr->mtohit = permons[pm_idx].melee.acc + ood(mptr->lev.level, permons[pm_idx].power, 3);
@@ -216,11 +216,11 @@ void death_drop(Mon_handle mon)
     int pm = mptr->mon_id;
     int pm2;
     Obj_handle k = NO_OBJECT;
-    libmrl::Coord pos;
+    libmormegil::Coord pos;
     if ((permons[pm].flags & PMF_MEATY) && !(permons[pm].flags & PMF_NOCORPSE))
     {
         pos = get_obj_scatter(mptr->pos);
-        if (pos == libmrl::NOWHERE)
+        if (pos == dunbash::NOWHERE)
         {
             return;
         }
@@ -248,7 +248,7 @@ void death_drop(Mon_handle mon)
         }
     }
     pos = get_obj_scatter(mptr->pos);
-    if (pos == libmrl::NOWHERE)
+    if (pos == dunbash::NOWHERE)
     {
         return;
     }
@@ -343,7 +343,7 @@ void death_drop(Mon_handle mon)
     map_updated = 1;
 }
 
-bool Mon::can_pass(libmrl::Coord c) const
+bool Mon::can_pass(libmormegil::Coord c) const
 {
     if (currlev->outofbounds(c))
     {
@@ -436,7 +436,7 @@ void heal_mon(Mon_handle mon, int amount, int cansee)
     }
 }
 
-int knock_mon(Mon_handle mon, libmrl::Coord step, int force, bool by_you)
+int knock_mon(Mon_handle mon, libmormegil::Offset step, int force, bool by_you)
 {
     if (!mon.valid())
     {
@@ -444,7 +444,7 @@ int knock_mon(Mon_handle mon, libmrl::Coord step, int force, bool by_you)
         return -1;
     }
     Mon *mptr = mon.snapv();
-    libmrl::Coord pos = mptr->pos + step;
+    libmormegil::Coord pos = mptr->pos + step;
     /*
      * The force parameter will determine how "big" a monster an attack can
      * knock back. For now, we aren't going to use it.
@@ -465,7 +465,7 @@ int knock_mon(Mon_handle mon, libmrl::Coord step, int force, bool by_you)
 bool damage_mon(Mon_handle mon, int amount, bool by_you, int *real_dmg, bool noisy)
 {
     Mon *mptr = mon.snapv();
-    libmrl::Coord pos = mptr->pos;
+    libmormegil::Coord pos = mptr->pos;
     std::string name;
     if (by_you)
     {
@@ -535,8 +535,8 @@ int teleport_mon_to_you(Mon_handle mon)
 {
     Mon *mptr = mon.snapv();
     int tryct;
-    libmrl::Coord delta;
-    libmrl::Coord pos;
+    libmormegil::Offset delta;
+    libmormegil::Coord pos;
     int success = 0;
     for (tryct = 0; tryct < 40; tryct++)
     {
@@ -569,7 +569,7 @@ int teleport_mon(Mon_handle mon)
     int rval = -1;
     int cell_try;
     Mon *mptr = mon.snapv();
-    libmrl::Coord pos;
+    libmormegil::Coord pos;
     if (mptr)
     {
         for (cell_try = 0; cell_try < 400; cell_try++)
@@ -588,7 +588,7 @@ int teleport_mon(Mon_handle mon)
     return rval;
 }
 
-void move_mon(Mon_handle mon, libmrl::Coord pos, Level *lptr)
+void move_mon(Mon_handle mon, libmormegil::Coord pos, Level *lptr)
 {
     // TODO account for the monster being moved into hostile terrain by a
     // player action and dying before they can get out of it. (I don't want
@@ -623,12 +623,12 @@ void move_mon(Mon_handle mon, libmrl::Coord pos, Level *lptr)
     display_update();
 }
 
-void summon_mon_near(int pm_idx, libmrl::Coord pos, Level *lptr)
+void summon_mon_near(int pm_idx, libmormegil::Coord pos, Level *lptr)
 {
-    libmrl::Coord pos2;
+    libmormegil::Coord pos2;
     Mon_handle mon;
     pos2 = get_mon_scatter(pos, lptr);
-    if (pos == libmrl::NOWHERE)
+    if (pos == dunbash::NOWHERE)
     {
         return;
     }
@@ -731,9 +731,9 @@ bool update_mon(Mon_handle mon)
     return wiped;
 }
 
-libmrl::Coord get_mon_scatter(libmrl::Coord pos, Level *lptr)
+libmormegil::Coord get_mon_scatter(libmormegil::Coord pos, Level *lptr)
 {
-    libmrl::Coord delta;
+    libmormegil::Offset delta;
     int tryct = 0;
     if (!lptr)
     {
@@ -748,7 +748,7 @@ libmrl::Coord get_mon_scatter(libmrl::Coord pos, Level *lptr)
         delta.y = zero_die(3) - 1;
         delta.x = zero_die(3) - 1;
         // Don't try to scatter through a wall.
-        if (int(delta) && !(terrain_data[lptr->terrain_at(pos + delta)].impassable))
+        if (delta.length_inf() && !(terrain_data[lptr->terrain_at(pos + delta)].impassable))
         {
             ++tryct;
             pos += delta;
@@ -756,7 +756,7 @@ libmrl::Coord get_mon_scatter(libmrl::Coord pos, Level *lptr)
     }
     if (tryct >= 100)
     {
-        return libmrl::NOWHERE;
+        return dunbash::NOWHERE;
     }
     return pos;
 }

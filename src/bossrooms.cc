@@ -131,9 +131,9 @@ void Levext_rooms_boss::excavate_zoo_room(void)
     /* TODO implement boss level zoo room excavation. */
     int yseg = zoo_room / 3;
     int xseg = zoo_room % 3;
-    libmrl::Coord topleft;
-    libmrl::Coord botright;
-    libmrl::Coord c;
+    libmormegil::Coord topleft;
+    libmormegil::Coord botright;
+    libmormegil::Coord c;
     int i;
     if ((parent->height < 42) || (parent->width < 42))
     {
@@ -164,7 +164,7 @@ void Levext_rooms_boss::excavate_zoo_room(void)
     bounds[zoo_room][1] = botright;
     for (i = 0; i < 10; ++i)
     {
-        num_posns[i] = libmrl::NOWHERE;
+        num_posns[i] = dunbash::NOWHERE;
     }
     for (c.y = topleft.y; c.y <= botright.y; ++(c.y))
     {
@@ -209,8 +209,8 @@ void Levext_rooms_boss::excavate_zoo_room(void)
 void Levext_rooms_boss::add_random_room(int yseg, int xseg)
 {
     int roomidx = (yseg * 3) + xseg;
-    libmrl::Coord topleft;
-    libmrl::Coord botright;
+    libmormegil::Coord topleft;
+    libmormegil::Coord botright;
     if (roomidx != zoo_room)
     {
         Levext_rooms::add_random_room(yseg, xseg);
@@ -225,7 +225,7 @@ void Levext_rooms_boss::add_random_room(int yseg, int xseg)
     bounds[roomidx][1] = botright;
 }
 
-int Levext_rooms_boss::leave_region(libmrl::Coord c)
+int Levext_rooms_boss::leave_region(libmormegil::Coord c)
 {
     if (parent->region_at(c) == zoo_room)
     {
@@ -242,7 +242,7 @@ int Levext_rooms_boss::leave_region(libmrl::Coord c)
             }
             release_monster(boss);
             boss = NO_MONSTER;
-            libmrl::Coord c;
+            libmormegil::Coord c;
             /* Cleanup: purge clouds. No, this is not "OP". Everything else
              * resets, after all. */
             for (c.y = bounds[zoo_room][0].y; c.y <= bounds[zoo_room][1].y; ++(c.y))
@@ -261,7 +261,7 @@ int Levext_rooms_boss::leave_region(libmrl::Coord c)
     }
 }
 
-int Levext_rooms_boss::enter_region(libmrl::Coord c)
+int Levext_rooms_boss::enter_region(libmormegil::Coord c)
 {
     int i;
     if ((parent->region_at(c) == zoo_room) && !cleared)

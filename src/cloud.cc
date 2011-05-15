@@ -1,28 +1,28 @@
-/* cloud.cc - clouds for Martin's Dungeon Bash
- * 
- * Copyright 2009 Martin Read
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// cloud.cc - clouds for Martin's Dungeon Bash
+// 
+// Copyright 2009 Martin Read
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #define CLOUD_CC
 #include "dunbash.hh"
@@ -103,7 +103,7 @@ Cloud resolve_conflict(const Cloud& left, const Cloud& right)
     if (left.flavour == right.flavour)
     {
         cld.flavour = left.flavour;
-        cld.intensity = libmrl::max(left.intensity, right.intensity);
+        cld.intensity = std::max(left.intensity, right.intensity);
         cld.duration = left.duration * left.intensity + right.duration * right.intensity;
         cld.duration /= cld.intensity;
         cld.by_you = left.by_you || right.by_you;
@@ -166,7 +166,7 @@ bool mon_endure_cloud(Mon_handle mon, Cloud cld)
     int next_tick = get_next_tick(SPEED_NORMAL);
 }
 
-bool put_cloud(Level *lptr, libmrl::Coord pos, Cloud cld)
+bool put_cloud(Level *lptr, libmormegil::Coord pos, Cloud cld)
 {
     // TODO implement placement of clouds
     Cloud existing;
@@ -186,9 +186,9 @@ bool put_cloud(Level *lptr, libmrl::Coord pos, Cloud cld)
     return true;
 }
 
-bool move_cloud(Level *lptr, libmrl::Coord old_cloudpos, libmrl::Coord new_cloudpos)
+bool move_cloud(Level *lptr, libmormegil::Coord old_cloudpos, libmormegil::Coord new_cloudpos)
 {
     // TODO implement movement of clouds
 }
 
-/* cloud.cc */
+// cloud.cc
