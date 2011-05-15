@@ -64,7 +64,12 @@ extern void farlook(void);
 extern int get_smite_target(libmormegil::Coord *ppos, bool must_be_visible);
 
 /* "Show the player the terrain only" flag. */
-extern int show_terrain;
+extern bool show_terrain;
+extern libmormegil::Coord last_projectile_pos;
+extern libmormegil::Coord curr_projectile_pos;
+extern Dbash_colour projectile_colour;
+extern int projectile_delay;
+extern int you_colour;
 
 #endif
 // ui.hh

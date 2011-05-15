@@ -34,6 +34,15 @@
 
 #include <vector>
 
+libmormegil::Coord last_projectile_pos = dunbash::NOWHERE;
+libmormegil::Coord curr_projectile_pos = dunbash::NOWHERE;
+Dbash_colour projectile_colour = DBCLR_L_GREY;
+int projectile_delay = 40;
+int you_colour = DBCLR_WHITE;
+
+bool fruit_salad_inventory = false;
+bool show_terrain = false;
+
 bool suppressions[] =
 {
     false, false, false, false,
@@ -53,7 +62,7 @@ const char *colour_names[15] =
 
 int display_init_common(void)
 {
-    int i, j;
+    //int i, j;
 #ifdef LOG_MESSAGES
 #ifdef MULTIUSER
     user_permissions();

@@ -37,16 +37,6 @@
 #include <libmormegil/stlprintf.hh>
 #include "cfgfile.hh"
 
-bool fruit_salad_inventory;
-
-libmormegil::Coord last_projectile_pos = dunbash::NOWHERE;
-libmormegil::Coord curr_projectile_pos = dunbash::NOWHERE;
-Dbash_colour projectile_colour = DBCLR_L_GREY;
-int projectile_delay = 40;
-
-int you_colour = DBCLR_WHITE;
-int show_terrain;
-
 /* Prototypes for static funcs */
 static int object_char(int object_id);
 static int monster_char(int monster_id);
