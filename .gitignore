@@ -4,6 +4,7 @@ src/permons.cc
 src/pmonid.hh
 src/permobj.cc
 src/pobjid.hh
+dirs.mk
 
 # Experimentation builds
 a.out
