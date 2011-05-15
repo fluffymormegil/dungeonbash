@@ -53,7 +53,7 @@ GetOptions(
 'datarootdir=s' => \$datarootdir, 'datadir=s' => \$datadir,
 'sysconfdir=s' => \$sysconfdir, 'sharedstatedir=s' => \$sharedstatedir,
 'localstatedir=s' => \$localstatedir, 'localedir=s' => \$localedir,
-'games_localstatedir=s' => \$games_localstatedir, 'localedir=s' => \$localedir,
+'games_localstatedir=s' => \$games_localstatedir,
 'mandir=s' => \$mandir,
 'man1dir=s' => \$man1dir, 'man3dir=s' => \$man3dir,
 'man5dir=s' => \$man5dir, 'man6dir=s' => \$man6dir,
