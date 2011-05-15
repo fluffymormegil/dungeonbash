@@ -636,6 +636,10 @@ bool ring_melee_proc(Mon_handle mon, Obj_handle obj)
     case PO_FROST_RING:
         if (!pmon_resists_cold(mptr->mon_id))
         {
+            if (!poptr->known)
+            {
+                poptr->known = 1;
+            }
             print_msg(0, "Your ring freezes %s!", victim_name.c_str());
             damage = one_die(6) + 4;
             killed = damage_mon(mon, damage, true);
