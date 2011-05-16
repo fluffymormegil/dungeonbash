@@ -3,8 +3,7 @@
 MON_OBJS=mon1.o mon2.o mon3.o permons.o perseff.o pmon2.o
 OBJ_OBJS=obj1.o obj2.o permobj.o
 ALG_OBJS=astar.o hexpi.o misc.o radiance.o rng.o spiralpath.o vector.o vision.o
-#ALG_OBJS=astar.o hexpi.o misc.o radiance.o rng.o spiralpath.o stlprintf.o vector.o vision.o
-OS_OBJS=cfgfile.o loadsave.o main.o
+OS_OBJS=cfgfile.o loadsave.o main.o engine.o msgpass.o logger.o
 CMBT_OBJS=bmagic.o combat.o
 PLYR_OBJS=prof-fighter.o prof-preacher.o prof-thanato.o u.o
 DUN_OBJS=bossrooms.o cloud.o map.o rooms.o
@@ -19,7 +18,7 @@ OBJS=$(ALG_OBJS) $(OS_OBJS) $(UI_OBJS) $(MON_OBJS) $(OBJ_OBJS) $(CMBT_OBJS) $(PL
 GAME=dungeonbash
 SRCGEN=srcgen
 MAJVERS=1
-MINVERS=131
+MINVERS=132
 PATCHVERS=0
 
 include ../os.mk
@@ -65,15 +64,14 @@ combat.o: combat.cc combat.hh dunbash.hh pmonid.hh pobjid.hh dbashcfg.hh monster
 
 display-classic.o: display-classic.cc dunbash.hh dbashcfg.hh
 
-ui-classic.o: ui-classic.cc dunbash.hh dbashcfg.hh pobjid.hh pmonid.hh
-
-prof-fighter.o: prof-fighter.cc dunbash.hh dbashcfg.hh player.hh combat.hh
-
 loadsave.o: loadsave.cc dunbash.hh monsters.hh objects.hh rooms.hh player.hh loadsave.hh bossrooms.hh
 
+logger.o: logger.cc dunbash.hh msgpass.hh
 main.o: main.cc combat.hh dunbash.hh monsters.hh pobjid.hh dbashcfg.hh
 
 map.o: map.cc dunbash.hh dbashcfg.hh
+
+msgpass.o: msgpass.cc dunbash.hh msgpass.hh
 
 mon1.o: mon1.cc dunbash.hh monsters.hh pmonid.hh pobjid.hh dbashcfg.hh pmonid.hh
 
@@ -97,6 +95,8 @@ permons.cc pmonid.hh: permons.txt $(SRCGEN)$(EXECUTABLE_SUFFIX)
 
 pmon2.o: pmon2.cc dunbash.hh monsters.hh dbashcfg.hh pmonid.hh
 
+prof-fighter.o: prof-fighter.cc dunbash.hh dbashcfg.hh player.hh combat.hh
+
 prof-preacher.o: prof-preacher.cc player.hh prof-preacher.hh dunbash.hh monsters.hh
 
 prof-thanato.o: prof-thanato.cc player.hh prof-thanato.hh dunbash.hh monsters.hh
@@ -105,15 +105,17 @@ rooms.o: rooms.cc dunbash.hh monsters.hh objects.hh pobjid.hh pmonid.hh rooms.hh
 
 spiralpath.o: spiralpath.cc
 
+spiralpath.cc: $(SRCGEN)$(EXECUTABLE_SUFFIX)
+	./$(SRCGEN)$(EXECUTABLE_SUFFIX) -s
+
 u.o: u.cc combat.hh dunbash.hh pmonid.hh pobjid.hh player.hh dbashcfg.hh
+
+ui-classic.o: ui-classic.cc dunbash.hh dbashcfg.hh pobjid.hh pmonid.hh
 
 vector.o: vector.cc dunbash.hh dbashcfg.hh
 
 vision.o: vision.cc dunbash.hh player.hh monsters.hh dbashcfg.hh
 
 srcgen.o: srcgen.cc pobj1.hh pmon1.hh dbashcfg.hh
-
-spiralpath.cc: $(SRCGEN)$(EXECUTABLE_SUFFIX)
-	./$(SRCGEN)$(EXECUTABLE_SUFFIX) -s
 
 # vim:noexpandtab:ts=8
