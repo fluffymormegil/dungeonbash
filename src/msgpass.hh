@@ -31,6 +31,8 @@ enum Msg_type
 {
     Msg_type_no_op,
     Msg_type_continuation,
+    Msg_type_shutdown,
+    Msg_type_text,
     Msg_type_cmd,
     Msg_type_dance,
     Msg_type_cmdreq,
@@ -53,17 +55,13 @@ namespace dunbash
     };
 }
 
-// Client writes
-extern void write_cmd_message(int fd, Game_cmd cmd);
-extern void write_dance_message(int fd, Game_cmd cmd);
+extern int client_socket;
+extern int engine_socket;
+extern const char * const msg_tags[];
+extern void logger();
+extern void logger_process_msg(const dunbash::Message& msg);
 
-// Client reads
-
-// Engine writes
-
-// Engine reads
-extern void read_cmd_message(int fd, Game_cmd *pcmd);
-extern void read_dance_message(int fd, Game_cmd *pcmd);
+extern void msgpass_init();
 
 #endif
 

@@ -1,6 +1,5 @@
 // msgpass.cc - message-passing functions for Martin's Dungeon Bash
-// 
-// Copyright 2011 Martin Read
+// // Copyright 2011 Martin Read
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
@@ -31,8 +30,27 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/uio.h>
+#include <signal.h>
+
+int client_socket;
+int engine_socket;
+int child_pid;
 
 const uint32_t dunbash::Message::max_size = 16384;
+
+static void logger_kill();
+
+const char * const msg_tags[] = {
+    "no-op",
+    "continuation",
+    "shutdown",
+    "text message",
+    "command",
+    "dance",
+    "command request",
+    "dance request",
+    "tick report"
+};
 
 ssize_t dunbash::Message::emit(int fd)
 {
@@ -46,46 +64,43 @@ ssize_t dunbash::Message::emit(int fd)
     return writev(fd, outbound, 3);
 }
 
-dunbash::Message *next_message(int fd)
+dunbash::Message kill_msg;
+
+static void logger_kill()
 {
-    uint32_t header_buf[2];
-    ssize_t i;
-    dunbash::Message *msg;
-    i = read(fd, header_buf, 8);
-    if (i != 8)
+    kill_msg.emit(engine_socket);
+}
+
+void msgpass_init()
+{
+    int sockets[2];
+    int i;
+    i = socketpair(AF_LOCAL, SOCK_STREAM, 0, sockets);
+    if (i < 0)
     {
-        return 0;
+        perror("dungeonbash: msgpass_init: socketpair");
+        exit(1);
     }
-    msg = new dunbash::Message;
-    uint32_t prospective_msg_type = htonl(header_buf[0]);
-    uint32_t size = htonl(header_buf[1]);
-    if (size > dunbash::Message::max_size)
+    engine_socket = sockets[0];
+    client_socket = sockets[1];
+    kill_msg.flavour = Msg_type_shutdown;
+    kill_msg.size = 0;
+    i = fork();
+    switch (i)
     {
-        // Either we've lost frame sync due to a bug, or we are being
-        // attacked. Annoyingly, there is no handy "discard all data
-        // available for reading from this socket" syscall.
+    case 0:
+        close(engine_socket);
+        logger();
+        break;
+    case -1:
+        perror("dungeonbash: msgpass_init: fork");
+        exit(1);
+    default:
+        child_pid = i;
+        atexit(logger_kill);
+        close(client_socket);
+        break;
     }
-    msg->flavour = Msg_type(prospective_msg_type);
-    msg->size = size;
-    msg->payload = new unsigned char[size];
-    i = read(fd, msg->payload, size);
-    if (i == -1)
-    {
-        // Read error.
-        delete msg;
-        return 0;
-    }
-    else if (i == 0)
-    {
-        // End of file. Shouldn't happen.
-        delete msg;
-        return 0;
-    }
-    else if (i < (ssize_t) size)
-    {
-        // hmmmm not sure what to do.
-    }
-    return msg;
 }
 
 // msgpass.cc
