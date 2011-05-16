@@ -28,3 +28,4 @@ dunbash.log
 msglog.txt
 core
 *.log
+*.dump
