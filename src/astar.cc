@@ -52,7 +52,6 @@ void Mon::find_astar_path(libmormegil::Coord goal)
     Astar_openset openset;
     Astar_openset_entry current;
     Astar_openset_entry newent;
-    Astar_openset::iterator iter;
     Astar_path *path = 0;
     int i;
     int next_g;
@@ -67,7 +66,7 @@ void Mon::find_astar_path(libmormegil::Coord goal)
     while (!(openset.empty()))
     {
         /* get first entry */
-        iter = openset.begin();
+        auto iter = openset.begin();
         current = *iter;
         /* and remove it */
         openset.erase(iter);
@@ -178,7 +177,6 @@ void Mon::discard_path()
 
 libmormegil::Coord astar_advance(Mon *mptr)
 {
-    Astar_path::iterator iter1;
     libmormegil::Coord result;
     if (mptr->current_path->empty())
     {
@@ -188,7 +186,7 @@ libmormegil::Coord astar_advance(Mon *mptr)
     }
     else
     {
-        iter1 = mptr->current_path->begin();
+        auto iter1 = mptr->current_path->begin();
         if (!mptr->can_pass(*iter1))
         {
             result = dunbash::NOWHERE;

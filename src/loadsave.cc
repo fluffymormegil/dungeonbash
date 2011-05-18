@@ -66,8 +66,7 @@ static void rebuild_mapobjs(void);
 
 static void rebuild_mapmons(void)
 {
-    std::map<uint64_t, Mon *>::const_iterator iter;
-    for (iter = monsters.begin(); iter != monsters.end(); ++iter)
+    for (auto iter = monsters.begin(); iter != monsters.end(); ++iter)
     {
         Level *lptr = iter->second->lev.snapv();
         if (lptr)
@@ -80,8 +79,7 @@ static void rebuild_mapmons(void)
 
 static void rebuild_mapobjs(void)
 {
-    std::map<uint64_t, Obj *>::const_iterator iter;
-    for (iter = objects.begin(); iter != objects.end(); ++iter)
+    for (auto iter = objects.begin(); iter != objects.end(); ++iter)
     {
         if (iter->second->with_you)
         {
@@ -508,8 +506,7 @@ static void serialize(FILE *fp, Player const *ptmp)
     serialize_ohandle_array(fp, &(ptmp->weapon), 1);
     serialize_ohandle_array(fp, &(ptmp->armour), 1);
     serialize_ohandle_array(fp, &(ptmp->ring), 1);
-    std::list<Perseff_data>::const_iterator peffiter;
-    for (peffiter = u.perseffs.begin(); peffiter != u.perseffs.end(); ++peffiter)
+    for (auto peffiter = u.perseffs.begin(); peffiter != u.perseffs.end(); ++peffiter)
     {
         serialize(fp, uint32_t(peffiter->flavour));
         serialize(fp, peffiter->power);
@@ -545,10 +542,9 @@ void serialize(FILE *fp, Obj const *optr)
 void serialize_objects(FILE *fp)
 {
     int32_t count;
-    std::map<uint64_t, Obj *>::iterator iter;
     count = objects.size();
     serialize(fp, count);
-    for (iter = objects.begin(); iter != objects.end(); ++iter)
+    for (auto iter = objects.begin(); iter != objects.end(); ++iter)
     {
 #ifdef DEBUG_LOADSAVE
         print_msg(0, "serialising object ID %llx", iter->first);
@@ -578,9 +574,8 @@ static void serialize_gamestate(FILE *fp)
 
 void serialize_levels(FILE *fp)
 {
-    std::map<Level_tag, Level *>::iterator iter;
     int i = 0;
-    for (iter = levels.begin(); iter != levels.end(); ++iter)
+    for (auto iter = levels.begin(); iter != levels.end(); ++iter)
     {
         serialize(fp, &(iter->first));
         ++i;
@@ -597,8 +592,7 @@ void serialize(FILE *fp, Level const *lp)
     serialize(fp, lp->width);
     serialize(fp, lp->levtype);
     // connectivity
-    Exitmode_citer exciter;
-    for (exciter = lp->exit_modes.begin();
+    for (auto exciter = lp->exit_modes.begin();
          exciter != lp->exit_modes.end();
          ++exciter)
     {
@@ -606,8 +600,7 @@ void serialize(FILE *fp, Level const *lp)
         serialize(fp, uint32_t(exciter->second));
     }
     serialize(fp, dunbash::NOWHERE);
-    Exitdest_citer edciter;
-    for (edciter = lp->exit_dests.begin();
+    for (auto edciter = lp->exit_dests.begin();
          edciter != lp->exit_dests.end();
          ++edciter)
     {
@@ -615,8 +608,7 @@ void serialize(FILE *fp, Level const *lp)
         serialize(fp, &(edciter->second));
     }
     serialize(fp, 0xffffffffu);
-    Entry_citer enciter;
-    for (enciter = lp->entries.begin();
+    for (auto enciter = lp->entries.begin();
          enciter != lp->entries.end();
          ++enciter)
     {
@@ -647,16 +639,16 @@ void serialize(FILE *fp, Level const *lp)
     case LEVEL_ROOMS:
         {
             Levext_rooms const *lerp = dynamic_cast<Levext_rooms const *>(lp->levextra);
-            /* I could check for errors, or I could have the program segfault its
-             * guts out. The latter is probably saner. */
+            // I could check for errors, or I could have the program segfault
+            // its guts out. The latter is probably saner.
             serialize(fp, lerp);
         }
         break;
     case LEVEL_ROOMS_BOSS:
         {
             Levext_rooms_boss const *lerp = dynamic_cast<Levext_rooms_boss const *>(lp->levextra);
-            /* I could check for errors, or I could have the program segfault its
-             * guts out. The latter is probably saner. */
+            // I could check for errors, or I could have the program segfault
+            // its guts out. The latter is probably saner.
             serialize(fp, lerp);
         }
         break;
@@ -715,7 +707,6 @@ void serialize(FILE *fp, Levext_rooms const *lerp)
 
 void serialize(FILE *fp, Mon const *mptr)
 {
-    Astar_path::iterator iter;
     serialize(fp, mptr->mon_id);
     serialize(fp, &(mptr->lev));
     serialize(fp, mptr->pos);
@@ -743,7 +734,7 @@ void serialize(FILE *fp, Mon const *mptr)
     }
     if (mptr->current_path)
     {
-        for (iter = mptr->current_path->begin();
+        for (auto iter = mptr->current_path->begin();
              iter != mptr->current_path->end();
              ++iter)
         {
@@ -751,8 +742,7 @@ void serialize(FILE *fp, Mon const *mptr)
         }
     }
     serialize(fp, dunbash::NOWHERE);
-    std::list<Perseff_data>::const_iterator peffiter;
-    for (peffiter = mptr->perseffs.begin(); peffiter != mptr->perseffs.end(); ++peffiter)
+    for (auto peffiter = mptr->perseffs.begin(); peffiter != mptr->perseffs.end(); ++peffiter)
     {
         serialize(fp, uint32_t(peffiter->flavour));
         serialize(fp, peffiter->power);
@@ -768,9 +758,8 @@ void serialize(FILE *fp, Mon const *mptr)
 void serialize_monsters(FILE *fp)
 {
     uint32_t count = monsters.size();
-    std::map<uint64_t, Mon *>::const_iterator iter;
     serialize(fp, count);
-    for (iter = monsters.begin(); iter != monsters.end(); ++iter)
+    for (auto iter = monsters.begin(); iter != monsters.end(); ++iter)
     {
         serialize(fp, iter->first);
         serialize(fp, iter->second);

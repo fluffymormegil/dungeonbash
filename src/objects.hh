@@ -85,13 +85,13 @@ inline Obj *Obj_handle::snapv() const
     {
         return 0;
     }
-    std::map<uint64_t, Obj *>::iterator iter = objects.find(value);
+    auto iter = objects.find(value);
     return (iter == objects.end()) ? 0 : iter->second;
 }
 
 inline Obj const *Obj_handle::snapc() const
 {
-    std::map<uint64_t, Obj *>::iterator iter = objects.find(value);
+    auto iter = objects.find(value);
     return (iter == objects.end()) ? 0 : iter->second;
 }
 
@@ -99,7 +99,7 @@ inline int Obj_handle::otyp() const { return value ? snapc()->obj_id : NO_POBJ; 
 
 inline void Obj_handle::wipe() const
 {
-    std::map<uint64_t, Obj *>::iterator iter = objects.find(value);
+    auto iter = objects.find(value);
     if (iter != objects.end())
     {
         objects.erase(iter);

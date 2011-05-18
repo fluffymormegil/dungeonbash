@@ -148,7 +148,7 @@ int release_obj(Obj_handle obj)
         if (!optr->with_you)
         {
             Level *lptr = optr->lev.snapv();
-            std::set<Obj_handle>::iterator iter = lptr->booty.find(obj);
+            auto iter = lptr->booty.find(obj);
             lptr->booty.erase(iter);
             lptr->set_obj_at(optr->pos, NO_OBJECT);
         }
@@ -661,7 +661,7 @@ void attempt_pickup(void)
     Obj_handle inv_oh;
     Obj *invobj;
     std::string namebuf;
-    std::set<Obj_handle>::iterator iter = currlev->booty.find(floor_oh);
+    auto iter = currlev->booty.find(floor_oh);
     if (floorobj->obj_id == PO_GOLD_PIECE)
     {
 	print_msg(0, "You get %d gold.", floorobj->quan);

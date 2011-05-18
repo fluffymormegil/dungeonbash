@@ -143,12 +143,12 @@ inline Mon *Mon_handle::snapv() const
     {
         return 0;
     }
-    std::map<uint64_t, Mon *>::iterator iter = monsters.find(value);
+    auto iter = monsters.find(value);
     return (iter == monsters.end()) ? 0 : iter->second;
 }
 inline Mon const *Mon_handle::snapc() const
 {
-    std::map<uint64_t, Mon *>::iterator iter = monsters.find(value);
+    auto iter = monsters.find(value);
     return (iter == monsters.end()) ? 0 : iter->second;
 }
 

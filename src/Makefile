@@ -33,8 +33,8 @@ include ../features.mk
 CXXFLAGS=-c -O -g -pipe -Wall -Wwrite-strings -Wredundant-decls \
 	-DMAJVERS=$(MAJVERS) -DMINVERS=$(MINVERS) -DPATCHVERS=$(PATCHVERS) \
 	-D_POSIX_SOURCE -DEXPERIMENTAL -DPLAYGROUND=\"$(PLAYGROUND)\" \
-	-DGLOBALCFGDIR=\"$(GLOBALCFGDIR)\" $(DEF_MULTIUSER) -D_POSIX_C_SOURCE=200112L
-LINKFLAGS=-lpanel -lncurses -lmormegil -g
+	-DGLOBALCFGDIR=\"$(GLOBALCFGDIR)\" -std=gnu++0x -I/usr/include/ncursesw
+LINKFLAGS=-lpanel -lncursesw -lmormegil -g
 # Following line is here for heap-corruption investigations
 #LINKFLAGS=-lpanel -lncurses -lefence -g
 

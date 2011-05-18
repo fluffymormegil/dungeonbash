@@ -246,9 +246,8 @@ void load_user_config()
         std::string tag;
         for (j = 0; string_config_vars[j].name; ++j)
         {
-            std::map<std::string, std::string>::iterator iter;
             tag = string_config_vars[j].name;
-            iter = configlines.find(tag);
+            auto iter = configlines.find(tag);
             if (iter != configlines.end())
             {
                 *(string_config_vars[j].destptr) = iter->second;
@@ -261,9 +260,8 @@ void load_user_config()
         }
         for (j = 0; int_config_vars[j].name; ++j)
         {
-            std::map<std::string, std::string>::iterator iter;
             tag = int_config_vars[j].name;
-            iter = configlines.find(tag);
+            auto iter = configlines.find(tag);
             if (iter != configlines.end())
             {
                 const char *cc = iter->second.c_str();
@@ -276,9 +274,8 @@ void load_user_config()
         }
         for (j = 0; bool_config_vars[j].name; ++j)
         {
-            std::map<std::string, std::string>::iterator iter;
             tag = bool_config_vars[j].name;
-            iter = configlines.find(tag);
+            auto iter = configlines.find(tag);
             if (iter != configlines.end())
             {
                 *(bool_config_vars[j].destptr) = string_to_bool(iter->second);
@@ -307,9 +304,8 @@ void load_system_config()
         std::string tag;
         for (j = 0; string_syscfg_vars[j].name; ++j)
         {
-            std::map<std::string, std::string>::iterator iter;
             tag = string_syscfg_vars[j].name;
-            iter = configlines.find(tag);
+            auto iter = configlines.find(tag);
             if (iter != configlines.end())
             {
                 *(string_syscfg_vars[j].destptr) = iter->second;
@@ -322,9 +318,8 @@ void load_system_config()
         }
         for (j = 0; bool_syscfg_vars[j].name; ++j)
         {
-            std::map<std::string, std::string>::iterator iter;
             tag = bool_syscfg_vars[j].name;
-            iter = configlines.find(tag);
+            auto iter = configlines.find(tag);
             if (iter != configlines.end())
             {
                 *(bool_syscfg_vars[j].destptr) = string_to_bool(iter->second);

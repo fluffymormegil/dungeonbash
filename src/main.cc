@@ -562,7 +562,7 @@ int do_command(Game_cmd cmd)
     case WIZARD_DUMP_PERSEFFS:
         if (wizard_mode)
         {
-        for (std::list<Perseff_data>::iterator peff_iter = u.perseffs.begin();
+        for (auto peff_iter = u.perseffs.begin();
              peff_iter != u.perseffs.end();
              ++peff_iter)
         {
@@ -750,7 +750,6 @@ void main_loop(void)
 {
     Game_cmd cmd;
     int i;
-    std::set<Mon_handle>::iterator miter;
     while (!game_finished)
     {
         display_update();
@@ -824,11 +823,10 @@ void main_loop(void)
             }
         }
         // TODO add timed-event queue
-        for (miter = currlev->denizens.begin(); miter != currlev->denizens.end();)
+        for (auto miter = currlev->denizens.begin(); miter != currlev->denizens.end();)
         {
             bool monwiped;
             Mon_handle saved_id;
-            std::set<Mon_handle>::iterator tmpiter;
             Mon *mptr;
             mptr = miter->snapv();
             saved_id = *miter;
@@ -852,7 +850,7 @@ void main_loop(void)
             {
                 // miter is no longer valid; find the earliest insertion point
                 // for the saved handle value instead.
-                tmpiter = currlev->denizens.lower_bound(saved_id);
+                auto tmpiter = currlev->denizens.lower_bound(saved_id);
                 miter = tmpiter;
             }
             else

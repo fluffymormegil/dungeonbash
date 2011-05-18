@@ -89,8 +89,9 @@ bool Mon::suffer(Perseff_data& peff)
 
 void aggravate_monsters(Level *lptr)
 {
-    std::set<Mon_handle>::iterator iter;
-    for (iter = lptr->denizens.begin(); iter != lptr->denizens.end(); ++iter)
+    for (auto iter = lptr->denizens.begin();
+         iter != lptr->denizens.end();
+         ++iter)
     {
         iter->snapv()->awake = true;
     }

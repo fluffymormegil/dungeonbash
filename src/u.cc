@@ -775,12 +775,11 @@ int teleport_u(void)
 
 void Player::apply_effect(Perseff_data& peff)
 {
-    std::list<Perseff_data>::iterator peff_iter;
-    std::list<Perseff_data>::iterator peff_next;
+    auto peff_iter = perseffs.begin();
+    auto peff_next = peff_iter;
     peff.on_you = true;
-    for (peff_iter = perseffs.begin(); peff_iter != perseffs.end(); peff_iter = peff_next)
+    for (; peff_iter != perseffs.end(); peff_iter = peff_next)
     {
-        peff_next = peff_iter;
         ++peff_next;
         if (peff_iter->flavour == peff.flavour)
         {
@@ -931,15 +930,12 @@ void update_player(void)
     if (!u.perseffs.empty())
     {
         bool wiped = false;
-        std::list<Perseff_data>::iterator peff_iter;
-        std::list<Perseff_data>::iterator peff_next;
+        auto peff_iter = u.perseffs.begin();
+        auto peff_next = peff_iter;
         Status_flags new_status;
         new_status.clear_all();
-        for (peff_iter = u.perseffs.begin();
-             peff_iter != u.perseffs.end();
-             peff_iter = peff_next)
+        for ( ; peff_iter != u.perseffs.end(); peff_iter = peff_next)
         {
-            peff_next = peff_iter;
             ++peff_next;
             if (!perseff_meta[(*peff_iter).flavour].ontological_inertia &&
                 !(*peff_iter).by_you && !(*peff_iter).caster.valid())
@@ -964,7 +960,7 @@ void update_player(void)
         recalc_defence();
         for (peff_iter = u.perseffs.begin();
              peff_iter != u.perseffs.end();
-             peff_iter = peff_next)
+             ++peff_iter)
         {
             wiped = u.suffer(*peff_iter);
             if (wiped)
@@ -1401,9 +1397,9 @@ int Player::do_profession_command(int which)
 
 void Player::dispel_effects(Persistent_effect flavour, int how_many)
 {
-    std::list<Perseff_data>::iterator iter_curr;
-    std::list<Perseff_data>::iterator iter_next;
-    for (iter_curr = perseffs.begin(); (how_many) && (iter_curr != perseffs.end()); iter_curr = iter_next)
+    auto iter_curr = perseffs.begin();
+    auto iter_next = iter_curr;
+    for (; (how_many) && (iter_curr != perseffs.end()); iter_curr = iter_next)
     {
         iter_next = iter_curr;
         ++iter_next;

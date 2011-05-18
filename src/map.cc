@@ -54,13 +54,11 @@ Level::~Level()
 void Level::release(void)
 {
     int i;
-    std::set<Obj_handle>::iterator oiter;
-    std::set<Mon_handle>::iterator miter;
-    while ((oiter = booty.begin()) != booty.end())
+    for (auto oiter = booty.begin(); oiter != booty.end(); oiter = booty.begin())
     {
         release_obj(*oiter);
     }
-    while ((miter = denizens.begin()) != denizens.end())
+    for (auto miter = denizens.begin(); miter != denizens.end(); miter = denizens.begin())
     {
         release_monster(*miter);
     }
@@ -114,7 +112,6 @@ void Level::build(void)
 
     if (!(self.level % 5))
     {
-        print_msg(0, "debug: boss level\n");
         levtype = LEVEL_ROOMS_BOSS;
     }
     else
@@ -170,7 +167,7 @@ void Level::populate(void)
 
 void inject_player(Level *lptr, Leventry_mode lem)
 {
-    Entry_citer eciter = lptr->entries.find(lem);
+    auto eciter = lptr->entries.find(lem);
     if (eciter == lptr->entries.end())
     {
         // This mode doesn't have a defined destination in the specified
@@ -187,7 +184,7 @@ void inject_player(Level *lptr, Leventry_mode lem)
 void go_to_level(Level_tag lt, Leventry_mode lem)
 {
     u.lev = lt;
-    Level_iter liter = levels.find(lt);
+    auto liter = levels.find(lt);
     if (liter != levels.end())
     {
         currlev = liter->second;

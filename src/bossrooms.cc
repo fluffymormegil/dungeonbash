@@ -293,7 +293,8 @@ int Levext_rooms_boss::enter_region(libmormegil::Coord c)
 void Levext_rooms_boss::mock_coward() const
 {
     print_msg(0, "\"Coward! Wretch! Craven! Stand and fight!\"");
-    print_msg(0, "You sense that your foes will be fully recovered when you return.");
+    print_msg(0, "You sense that your foes will recover while");
+    print_msg(0, "their leader remains alive.");
 }
 
 /* bossrooms.cc */

@@ -686,13 +686,11 @@ bool update_mon(Mon_handle mon)
         print_msg(0, "Monster %p has %d persistent effects.", mptr->perseffs.size());
         press_enter();
 #endif
-        std::list<Perseff_data>::iterator peff_iter;
-        std::list<Perseff_data>::iterator peff_next;
+        auto peff_iter = mptr->perseffs.begin();
+        auto peff_next = mptr->perseffs.begin();
         Status_flags new_status;
         new_status.clear_all();
-        for (peff_iter = mptr->perseffs.begin();
-             peff_iter != mptr->perseffs.end();
-             peff_iter = peff_next)
+        for ( ; peff_iter != mptr->perseffs.end(); peff_iter = peff_next)
         {
             peff_next = peff_iter;
             ++peff_next;
@@ -778,7 +776,7 @@ void release_monster(Mon_handle mon)
     }
     else
     {
-        std::set<Mon_handle>::iterator iter = lptr->denizens.find(mon);
+        auto iter = lptr->denizens.find(mon);
         if (iter == lptr->denizens.end())
         {
             print_msg(MSGCHAN_INTERROR, "release_monster: Mon not in its alleged level's denizen set");
@@ -800,7 +798,7 @@ void release_monster(Mon_handle mon)
         mptr->name = 0;
     }
     delete mptr;
-    std::map<uint64_t, Mon *>::iterator miter = monsters.find(mon.value);
+    auto miter = monsters.find(mon.value);
     /* No need to validate the iterator, because we've already snapped this
      * handle once! */
     monsters.erase(miter);

@@ -198,9 +198,9 @@ struct Level
     Obj_handle object_at(libmormegil::Coord c) const { return mobjs[c.y][c.x]; }
     void set_mon_at(libmormegil::Coord c, Mon_handle m) { mmons[c.y][c.x] = m; }
     void set_obj_at(libmormegil::Coord c, Obj_handle o) { mobjs[c.y][c.x] = o; }
-    Cloud cloud_at(libmormegil::Coord c) const { std::map<libmormegil::Coord, Cloud>::const_iterator iter = clouds.find(c); if (iter != clouds.end()) { return iter->second; } return no_cloud; }
+    Cloud cloud_at(libmormegil::Coord c) const { auto iter = clouds.find(c); if (iter != clouds.end()) { return iter->second; } return no_cloud; }
     void set_cloud_at(libmormegil::Coord c, Cloud const& cld) { clouds[c] = cld; }
-    void clear_cloud_at(libmormegil::Coord c) { std::map<libmormegil::Coord, Cloud>::iterator iter = clouds.find(c); if (iter != clouds.end()) { clouds.erase(iter); } }
+    void clear_cloud_at(libmormegil::Coord c) { auto iter = clouds.find(c); if (iter != clouds.end()) { clouds.erase(iter); } }
     int region_at(libmormegil::Coord c) const { return rnums[c.y][c.x]; }
     void set_region(libmormegil::Coord c, int r) const { rnums[c.y][c.x] = r; }
     int as_gscore(libmormegil::Coord c) const { return gscores[c.y][c.x]; }
@@ -220,26 +220,17 @@ struct Level
     int enter_region(libmormegil::Coord c) { return (levextra ? levextra->enter_region(c) : 1); }
 };
 
-typedef std::map<libmormegil::Coord, Leventry_mode>::iterator Exitmode_iter;
-typedef std::map<libmormegil::Coord, Leventry_mode>::const_iterator Exitmode_citer;
-typedef std::map<Leventry_mode, Level_tag>::iterator Exitdest_iter;
-typedef std::map<Leventry_mode, Level_tag>::const_iterator Exitdest_citer;
-typedef std::map<Leventry_mode, libmormegil::Coord>::iterator Entry_iter;
-typedef std::map<Leventry_mode, libmormegil::Coord>::const_iterator Entry_citer;
-
 extern std::map<Level_tag, Level *> levels;
-typedef std::map<Level_tag, Level *>::const_iterator Level_citer;
-typedef std::map<Level_tag, Level *>::iterator Level_iter;
 
 inline Level *Level_tag::snapv() const
 {
-    std::map<Level_tag, Level *>::iterator iter = levels.find(*this);
+    auto iter = levels.find(*this);
     return (iter == levels.end()) ? 0 : iter->second;
 }
 
 inline Level const *Level_tag::snapc() const
 {
-    std::map<Level_tag, Level *>::iterator iter = levels.find(*this);
+    auto iter = levels.find(*this);
     return (iter == levels.end()) ? 0 : iter->second;
 }
 
