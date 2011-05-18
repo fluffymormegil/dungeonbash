@@ -115,11 +115,13 @@ struct Player {
     // resource usage
     bool check_mana(int howmuch, bool noisy = true) const;
     void spend_mana(int howmuch);
-    void restore_mana(int homuch);
+    void restore_mana(int howmuch, bool noisy = false);
     void spellcast(int mana, int cd_index = 0, int cd_val = 0);
     // computed-value functions
     void renew_combat_timer(void) { combat_timer = 10; dispel_noncom_only(); }
     bool in_combat() const { return combat_timer > 0; }
+    bool ability_ready(unsigned abil) const { return (abil < 10) ? (cooldowns[abil] <= game_tick) : false; }
+    uint32_t ability_ticks(unsigned abil) const { return (abil < 10) ? ((cooldowns[abil] > game_tick) ? cooldowns[abil] - game_tick : 0) : false; }
     int net_body() const { return body - bdam; }
     int net_agility() const { return agility - adam; }
     bool test_mobility(bool noisy = false) const;

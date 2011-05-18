@@ -1,28 +1,28 @@
-/* prof-fighter.cc - fighter professional abilities for Martin's Dungeon Bash
- * 
- * Copyright 2009 Martin Read
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// prof-fighter.cc - fighter professional abilities for Martin's Dungeon Bash
+// 
+// Copyright 2009-11 Martin Read
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #define PROF_FIGHTER_CC
 #include "dunbash.hh"
@@ -35,7 +35,8 @@ const int fighter_cooldowns[] =
     30,
     5,
     0,
-    200
+    200,
+    500
 };
 
 const int fighter_costs[] =
@@ -44,8 +45,8 @@ const int fighter_costs[] =
     30,
     20,
     30,
-    25,
-    0 // surge *restores* violence
+    0, // surge *restores* violence
+    0
 };
 
 int do_fighter_slam(Player *ptmp)
@@ -55,9 +56,9 @@ int do_fighter_slam(Player *ptmp)
         return 0;
     }
     int cooldown_multiplier = 1;
-    if (ptmp->cooldowns[Fighter_slam])
+    if (!ptmp->ability_ready(Fighter_slam))
     {
-        print_msg(0, "You are not ready to slam another foe (%d ticks to go)", ptmp->cooldowns[Fighter_slam]);
+        print_msg(0, "You are not ready to slam another foe (%d ticks to go)", ptmp->ability_ticks(Fighter_slam));
         return 0;
     }
     // get an adjacent monster.
@@ -100,7 +101,8 @@ int do_fighter_slam(Player *ptmp)
     }
     else
     {
-        // this will want revising if I implement invisibility.
+        // this will want revising if I implement invisibility in a way that
+        // works at point blank range.
         print_msg(0, "There is no monster there.");
         return 0;
     }
@@ -114,9 +116,9 @@ int do_fighter_berserk(Player *ptmp)
     {
         return 0;
     }
-    if (ptmp->cooldowns[Fighter_berserk])
+    if (!ptmp->ability_ready(Fighter_berserk))
     {
-        print_msg(0, "You are too tired to go berserk (%d ticks to go)", ptmp->cooldowns[Fighter_berserk]);
+        print_msg(0, "You are too tired to go berserk (%d ticks to go)", ptmp->ability_ticks(Fighter_berserk));
         return 0;
     }
     Perseff_data peff = 
@@ -130,8 +132,8 @@ int do_fighter_berserk(Player *ptmp)
         return 0;
     }
     print_msg(0, "You go berserk!");
-    // Going berserk voids your current supply of violence, but makes you
-    // regain violence every tick.
+    // Going berserk _requires_ its listed Violence cost, but _costs_ all
+    // your Violence.
     ptmp->spellcast(ptmp->mpcur, Fighter_berserk, fighter_cooldowns[Fighter_berserk]);
     return 1;
 }
@@ -142,9 +144,9 @@ int do_fighter_smash(Player *ptmp)
     {
         return 0;
     }
-    if (ptmp->cooldowns[Fighter_smash])
+    if (!ptmp->ability_ready(Fighter_smash))
     {
-        print_msg(0, "You are not ready to make such a powerful blow (%d ticks to go)", ptmp->cooldowns[Fighter_smash]);
+        print_msg(0, "You are not ready to make such a powerful blow (%d ticks to go)", ptmp->ability_ticks(Fighter_smash));
         return 0;
     }
     // Get a target.
@@ -186,9 +188,9 @@ int do_fighter_whirl(Player *ptmp)
         print_msg(0, "Your weapon is too badly damaged to consider that manoeuvre.");
         return 0;
     }
-    if (ptmp->cooldowns[Fighter_whirlwind])
+    if (!ptmp->ability_ready(Fighter_whirlwind))
     {
-        print_msg(0, "You feel too dizzy to execute that manoeuvre.");
+        print_msg(0, "You feel too dizzy to execute that manoeuvre. (%d ticks remaining)", ptmp->ability_ticks(Fighter_whirlwind));
         return 0;
     }
     if (ptmp->check_mana(fighter_costs[Fighter_whirlwind]))
@@ -226,15 +228,15 @@ int do_fighter_whirl(Player *ptmp)
     return 1;
 }
 
-int do_surge(Player *ptmp)
+int do_fighter_surge(Player *ptmp)
 {
-    if (ptmp->cooldowns[Fighter_surge])
+    if (!ptmp->ability_ready(Fighter_surge))
     {
-        print_msg(0, "You are too tired to surge with violence (%d ticks to go)", ptmp->cooldowns[Fighter_surge]);
+        print_msg(0, "You are too tired to surge with violence (%d ticks to go)", ptmp->ability_ticks(Fighter_surge));
         return 0;
     }
     ptmp->restore_mana(50);
-    ptmp->cooldowns[Fighter_surge] = 500;
+    ptmp->cooldowns[Fighter_surge] = game_tick + fighter_cooldowns[Fighter_surge];
     print_msg(0, "Violence surges within you!");
     return 1;
 }

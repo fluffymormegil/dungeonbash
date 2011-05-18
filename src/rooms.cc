@@ -642,6 +642,7 @@ int Levext_rooms::get_levgen_mon_spot(libmormegil::Coord *ppos) const
 
 void Levext_rooms::populate_zoo_room(void)
 {
+    print_msg(0, "Levext_rooms::populate_zoo_room");
     switch (zoo_style)
     {
     case ZOO_TREASURE:

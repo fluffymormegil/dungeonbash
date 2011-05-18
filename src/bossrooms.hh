@@ -41,8 +41,8 @@ struct Boss_spec
     Terrain_num hash_terrain;
     Terrain_num dot_terrain;
     Terrain_num tilde_terrain;
-    int num_pmons[10];
-    int num_pobjs[10];
+    int32_t num_pmons[10];
+    int32_t num_pobjs[10];
     Terrain_num num_terrs[10];
 };
 
@@ -70,7 +70,7 @@ struct Levext_rooms_boss : public Levext_rooms
     };
     void mock_coward() const;
     bool cleared;
-    Boss_spec const *spec;
+    Boss_spec spec;
     libmormegil::Coord num_posns[10];
     Mon_handle boss;
     std::set<Mon_handle> guards;
@@ -79,6 +79,7 @@ struct Levext_rooms_boss : public Levext_rooms
     virtual int leave_region(libmormegil::Coord c);
     virtual int enter_region(libmormegil::Coord c);
     virtual void populate_zoo_room(void);
+    Levext_rooms_boss() : cleared(false) {}
 };
 
 #endif

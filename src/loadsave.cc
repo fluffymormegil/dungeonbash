@@ -429,6 +429,16 @@ Levext_rooms_boss *deserialize_levext_rooms_boss(FILE *fp)
             deserialize(fp, &(lerp->linkage[i][j]));
         }
     }
+    deserialize(fp, &t32); lerp->spec.x_terrain = Terrain_num(t32);
+    deserialize(fp, &t32); lerp->spec.hash_terrain = Terrain_num(t32);
+    deserialize(fp, &t32); lerp->spec.dot_terrain = Terrain_num(t32);
+    deserialize(fp, &t32); lerp->spec.tilde_terrain = Terrain_num(t32);
+    deserialize(fp, lerp->spec.num_pmons, 10);
+    deserialize(fp, lerp->spec.num_pobjs, 10);
+    for (i = 0; i < 10; ++i)
+    {
+        deserialize(fp, &t32); lerp->spec.num_terrs[i] = Terrain_num(t32);
+    }
     return lerp;
 }
 
@@ -660,6 +670,16 @@ void serialize(FILE *fp, Levext_rooms_boss const *lerp)
 #endif
     serialize(fp, (Levext_rooms const *) lerp);
     // then serialize the extra stuff
+    serialize(fp, uint32_t(lerp->spec.x_terrain));
+    serialize(fp, uint32_t(lerp->spec.hash_terrain));
+    serialize(fp, uint32_t(lerp->spec.dot_terrain));
+    serialize(fp, uint32_t(lerp->spec.tilde_terrain));
+    serialize(fp, lerp->spec.num_pmons, 10);
+    serialize(fp, lerp->spec.num_pobjs, 10);
+    for (int i = 0; i < 10; ++i)
+    {
+        serialize(fp, uint32_t(lerp->spec.num_terrs[i]));
+    }
 }
 
 void serialize(FILE *fp, Levext_rooms const *lerp)

@@ -47,6 +47,15 @@ inline void serialize(FILE *fp, uint32_t const *buf, int len)
     }
 }
 
+inline void serialize(FILE *fp, int32_t const *buf, int len)
+{
+    int i;
+    for (i = 0; i < len; ++i)
+    {
+        serialize(fp, buf[i]);
+    }
+}
+
 inline void serialize_ohandle(FILE *fp, Obj_handle foo)
 {
     serialize(fp, uint64_t(foo.value));
@@ -61,6 +70,15 @@ extern void serialize_objects(FILE *fp);
 extern void serialize_permobj_vars(FILE *fp);
 
 inline void deserialize(FILE *fp, uint32_t *buf, int len)
+{
+    int i;
+    for (i = 0; i < len; ++i)
+    {
+        deserialize(fp, buf + i);
+    }
+}
+
+inline void deserialize(FILE *fp, int32_t *buf, int len)
 {
     int i;
     for (i = 0; i < len; ++i)

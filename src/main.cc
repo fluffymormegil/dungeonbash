@@ -38,7 +38,6 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <limits.h>
-#include "msgpass.hh"
 #include "cfgfile.hh"
 
 int user_uid;
@@ -900,7 +899,6 @@ int main(void)
     display_init_common();
     /* TODO move the below into common */
     display_init_classic();
-    msgpass_init();
     ui_init();
     ptac_init();
     monsters_init();

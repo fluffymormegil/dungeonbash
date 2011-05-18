@@ -32,6 +32,7 @@ int do_fighter_smash(Player *ptmp);
 int do_fighter_slam(Player *ptmp);
 int do_fighter_berserk(Player *ptmp);
 int do_fighter_whirl(Player *ptmp);
+int do_fighter_surge(Player *ptmp);
 
 #endif
 

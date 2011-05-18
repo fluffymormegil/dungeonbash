@@ -112,7 +112,7 @@ Boss_spec goblin_chieftain_boss =
     // monsters at the numbered positions
     {
         PM_GOBLIN_CHIEFTAIN, PM_GOBLIN, PM_GOBLIN, PM_GOBLIN, PM_GOBLIN,
-        PM_GOBLIN, PM_GOBLIN, PM_GOBLIN, PM_GOBLIN, PM_GOBLIN
+        PM_GOBLIN, PM_GOBLIN, PM_GOBLIN, -1, -1
     },
     // objects at the numbered positions
     {
@@ -128,7 +128,6 @@ Boss_spec goblin_chieftain_boss =
 
 void Levext_rooms_boss::excavate_zoo_room(void)
 {
-    /* TODO implement boss level zoo room excavation. */
     int yseg = zoo_room / 3;
     int xseg = zoo_room % 3;
     libmormegil::Coord topleft;
@@ -145,7 +144,7 @@ void Levext_rooms_boss::excavate_zoo_room(void)
      * now it gets embedded in this function in one big blob */
     if (parent->self.level == 5)
     {
-        spec = &goblin_chieftain_boss;
+        spec = goblin_chieftain_boss;
     }
     else if (parent->self.level == 10)
     {
@@ -170,21 +169,22 @@ void Levext_rooms_boss::excavate_zoo_room(void)
     {
         for (c.x = topleft.x; c.x <= botright.x; ++(c.x))
         {
+            parent->set_region(c, zoo_room);
             int ch = boss_template[c.y - topleft.y][c.x - topleft.x];
             switch (ch)
             {
             case 'X':
                 parent->set_flag_at(c, MAPFLAG_NOPIERCE);
-                parent->set_terrain(c, spec->x_terrain);
+                parent->set_terrain(c, spec.x_terrain);
                 break;
             case '#':
-                parent->set_terrain(c, spec->hash_terrain);
+                parent->set_terrain(c, spec.hash_terrain);
                 break;
             case '.':
-                parent->set_terrain(c, spec->dot_terrain);
+                parent->set_terrain(c, spec.dot_terrain);
                 break;
             case '~':
-                parent->set_terrain(c, spec->tilde_terrain);
+                parent->set_terrain(c, spec.tilde_terrain);
                 break;
             case '+':
                 parent->set_terrain(c, DOOR);
@@ -194,7 +194,7 @@ void Levext_rooms_boss::excavate_zoo_room(void)
                 /* what's that? your platform's native character set doesn't
                  * store the ten standard numerals as a dense sequence?  Even
                  * IBM use ASCII these days, for crying out louud! */
-                parent->set_terrain(c, spec->num_terrs[ch - '0']);
+                parent->set_terrain(c, spec.num_terrs[ch - '0']);
                 num_posns[ch - '0'] = c;
                 break;
             default:
@@ -253,6 +253,10 @@ int Levext_rooms_boss::leave_region(libmormegil::Coord c)
                 }
             }
         }
+        else
+        {
+            cleared = true;
+        }
         return 1;
     }
     else
@@ -267,10 +271,14 @@ int Levext_rooms_boss::enter_region(libmormegil::Coord c)
     if ((parent->region_at(c) == zoo_room) && !cleared)
     {
         /* initialize monsters. */
-        boss = create_mon(spec->num_pmons[0], num_posns[0], parent);
+        boss = create_mon(spec.num_pmons[0], num_posns[0], parent);
         for (i = 1; i < 10; ++i)
         {
-            Mon_handle mon = create_mon(spec->num_pmons[i], num_posns[i], parent);
+            if (spec.num_pmons[i] == -1)
+            {
+                continue;
+            }
+            Mon_handle mon = create_mon(spec.num_pmons[i], num_posns[i], parent);
             mon.snapv()->no_exp = true;
             guards.insert(mon);
         }
@@ -284,7 +292,8 @@ int Levext_rooms_boss::enter_region(libmormegil::Coord c)
 
 void Levext_rooms_boss::mock_coward() const
 {
-    print_msg(0, "Coward! Wretch! Craven! Stand and fight!");
+    print_msg(0, "\"Coward! Wretch! Craven! Stand and fight!\"");
+    print_msg(0, "You sense that your foes will be fully recovered when you return.");
 }
 
 /* bossrooms.cc */

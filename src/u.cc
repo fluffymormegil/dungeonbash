@@ -863,13 +863,9 @@ void update_player(void)
     int i;
     for (i = 0; i < 10; ++i)
     {
-        if (u.cooldowns[i])
+        if ((u.cooldowns[i] == game_tick) && game_tick)
         {
-            --u.cooldowns[i];
-            if (!u.cooldowns[i])
-            {
-                u.notify_cooldown(i);
-            }
+            u.notify_cooldown(i);
         }
     }
     if (u.combat_timer > 0)
@@ -1252,14 +1248,20 @@ int get_inventory_slot(Obj_handle oh)
     return -1;
 }
 
-void Player::restore_mana(int howmuch)
+void Player::restore_mana(int howmuch, bool noisy)
 {
+    // Everywhere we currently call this, we print a message anyway.
+    // Worst case, the player has to wait until their next action to
+    // see their mana update. Oh noes.
     howmuch = std::min(howmuch, mpmax - mpcur);
     if (howmuch > 0)
     {
         mpcur += howmuch;
         status_updated = 1;
-        display_update();
+        if (noisy)
+        {
+            print_msg(0, "You recover %d %s.\n", howmuch, mana_nouns[job]);
+        }
     }
 }
 
@@ -1349,7 +1351,7 @@ void Player::spellcast(int mana, int cd_index, int cd_val)
             print_msg(MSGCHAN_INTERROR, "Invalid cooldown index %d\n", cd_index);
             return;
         }
-        cooldowns[cd_index] = cd_val;
+        cooldowns[cd_index] = game_tick + cd_val;
     }
 }
 
@@ -1368,6 +1370,8 @@ int Player::do_profession_command(int which)
             return do_fighter_smash(this);
         case Fighter_slam:
             return do_fighter_slam(this);
+        case Fighter_surge:
+            return do_fighter_surge(this);
         default:
             break;
         }
