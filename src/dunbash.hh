@@ -322,9 +322,6 @@ extern int get_room_x(int room);
 extern int get_room_y(int room);
 extern void room_reset(void);
 
-// first parts of engine.cc 
-extern void send_text_message(int channel, const char *fmt, ...);
-
 #ifndef DISPLAY_H
 #include "display.hh"
 #endif
