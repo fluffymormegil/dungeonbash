@@ -3,7 +3,7 @@
 MON_OBJS=mon1.o mon2.o mon3.o permons.o perseff.o pmon2.o
 OBJ_OBJS=obj1.o obj2.o permobj.o
 ALG_OBJS=astar.o hexpi.o misc.o radiance.o rng.o spiralpath.o vector.o vision.o
-OS_OBJS=cfgfile.o loadsave.o main.o msgpass.o logger.o
+OS_OBJS=cfgfile.o loadsave.o main.o
 CMBT_OBJS=bmagic.o combat.o
 PLYR_OBJS=prof-fighter.o prof-preacher.o prof-thanato.o u.o
 DUN_OBJS=bossrooms.o cloud.o map.o rooms.o
