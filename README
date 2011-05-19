@@ -26,7 +26,10 @@ acknowledgements are due to numerous people.
 Dependencies
 ============
 Currently, dungeonbash depends on:
-- a working C++03 environment sharing headers with a C99 environment.
+- a working C++03 environment sharing headers with a C99 environment and
+  providing the following C++0x features
+    - "auto"
+    - explicitly sized enums
 - libncurses and libpanel (PDCurses also works but is not tested).
 
 Top-level directory structure
