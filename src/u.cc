@@ -58,7 +58,7 @@ const Stat_handling stat_handling[Total_professions] =
     { 10, 10, 30, 1, 1, 10, false }, // thanatophile
 };
 
-void recalc_defence(void)
+void recalc_derived_stats(void)
 {
     int i;
     Obj const *armptr = u.armour.snapc();
@@ -288,19 +288,17 @@ void look_at_floor(void)
     }
 }
 
-int gain_body(int amount, int loud)
+unsigned char gain_body(unsigned char amount, bool loud)
 {
-    if (amount < 1)
+    amount = std::min((int) amount, (int) std::max(0, 99 - u.body));
+    if (amount)
     {
-	print_msg(MSGCHAN_INTERROR, "Absurd body gain %d", amount);
-    }
-    if (u.body < 99)
-    {
-	if (u.body + amount > 99)
-	{
-	    amount = 99 - u.body;
-	}
+        unsigned char event[4] = {
+            (unsigned char) u.body, (unsigned char) amount,
+            (unsigned char) (u.body + amount), (unsigned char) loud 
+        };
 	u.body += amount;
+        notify_event(Event_player_gain_body, &event);
 	status_updated = 1;
 	if (loud)
 	{
@@ -310,96 +308,95 @@ int gain_body(int amount, int loud)
 	{
 	    display_update();
 	}
-	return amount;
     }
-    else
-    {
-	print_msg(0, "You feel disappointed.");
-	return 0;
-    }
+    return amount;
 }
 
-int drain_body(int amount, const char *what, int permanent)
+int drain_body(unsigned char amount, const char *what, bool permanent)
 {
-    if (!amount)
+    if (amount)
     {
-        return 0;
+        disturb_u();
+        if (u.bdam + amount > u.body)
+        {
+            notify_event(Event_player_death_body, 0);
+            return do_death(DEATH_BODY, what);
+        }
+        else
+        {
+            unsigned char event[6] = {
+                (unsigned char) amount,
+                (unsigned char) permanent,
+                (unsigned char) u.body,
+                (unsigned char) u.bdam,
+                (unsigned char) (permanent ? u.body - amount : u.body),
+                (unsigned char) (permanent ? u.bdam : u.bdam + amount)
+            };
+
+            if (permanent)
+            {
+                u.body -= amount;
+            }
+            else
+            {
+                u.bdam += amount;
+            }
+            notify_event(Event_player_lose_body, event);
+        }
     }
-    disturb_u();
-    print_msg(0, "You feel weaker!");
-    if (permanent)
-    {
-	u.body -= amount;
-    }
-    else
-    {
-	u.bdam += amount;
-    }
-    status_updated = 1;
-    if ((u.body - u.bdam) < 0)
-    {
-	print_msg(0, "Your heart is too weak to beat.");
-	return do_death(DEATH_BODY, what);
-    }
-    display_update();
     return 0;
 }
 
-int gain_agility(int amount, int loud)
+unsigned char gain_agility(unsigned char amount, bool loud)
 {
-    if (amount < 1)
+    amount = std::min((int) amount, std::max(0, 99 - u.agility));
+    if (amount)
     {
-	print_msg(MSGCHAN_INTERROR, "Absurd agility gain %d", amount);
+        unsigned char event[4] = {
+            (unsigned char) u.agility, 
+            (unsigned char)amount, 
+            (unsigned char) (u.agility + amount),
+            (unsigned char) loud };
+        u.agility += amount;
+        notify_event(Event_player_gain_agility, &event);
+        recalc_derived_stats();
     }
-    if (u.agility < 99)
-    {
-	if (u.agility + amount > 99)
-	{
-	    amount = 99 - u.agility;
-	}
-	u.agility += amount;
-	status_updated = 1;
-	recalc_defence();
-	if (loud)
-	{
-	    print_msg(0, "You feel more agile!");
-	}
-	else
-	{
-	    display_update();
-	}
-	return amount;
-    }
-    else
-    {
-	print_msg(0, "You feel disappointed.");
-	return 0;
-    }
+    return amount;
 }
 
-int drain_agility(int amount, const char *what, int permanent)
+int drain_agility(unsigned char amount, const char *what, bool permanent)
 {
-    if (!amount)
+    if (amount)
     {
-        return 0;
+        disturb_u();
+        if (u.adam + amount > u.agility)
+        {
+            notify_event(Event_player_death_agility, 0);
+            return do_death(DEATH_AGILITY, what);
+        }
+        else
+        {
+            unsigned char event[6] = {
+                (unsigned char) amount,
+                (unsigned char) permanent,
+                (unsigned char) u.agility,
+                (unsigned char) u.adam,
+                (unsigned char) (permanent ? u.body - amount : u.body),
+                (unsigned char) (permanent ? u.bdam : u.bdam + amount)
+            };
+
+            if (permanent)
+            {
+                u.agility -= amount;
+            }
+            else
+            {
+                u.adam += amount;
+            }
+            notify_event(Event_player_lose_agility, event);
+            recalc_derived_stats();
+        }
     }
-    disturb_u();
-    print_msg(0, "You feel clumsy!");
-    if (permanent)
-    {
-	u.agility -= amount;
-    }
-    else
-    {
-	u.adam += amount;
-    }
-    status_updated = 1;
-    if ((u.agility - u.adam) < 0)
-    {
-	print_msg(0, "You forget how to breathe.");
-	return do_death(DEATH_AGILITY, what);
-    }
-    recalc_defence();
     return 0;
 }
 
@@ -669,7 +666,7 @@ void u_init(void)
     u.weapon = u.inventory[0];
     u.ring = NO_OBJECT;
     u.armour = u.inventory[2];
-    recalc_defence();
+    recalc_derived_stats();
 }
 
 unsigned lev_threshold(int level)
@@ -957,7 +954,7 @@ void update_player(void)
             }
         }
         u.status = new_status;
-        recalc_defence();
+        recalc_derived_stats();
         for (peff_iter = u.perseffs.begin();
              peff_iter != u.perseffs.end();
              ++peff_iter)
@@ -1224,7 +1221,7 @@ int Player::on_remove(bool force)
         print_msg(0, "You remove your ring.");
     }
     u.ring = NO_OBJECT;
-    recalc_defence();
+    recalc_derived_stats();
     return 1;
 }
 

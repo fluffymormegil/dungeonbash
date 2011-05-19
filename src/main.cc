@@ -370,7 +370,7 @@ int do_command(Game_cmd cmd)
 	{
 	    u.armour = u.inventory[i];
 	    permobjs[u.armour.otyp()].known = 1;
-	    recalc_defence();
+	    recalc_derived_stats();
             u.armour.snapc()->get_name(&namestr);
 	    print_msg(0, "Wearing %s.", namestr.c_str());
 	    return 1;
@@ -380,7 +380,7 @@ int do_command(Game_cmd cmd)
 	if (u.armour.valid())
 	{
 	    u.armour = NO_OBJECT;
-	    recalc_defence();
+	    recalc_derived_stats();
 	    print_msg(0, "You take off your armour.");
 	    return 1;
 	}

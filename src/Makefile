@@ -3,7 +3,7 @@
 MON_OBJS=mon1.o mon2.o mon3.o permons.o perseff.o pmon2.o
 OBJ_OBJS=obj1.o obj2.o permobj.o
 ALG_OBJS=astar.o hexpi.o misc.o radiance.o rng.o spiralpath.o vector.o vision.o
-OS_OBJS=cfgfile.o loadsave.o main.o
+OS_OBJS=cfgfile.o loadsave.o main.o event.o messages.o
 CMBT_OBJS=bmagic.o combat.o
 PLYR_OBJS=prof-fighter.o prof-preacher.o prof-thanato.o u.o
 DUN_OBJS=bossrooms.o cloud.o map.o rooms.o
@@ -81,7 +81,7 @@ mon3.o: mon3.cc dunbash.hh monsters.hh dbashcfg.hh pmonid.hh
 
 obj1.o: obj1.cc dunbash.hh objects.hh pobjid.hh dbashcfg.hh
 
-obj2.o: obj2.cc  dunbash.hh objects.hh pobjid.hh pmonid.hh dbashcfg.hh monsters.hh
+obj2.o: obj2.cc dunbash.hh objects.hh pobjid.hh pmonid.hh dbashcfg.hh monsters.hh
 
 permobj.o: permobj.cc indie.hh dbashcfg.hh
 

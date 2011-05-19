@@ -1,28 +1,28 @@
-/* player.hh
- * 
- * Copyright 2009 Martin Read
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// player.hh
+// 
+// Copyright 2009 Martin Read
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #ifndef PLAYER_H
 #define PLAYER_H
@@ -135,17 +135,17 @@ extern int do_death(Death d, const char *what);
 extern void heal_u(int amount, bool boost, bool loud);
 extern void disturb_u(void);
 extern int damage_u(int amount, Death d, const char *what);
-extern int gain_body(int amount, int loud);
-extern int gain_agility(int amount, int loud);
+extern unsigned char gain_body(unsigned char amount, bool loud);
+extern unsigned char gain_agility(unsigned char amount, bool loud);
 extern int gain_mp(int amount, bool loud);
-extern int drain_body(int amount, const char *what, int permanent);
-extern int drain_agility(int amount, const char *what, int permanent);
+extern int drain_body(unsigned char amount, const char *what, bool permanent);
+extern int drain_agility(unsigned char amount, const char *what, bool permanent);
 extern void gain_experience(int amount);
 extern unsigned int lev_threshold(int level);
 extern int farmove_player(libmormegil::Offset direction);
 extern int move_player(libmormegil::Offset step);
 extern int reloc_player(libmormegil::Coord target, bool override = false);
-extern void recalc_defence(void);
+extern void recalc_derived_stats(void);
 extern int teleport_u(void);
 extern void update_player(void);
 extern int player_resists_dtype(Damtyp dtype);
@@ -161,4 +161,4 @@ extern Player u;
 
 #endif
 
-/* player.hh */
+// player.hh

@@ -326,6 +326,10 @@ extern void room_reset(void);
 #include "display.hh"
 #endif
 
+#ifndef event_hh
+#include "event.hh"
+#endif
+
 #ifndef UI_H
 #include "ui.hh"
 #endif

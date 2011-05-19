@@ -157,17 +157,17 @@ int release_obj(Obj_handle obj)
 	    if (obj == u.armour)
 	    {
 		u.armour = NO_OBJECT;
-		recalc_defence();
+		recalc_derived_stats();
 	    }
 	    else if (obj == u.weapon)
 	    {
 		u.weapon = NO_OBJECT;
-		recalc_defence();
+		recalc_derived_stats();
 	    }
 	    else if (obj == u.ring)
 	    {
 		u.ring = NO_OBJECT;
-		recalc_defence();
+		recalc_derived_stats();
 	    }
 	    for (i = 0; i < 19; i++)
 	    {
@@ -742,7 +742,7 @@ int damage_obj(Obj_handle obj)
             print_msg(0, "Your wand is consumed in a puff of wild magic.");
         }
 	consume_obj(obj);
-	recalc_defence();
+	recalc_derived_stats();
         return 2;
     }
     return 1;

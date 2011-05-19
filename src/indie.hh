@@ -1,6 +1,6 @@
 // indie.hh
 // 
-// Copyright 2009 Martin Read
+// Copyright 2009-2011 Martin Read
 // 
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
@@ -30,16 +30,18 @@
 #include <stdint.h>
 #include <libmormegil/Coord.hh>
 
-/* This file contains universal definitions for things that don't change
- * when the monster or item databases do. */
+// This file contains universal definitions for things that don't change
+// when the monster or item databases do.
 
-/* XXX enum damtyp - types of damage. */
-enum Damtyp {
+// XXX enum Damtyp - types of damage.
+enum Damtyp : uint32_t
+{
     DT_PHYS = 0, DT_COLD, DT_FIRE, DT_NECRO, DT_ELEC, DT_POISON, DT_ACID, DT_COUNT
 };
 
-/* XXX enum terrain_num */
-enum Terrain_num {
+// XXX enum Terrain_num - types of terrain
+enum Terrain_num : uint32_t
+{
     // Walls
     WALL, BONE_WALL, IRON_WALL, RED_WALL, SKIN_WALL,
     // Floors
@@ -54,15 +56,13 @@ enum Terrain_num {
     WATER_POOL, ACID_POOL, LAVA_POOL
 };
 
-/* XXX enum death */
-/* Sadly, there are not yet 52 kinds of way to die, only four: killed by
- * an arbitrary string, killed by a monster, drained of body by an arbitrary
- * string, and drained of agility by an arbitrary string. */
-enum Death {
+// XXX enum Death - 52^W 4 ways to die.
+enum Death : uint32_t
+{
     DEATH_KILLED, DEATH_KILLED_MON, DEATH_BODY, DEATH_AGILITY
 };
 
-/* XXX enum game_cmd - player actions. */
+// XXX enum Game_cmd - player actions
 enum Game_cmd {
     NO_CMD, DROP_ITEM, SAVE_GAME, SHOW_INVENTORY,
     MOVE_WEST, MOVE_SOUTH, MOVE_NORTH, MOVE_EAST,
@@ -91,24 +91,33 @@ inline bool was_move_command(int i)
 
 #endif
 
-/* Player resistance masks */
+// Player resistance masks
 
 #define RESIST_MASK_TEMPORARY	0x0000FFFFu
 #define RESIST_MASK_PERM_EQUIP	0xFFFF0000u
 #define RESIST_RING	0x00010000u
 #define RESIST_ARMOUR	0x00020000u
 
-/* Game-internal colour codes */
+// Game-internal colour codes
 
-enum Dbash_colour
+enum Dbash_colour : int16_t
 {
     DBCLR_L_GREY, DBCLR_D_GREY, DBCLR_RED, DBCLR_BLUE,
     DBCLR_GREEN, DBCLR_PURPLE, DBCLR_BROWN, DBCLR_CYAN,
     DBCLR_WHITE, DBCLR_L_RED, DBCLR_L_BLUE, DBCLR_L_GREEN,
     DBCLR_L_PURPLE, DBCLR_YELLOW, DBCLR_L_CYAN
 };
+#define Total_dbash_colours (1 + (int) DBCLR_L_CYAN)
 
-enum Creature_speed
+enum Tile_layer
+{
+    Tlayer_terrain, Tlayer_furniture /* unused */,
+    Tlayer_objects, Tlayer_critters,
+    Tlayer_clouds, Tlayer_projectiles
+};
+#define Total_tile_layers (1 + (int) Tlayer_projectiles)
+
+enum Creature_speed : uint32_t
 {
     SPEED_VERY_SLOW, SPEED_SLOW, SPEED_NORMAL, SPEED_FAST,
     SPEED_VERY_FAST, SPEED_ULTRAFAST
@@ -122,27 +131,27 @@ struct Direction_data
     bool oncardinal;
 };
 
-enum Dungeon_num
+enum Dungeon_num : uint32_t
 {
     Dungeon_main, Dungeon_necropolis, Dungeon_inferno,
     Dungeon_torment, Dungeon_iron_halls, Dungeon_hellmire,
     Total_dungeons
 };
 
-enum Player_profession
+enum Player_profession : uint32_t
 {
     Prof_fighter, Prof_preacher, Prof_thanatophile,
     Total_professions
 };
 
-enum Critter_sex
+enum Critter_sex : uint32_t
 {
     Csex_neuter, Csex_female, Csex_male, Csex_other
 };
 
 // for now I am keeping this to major-body-part anatomy. Organs can wait for a
 // highly hypothetical "gorebash" or "hentaibash" fork.
-enum Anatomy_bits
+enum Anatomy_bits : uint32_t
 {
     Anat_head, Anat_torso, // Fundamentals of meaty critters
     Anat_left_leg, Anat_right_leg, // bipeds
@@ -151,7 +160,7 @@ enum Anatomy_bits
     Anat_left_wing, Anat_right_wing // avians, chiropterans, etc.
 };
 
-enum Caster_fluff
+enum Caster_fluff : uint32_t
 {
     Cfluff_curse, Cfluff_incant, Cfluff_judge, Total_caster_fluffs
 };
@@ -176,9 +185,9 @@ typedef uint32_t Anatomy;
 
 #define INVENTORY_SIZE 19
 
-/* The world window _must_ accommodate a 21x21 view. If it doesn't, your port
- * will always be unofficial. */
+// The world window _must_ accommodate at least a 21x21 view. If it doesn't,
+// your port will always be unofficial.
 #define DISP_HEIGHT 21
 #define DISP_WIDTH 21
 
-// indie.h
+// indie.hh

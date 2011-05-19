@@ -53,6 +53,9 @@ extern bool get_interrupt(void);
 extern char get_silent(void);
 extern bool cursor_highlight(libmormegil::Coord mappos);
 
+/* XXX event.cc data and funcs */
+extern void notify_event(uint32_t event_type, void *event_data);
+
 /* The back buffer represents the character's entire map knowledge.  It
    is currently represented using colored characters; this is Less Than Ideal.
 
